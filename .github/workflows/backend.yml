@@ -1,0 +1,34 @@
+name: backend
+
+on: push
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: backend
+    env:
+      TEST_DATABASE_URL: postgresql+psycopg://dtm:dtm@localhost:5432/dtm_test
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: dtm
+          POSTGRES_PASSWORD: dtm
+          POSTGRES_DB: dtm_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U dtm -d dtm_test"
+          --health-interval 2s
+          --health-timeout 3s
+          --health-retries 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+      - run: uv sync --locked
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+      - run: uv run mypy .
+      - run: uv run pytest
