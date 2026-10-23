@@ -185,3 +185,11 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — Frontend tests cover the Purchase button, the 409 out of stock message, the admin route guard, and login and register form validation. They are listed as F-01 to F-20 in `TEST_LIST.md`.
 
 **Why** — These are the places where the frontend decides something instead of only showing data. Each one is a way the UI can let a user do what the server will refuse.
+
+## [2026-10-24] Unknown fields are a 422, set once on a shared base schema
+
+**Supersedes** — The `[unverified]` note in "All input validation is 422". The owner has confirmed that reading.
+
+**Decision** — Any extra field in a request body is a 422, on every endpoint. Every request schema inherits from one base schema that sets `extra="forbid"`. No schema repeats the setting.
+
+**Why** — One place to read and to change, and a new schema cannot forget it. This is what A-09, V-21 and E-08 test.

@@ -172,6 +172,7 @@ Operations
 - E-11 api: `GET /api/health` returns 200 when the database answers
 - E-12 unit: the app refuses to start when the secret key setting is missing
 - E-13 db: migrations run from an empty database up to head, and down again
+- E-14 api: `GET /api/health` returns 200 with status `ok` (the plain check that proves the test loop; E-11 adds the database)
 
 ## Frontend (F)
 
