@@ -139,3 +139,49 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — No purchase history, and no defence against the login timing difference between an unknown email and a wrong password.
 
 **Why** — A history table is not in the brief, and adding one later means deciding what delete does to it. Hiding the timing needs a dummy hash check that is more to explain than it is worth here.
+
+## [2026-10-24] Prices are INR, stored in paise as BigInteger
+
+**Supersedes** — "Prices stored as integer cents", "Currency is USD", and the price part of "Limits live in one constants module".
+
+**Decision** — Prices are integer paise in the database and the API, in a BigInteger column. A price is from 1 to 10^11 paise (100 crore rupees). The frontend turns paise into rupees for display, and the currency is one constant there. The password, make/model, restock and id limits from the earlier entry stay.
+
+**Why** — It is an Indian dealership. Cars cost crores, and 10^11 paise does not fit a 32-bit column, so the column has to be wider. Whole paise are still exact integers, so range search stays exact.
+
+## [2026-10-24] Categories: sedan, suv, hatchback, coupe, truck, ev
+
+**Supersedes** — "Categories are a fixed list". The list was sedan, suv, hatchback, coupe, truck, van.
+
+**Decision** — The categories are sedan, suv, hatchback, coupe, truck and ev. Still one enum, stored as text.
+
+**Why** — Electric vehicles matter more to a current dealership than vans.
+
+## [2026-10-24] PUT with quantity in the body is a 422
+
+**Supersedes** — The part of "PUT replaces four fields and never touches quantity" that said a `quantity` in the body is ignored.
+
+**Decision** — A PUT body that contains `quantity` is refused with 422. PUT still requires make, model, category and price and writes only those four columns.
+
+**Why** — If the field is silently ignored, the caller thinks the stock changed. Stock only moves through purchase and restock, so an attempt to set it should fail loudly.
+
+## [2026-10-24] All input validation is 422
+
+**Decision** — Every kind of bad input returns 422, FastAPI's default: wrong types, out of range values, a minimum price above the maximum, and fields we do not accept. A request body with an unknown field is refused on every endpoint, not only on PUT. No 400 anywhere.
+
+**Why** — One rule everywhere is easier to explain and to test. Refusing unknown fields everywhere is a consequence of the PUT decision above: the same reasoning applies to a `role` sent at register. [unverified] The owner asked for 422 on everything; applying it to unknown fields on all bodies was Claude's reading of that, and changes A-09 and E-08.
+
+## [2026-10-24] Which error wins, with 409 last
+
+**Supersedes** — "Which error wins".
+
+**Decision** — When several things are wrong at once, the order is 401, 403, 422, 404, 409.
+
+**Why** — Same reasoning as before, now including 409: a vehicle has to exist before it can be out of stock.
+
+## [2026-10-24] Frontend tests: purchase, out of stock, route guard, forms
+
+**Supersedes** — "Frontend tests".
+
+**Decision** — Frontend tests cover the Purchase button, the 409 out of stock message, the admin route guard, and login and register form validation. They are listed as F-01 to F-20 in `TEST_LIST.md`.
+
+**Why** — These are the places where the frontend decides something instead of only showing data. Each one is a way the UI can let a user do what the server will refuse.

@@ -30,7 +30,7 @@ Roles: **visitor** (no account), **customer** (registered), **admin** (seeded).
 
 **V3. Update a vehicle.** As an admin, I want to correct a vehicle's make, model, category or price, so that the catalogue stays accurate.
 - Make, model, category and price are all required, and replace the old values.
-- Quantity is not changed here. It only changes through purchase and restock.
+- Quantity is not accepted here. A request that includes it is refused. Stock only moves through purchase and restock.
 
 **V4. Delete a vehicle.** As an admin, I want to delete a vehicle, so that models we no longer carry disappear.
 
@@ -68,7 +68,7 @@ Roles: **visitor** (no account), **customer** (registered), **admin** (seeded).
 
 **D1. Continuous integration.** As a developer, I want every push to run lint, type checks and tests for backend and frontend, so that main is always releasable.
 - Migrations run from an empty database to the latest and back down again.
-- Frontend tests cover the Purchase button only (F4). That list is written when the frontend phase starts.
+- Frontend tests are listed in `TEST_LIST.md` (F-01 onward).
 
 **D2. Small releases.** As the owner, I want the app deployed on my VPS with Docker Compose and Caddy behind Cloudflare, and redeployed from main in small steps, so that each finished slice is live.
 - A health endpoint answers when the database answers, so Docker and Caddy can tell the app is up.
@@ -89,10 +89,10 @@ Written down so it is a decision, not an oversight.
 
 ## Answers to the open questions
 
-All five are decided and logged in `DECISIONS.md`.
+All five are decided and logged in `DECISIONS.md`. Later entries there supersede some of these answers (currency, categories, PUT with quantity).
 
 1. **Who can add a vehicle?** Admin only.
-2. **Does PUT change quantity?** No.
+2. **Does PUT change quantity?** No, and sending it is a 422.
 3. **Login identifier?** Email and password.
-4. **Category values?** A fixed list: sedan, suv, hatchback, coupe, truck, van.
-5. **Currency?** USD. It only affects how the UI shows prices.
+4. **Category values?** A fixed list: sedan, suv, hatchback, coupe, truck, ev.
+5. **Currency?** INR, prices stored in paise.

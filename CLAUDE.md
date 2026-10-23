@@ -16,11 +16,11 @@ Read before working: `docs/BRIEF.md`, `docs/STORIES.md`, `docs/TEST_LIST.md`, `d
 Do not reopen these. They are in `docs/DECISIONS.md` with the reason for each.
 
 - List returns every vehicle, including zero stock. The UI shows those as out of stock.
-- Update, delete and restock are admin only.
+- Add, update, delete and restock are admin only.
 - A purchase is always one unit.
 - Register never picks a role. Admin comes from a seed script.
 - Purchase is one atomic update, never read then write. 409 when out of stock.
-- Prices are integer cents.
+- Prices are integer paise (INR), stored as BigInteger.
 - Out of scope: refresh tokens, email verification, pagination.
 
 `docs/DECISIONS.md` is append only. New decisions are new entries. Never edit old ones.
