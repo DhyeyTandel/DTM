@@ -193,3 +193,33 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — Any extra field in a request body is a 422, on every endpoint. Every request schema inherits from one base schema that sets `extra="forbid"`. No schema repeats the setting.
 
 **Why** — One place to read and to change, and a new schema cannot forget it. This is what A-09, V-21 and E-08 test.
+
+## [2026-10-24] Purchase takes no body
+
+**Decision** — `POST /api/vehicles/{id}/purchase` has no request body model. A body sent to it is not read. E-08 applies to every endpoint that accepts a body, and I-15 says the same for purchase.
+
+**Why** — A purchase is always one unit, so there is nothing to put in a body. Giving it a body model only to refuse it would be code for no behaviour. This removes the conflict between I-15 and E-08.
+
+## [2026-10-24] Synchronous SQLAlchemy
+
+**Decision** — The backend uses synchronous SQLAlchemy 2 with psycopg 3, and plain `def` routes.
+
+**Why** — It is the simplest to read and to explain. Concurrency tests can use one session per thread, and FastAPI runs `def` routes in a threadpool, so requests still overlap.
+
+## [2026-10-24] API tests roll back through a savepoint
+
+**Decision** — Each api test runs on one connection inside an outer transaction. Sessions use `join_transaction_mode="create_savepoint"`, so a commit in a request only releases a savepoint. The outer transaction is rolled back after the test. This fixture is never used for concurrent requests.
+
+**Why** — The app commits for real, the tests leave no data behind, and no truncate is needed between tests. Concurrent tests need separate connections, which is why they use the commit and truncate fixture instead.
+
+## [2026-10-24] Alembic takes the database url from its caller first
+
+**Decision** — `alembic/env.py` uses the `sqlalchemy.url` already set on the Alembic config, and falls back to `Settings().database_url` only when none is set. Tests set their own test url and never fall back to the dev one.
+
+**Why** — If `env.py` always read the app settings, the test run would migrate, and later truncate, the dev database.
+
+## [2026-10-24] The session commits before the response is sent
+
+**Decision** — The session dependency is declared with `Depends(get_session, scope="function")`, so its commit runs when the route function returns, before the response goes out. The session is opened with `with`, commits after `yield`, and an exception skips the commit so closing the session rolls back.
+
+**Why** — By default code after `yield` runs after the response is sent. A failed commit, such as a duplicate email (A-08), would then reach the client as a success. This is written down now and applied when `get_session` is first built.

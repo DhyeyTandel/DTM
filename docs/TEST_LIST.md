@@ -131,14 +131,14 @@ Purchase
 - I-05 db: purchase of the last unit succeeds and leaves quantity zero
 - I-06 db: purchase at zero stock changes nothing and returns nothing
 - I-07 db: the database refuses a negative quantity (check constraint, last line of defence)
-- I-08 db: two concurrent purchases of the last unit give one success and one `OutOfStock`
-- I-09 db: N concurrent purchases against stock below N give exactly stock-many successes, the rest `OutOfStock`, final quantity zero
+- I-08 db: two concurrent purchases of the last unit give one success and one `OutOfStock`. Each thread uses its own session, waits on a `threading.Barrier` right before the update so they really overlap, and closes its session before the test ends so the truncate does not wait on a lock.
+- I-09 db: N concurrent purchases against stock below N give exactly stock-many successes, the rest `OutOfStock`, final quantity zero. Same rules as I-08, and the engine pool must be at least N connections (the default allows 15) or threads wait on the pool and run one after another.
 - I-10 api: `POST /api/vehicles/{id}/purchase` as customer returns 200 with the full vehicle and its new quantity
 - I-11 api: an admin purchase returns 200 and is handled exactly like a customer's
 - I-12 api: out of stock returns 409 and the stock is still zero
 - I-13 api: missing id returns 404
 - I-14 api: without a token returns 401
-- I-15 api: the request body is ignored and exactly one unit is bought
+- I-15 api: purchase takes no body, so a body sent to it is not read and exactly one unit is bought
 
 Restock
 - I-16 unit: restock adds the given amount to quantity
@@ -164,14 +164,14 @@ Data and format
 - E-05 db: price is stored and returned as an integer number of paise, and a price at the maximum (10^11) does not overflow
 - E-06 api: make and model over the maximum length return 422
 - E-07 api: make and model have surrounding whitespace trimmed
-- E-08 api: an unknown field in any request body returns 422
+- E-08 api: any endpoint that accepts a body rejects an unknown field with 422 (purchase takes no body, so it is not covered; see I-15)
 - E-09 api: a body that is not valid JSON returns 422
 
 Operations
 - E-10 api: CORS allows only the configured frontend origin
 - E-11 api: `GET /api/health` returns 200 when the database answers
 - E-12 unit: the app refuses to start when the secret key setting is missing
-- E-13 db: migrations run from an empty database up to head, and down again
+- E-13 db: migrations run from an empty database up to head, and down again. It ends with an upgrade to head, because the test database is shared and a downgrade to base would drop the schema for every test after it.
 - E-14 api: `GET /api/health` returns 200 with status `ok` (the plain check that proves the test loop; E-11 adds the database)
 
 ## Frontend (F)
