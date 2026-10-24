@@ -93,3 +93,11 @@ def test_a_valid_token_for_a_user_that_no_longer_exists_returns_401(
     response = probe_client.get(PROBE_URL, headers=bearer(buyer_token))
 
     assert response.status_code == 401
+
+
+def test_an_authorization_header_without_the_bearer_scheme_returns_401(
+    probe_client: TestClient, buyer_token: str
+) -> None:
+    response = probe_client.get(PROBE_URL, headers={"Authorization": f"Basic {buyer_token}"})
+
+    assert response.status_code == 401
