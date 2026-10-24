@@ -1,3 +1,6 @@
+from datetime import UTC, datetime, timedelta
+
+import jwt
 import pytest
 
 from app.config import Settings
@@ -35,3 +38,18 @@ def test_login_with_an_unknown_email_raises_invalid_credentials(settings: Settin
 
     with pytest.raises(InvalidCredentials):
         service.login("nobody@example.com", PASSWORD)
+
+
+def test_the_token_carries_only_the_user_id_and_an_expiry_from_config(
+    settings: Settings,
+) -> None:
+    short_lived_settings = settings.model_copy(update={"token_lifetime_minutes": 15})
+    service = build_service_with_registered_buyer(short_lived_settings)
+
+    token = service.login(EMAIL, PASSWORD)
+
+    claims = jwt.decode(token, settings.secret_key, algorithms=[settings.token_algorithm])
+    expected_expiry = datetime.now(UTC) + timedelta(minutes=15)
+    assert set(claims) == {"sub", "exp"}
+    assert claims["sub"] == "1"
+    assert abs(claims["exp"] - expected_expiry.timestamp()) < 5
