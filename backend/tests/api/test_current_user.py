@@ -1,19 +1,16 @@
 from datetime import UTC, datetime, timedelta
-from typing import Annotated
 
 import jwt
 import pytest
-from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import Settings
-from app.dependencies import get_current_user
 from app.domain.role import Role
 from app.models.user import User
 from app.security.tokens import create_access_token
+from tests.vehicles import VALID_VEHICLE, VEHICLES_URL
 
-PROBE_URL = "/probe/current-user"
 OTHER_SECRET_KEY = "a-different-secret-that-is-also-long-enough"
 
 
@@ -25,50 +22,32 @@ def user_id_of(token: str) -> int:
     return int(jwt.decode(token, options={"verify_signature": False})["sub"])
 
 
-@pytest.fixture
-def probe_client(app: FastAPI) -> TestClient:
-    @app.get(PROBE_URL)
-    def probe(user: Annotated[User, Depends(get_current_user)]) -> dict[str, str | int]:
-        return {"id": user.id, "email": user.email, "role": user.role}
-
-    return TestClient(app)
-
-
-def test_a_request_with_no_token_returns_401(probe_client: TestClient) -> None:
-    response = probe_client.get(PROBE_URL)
-
-    assert response.status_code == 401
-    assert "detail" in response.json()
-
-
-def test_a_valid_token_gives_the_signed_in_user(probe_client: TestClient, buyer_token: str) -> None:
-    response = probe_client.get(PROBE_URL, headers={"Authorization": f"Bearer {buyer_token}"})
+def test_a_valid_token_is_accepted(client: TestClient, buyer_token: str) -> None:
+    response = client.get(VEHICLES_URL, headers=bearer(buyer_token))
 
     assert response.status_code == 200
-    assert response.json()["email"] == "buyer@example.com"
-    assert response.json()["role"] == "customer"
 
 
-def test_a_malformed_token_returns_401(probe_client: TestClient) -> None:
-    response = probe_client.get(PROBE_URL, headers={"Authorization": "Bearer not-a-token"})
+def test_a_malformed_token_returns_401(client: TestClient) -> None:
+    response = client.get(VEHICLES_URL, headers={"Authorization": "Bearer not-a-token"})
 
     assert response.status_code == 401
 
 
 def test_a_token_signed_with_a_different_secret_returns_401(
-    probe_client: TestClient, settings: Settings, buyer_token: str
+    client: TestClient, settings: Settings, buyer_token: str
 ) -> None:
     forged_token = create_access_token(
         user_id_of(buyer_token), OTHER_SECRET_KEY, settings.token_algorithm, timedelta(minutes=5)
     )
 
-    response = probe_client.get(PROBE_URL, headers=bearer(forged_token))
+    response = client.get(VEHICLES_URL, headers=bearer(forged_token))
 
     assert response.status_code == 401
 
 
 def test_an_expired_token_returns_401(
-    probe_client: TestClient, settings: Settings, buyer_token: str
+    client: TestClient, settings: Settings, buyer_token: str
 ) -> None:
     expired_token = create_access_token(
         user_id_of(buyer_token),
@@ -77,13 +56,13 @@ def test_an_expired_token_returns_401(
         timedelta(minutes=-1),
     )
 
-    response = probe_client.get(PROBE_URL, headers=bearer(expired_token))
+    response = client.get(VEHICLES_URL, headers=bearer(expired_token))
 
     assert response.status_code == 401
 
 
 def test_a_valid_token_for_a_user_that_no_longer_exists_returns_401(
-    probe_client: TestClient,
+    client: TestClient,
     rolled_back_session_factory: sessionmaker[Session],
     buyer_token: str,
 ) -> None:
@@ -91,22 +70,22 @@ def test_a_valid_token_for_a_user_that_no_longer_exists_returns_401(
         session.query(User).delete()
         session.commit()
 
-    response = probe_client.get(PROBE_URL, headers=bearer(buyer_token))
+    response = client.get(VEHICLES_URL, headers=bearer(buyer_token))
 
     assert response.status_code == 401
 
 
 def test_an_authorization_header_without_the_bearer_scheme_returns_401(
-    probe_client: TestClient, buyer_token: str
+    client: TestClient, buyer_token: str
 ) -> None:
-    response = probe_client.get(PROBE_URL, headers={"Authorization": f"Basic {buyer_token}"})
+    response = client.get(VEHICLES_URL, headers={"Authorization": f"Basic {buyer_token}"})
 
     assert response.status_code == 401
 
 
 @pytest.mark.parametrize("missing_claim", ["exp", "sub"])
 def test_a_signed_token_missing_a_claim_returns_401(
-    probe_client: TestClient, settings: Settings, buyer_token: str, missing_claim: str
+    client: TestClient, settings: Settings, buyer_token: str, missing_claim: str
 ) -> None:
     claims = {
         "sub": str(user_id_of(buyer_token)),
@@ -115,31 +94,32 @@ def test_a_signed_token_missing_a_claim_returns_401(
     del claims[missing_claim]
     token = jwt.encode(claims, settings.secret_key, algorithm=settings.token_algorithm)
 
-    response = probe_client.get(PROBE_URL, headers=bearer(token))
+    response = client.get(VEHICLES_URL, headers=bearer(token))
 
     assert response.status_code == 401
 
 
 def test_a_signed_token_with_a_non_numeric_sub_returns_401(
-    probe_client: TestClient, settings: Settings
+    client: TestClient, settings: Settings
 ) -> None:
     claims = {"sub": "not-a-number", "exp": datetime.now(UTC) + timedelta(minutes=5)}
     token = jwt.encode(claims, settings.secret_key, algorithm=settings.token_algorithm)
 
-    response = probe_client.get(PROBE_URL, headers=bearer(token))
+    response = client.get(VEHICLES_URL, headers=bearer(token))
 
     assert response.status_code == 401
 
 
 def test_the_role_comes_from_the_database_not_the_token(
-    probe_client: TestClient,
+    client: TestClient,
     rolled_back_session_factory: sessionmaker[Session],
     buyer_token: str,
 ) -> None:
+    before = client.post(VEHICLES_URL, json=VALID_VEHICLE, headers=bearer(buyer_token))
     with rolled_back_session_factory() as session:
         session.query(User).update({User.role: Role.ADMIN})
         session.commit()
 
-    response = probe_client.get(PROBE_URL, headers=bearer(buyer_token))
+    after = client.post(VEHICLES_URL, json=VALID_VEHICLE, headers=bearer(buyer_token))
 
-    assert response.json()["role"] == "admin"
+    assert (before.status_code, after.status_code) == (403, 201)
