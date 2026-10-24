@@ -60,8 +60,11 @@ def delete_vehicle(
 def search_vehicles(
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
     make: str | None = None,
+    model: str | None = None,
     category: Category | None = None,
     min_price: PriceBound | None = None,
     max_price: PriceBound | None = None,
 ) -> list[Vehicle]:
-    return service.search(make=make, category=category, min_price=min_price, max_price=max_price)
+    return service.search(
+        make=make, model=model, category=category, min_price=min_price, max_price=max_price
+    )
