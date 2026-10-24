@@ -23,6 +23,28 @@ def test_an_admin_adding_a_vehicle_gets_201_with_the_vehicle_and_its_id(
     assert {key: body[key] for key in VALID_VEHICLE} == VALID_VEHICLE
 
 
+def test_adding_a_vehicle_with_an_image_url_returns_it(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    image_url = "https://upload.wikimedia.org/wikipedia/commons/a/a1/Corolla.jpg"
+
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "image_url": image_url}, headers=admin_headers
+    )
+
+    assert response.status_code == 201
+    assert response.json()["image_url"] == image_url
+
+
+def test_adding_a_vehicle_without_an_image_url_returns_null_for_it(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    response = client.post(VEHICLES_URL, json=VALID_VEHICLE, headers=admin_headers)
+
+    assert response.status_code == 201
+    assert response.json()["image_url"] is None
+
+
 def test_adding_a_vehicle_without_a_token_returns_401(client: TestClient) -> None:
     response = client.post(VEHICLES_URL, json=VALID_VEHICLE)
 
