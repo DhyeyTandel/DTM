@@ -8,7 +8,7 @@ from app.schemas.base import RequestSchema
 
 Make = Annotated[str, StringConstraints(min_length=1)]
 Model = Annotated[str, StringConstraints(min_length=1)]
-Price = Annotated[int, Field(ge=PRICE_MIN, le=PRICE_MAX)]
+Price = Annotated[int, Field(strict=True, ge=PRICE_MIN, le=PRICE_MAX)]
 
 
 class VehicleCreate(RequestSchema):
