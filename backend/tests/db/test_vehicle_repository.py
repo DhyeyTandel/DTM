@@ -1,5 +1,6 @@
 import pytest
 from psycopg.errors import CheckViolation
+from sqlalchemy import update
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 
@@ -42,3 +43,33 @@ def test_the_database_refuses_a_vehicle_that_breaks_a_check_constraint(
 
     assert isinstance(refused.value.orig, CheckViolation)
     assert refused.value.orig.diag.constraint_name == constraint
+
+
+def test_updating_changes_only_the_four_editable_columns(
+    committed_session_factory: sessionmaker[Session],
+) -> None:
+    with committed_session_factory() as setup_session:
+        vehicle = SqlVehicleRepository(setup_session).add(build_vehicle(quantity=5))
+        vehicle_id = vehicle.id
+        setup_session.commit()
+
+    with committed_session_factory() as editing_session:
+        editing_session.get(Vehicle, vehicle_id)
+        with committed_session_factory() as buying_session:
+            buying_session.execute(
+                update(Vehicle).where(Vehicle.id == vehicle_id).values(quantity=4)
+            )
+            buying_session.commit()
+
+        updated = SqlVehicleRepository(editing_session).update(
+            vehicle_id, "Honda", "City", "hatchback", 1_200_000_00
+        )
+        assert updated is not None
+        returned_quantity = updated.quantity
+        editing_session.commit()
+
+    with committed_session_factory() as checking_session:
+        stored = checking_session.get(Vehicle, vehicle_id)
+        assert stored is not None
+        assert (stored.make, stored.quantity) == ("Honda", 4)
+    assert returned_quantity == 4
