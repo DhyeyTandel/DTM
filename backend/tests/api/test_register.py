@@ -40,3 +40,9 @@ def test_register_with_a_role_field_returns_422_and_creates_no_account(
 
     assert response.status_code == 422
     assert client.post(REGISTER_URL, json=VALID_REGISTRATION).status_code == 201
+
+
+def test_register_with_an_invalid_email_returns_422(client: TestClient) -> None:
+    response = client.post(REGISTER_URL, json={**VALID_REGISTRATION, "email": "not-an-email"})
+
+    assert response.status_code == 422
