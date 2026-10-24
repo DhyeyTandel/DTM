@@ -73,3 +73,21 @@ def test_updating_changes_only_the_four_editable_columns(
         assert stored is not None
         assert (stored.make, stored.quantity) == ("Honda", 4)
     assert returned_quantity == 4
+
+
+def add_vehicles(session: Session, *vehicles: Vehicle) -> list[Vehicle]:
+    repository = SqlVehicleRepository(session)
+    return [repository.add(vehicle) for vehicle in vehicles]
+
+
+def test_a_search_with_no_filters_returns_every_vehicle(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        added = add_vehicles(
+            session, build_vehicle(), build_vehicle(make="Honda", model="City"), build_vehicle()
+        )
+
+        found = SqlVehicleRepository(session).search()
+
+        assert found == added
