@@ -1,4 +1,6 @@
 import bcrypt
+import pytest
+from app.domain.errors import EmailAlreadyRegistered
 
 from app.domain.role import Role
 from app.services.auth_service import AuthService
@@ -23,3 +25,11 @@ def test_the_stored_password_is_a_hash_not_the_plain_text() -> None:
     stored_hash = users.users[0].password_hash
     assert stored_hash != "correct horse"
     assert bcrypt.checkpw(b"correct horse", stored_hash.encode())
+
+
+def test_registering_an_existing_email_is_refused() -> None:
+    service = AuthService(FakeUserRepository())
+    service.register("buyer@example.com", "correct horse")
+
+    with pytest.raises(EmailAlreadyRegistered):
+        service.register("buyer@example.com", "another password")
