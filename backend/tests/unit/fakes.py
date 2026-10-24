@@ -30,7 +30,12 @@ class FakeVehicleRepository:
     def list_all(self) -> list[Vehicle]:
         return list(self.vehicles)
 
-    def search(self, make: str | None = None, model: str | None = None) -> list[Vehicle]:
+    def search(
+        self,
+        make: str | None = None,
+        model: str | None = None,
+        category: str | None = None,
+    ) -> list[Vehicle]:
         return list(self.vehicles)
 
     def update(
