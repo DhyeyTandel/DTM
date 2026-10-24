@@ -1,5 +1,12 @@
 from app.domain.category import Category
-from app.limits import PRICE_MAX, PRICE_MIN, QUANTITY_MAX, QUANTITY_MIN
+from app.limits import (
+    IMAGE_URL_MAX_LENGTH,
+    IMAGE_URL_SCHEME,
+    PRICE_MAX,
+    PRICE_MIN,
+    QUANTITY_MAX,
+    QUANTITY_MIN,
+)
 from app.services.seed_vehicles import seed_vehicles
 from tests.unit.fakes import FakeVehicleRepository
 
@@ -33,6 +40,20 @@ def test_every_seeded_vehicle_is_within_the_price_and_quantity_limits() -> None:
     for vehicle in vehicles.vehicles:
         assert PRICE_MIN <= vehicle.price <= PRICE_MAX
         assert QUANTITY_MIN <= vehicle.quantity <= QUANTITY_MAX
+
+
+def test_every_seeded_vehicle_has_its_own_https_image_url_inside_the_limit() -> None:
+    vehicles = FakeVehicleRepository()
+
+    seed_vehicles(vehicles)
+
+    image_urls = [vehicle.image_url for vehicle in vehicles.vehicles]
+    for image_url in image_urls:
+        assert image_url is not None
+        assert image_url.startswith(IMAGE_URL_SCHEME)
+        assert len(image_url) <= IMAGE_URL_MAX_LENGTH
+        assert not any(character.isspace() for character in image_url)
+    assert len(set(image_urls)) == len(image_urls)
 
 
 def test_seeding_a_table_that_already_has_a_vehicle_adds_nothing() -> None:
