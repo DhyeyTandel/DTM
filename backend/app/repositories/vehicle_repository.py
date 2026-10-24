@@ -11,7 +11,7 @@ class VehicleRepository(Protocol):
 
     def list_all(self) -> list[Vehicle]: ...
 
-    def search(self) -> list[Vehicle]: ...
+    def search(self, make: str | None = None) -> list[Vehicle]: ...
 
     def update(
         self, vehicle_id: int, make: str, model: str, category: str, price: int
@@ -32,8 +32,11 @@ class SqlVehicleRepository:
     def list_all(self) -> list[Vehicle]:
         return list(self.session.scalars(select(Vehicle).order_by(Vehicle.id)))
 
-    def search(self) -> list[Vehicle]:
-        return list(self.session.scalars(select(Vehicle).order_by(Vehicle.id)))
+    def search(self, make: str | None = None) -> list[Vehicle]:
+        statement = select(Vehicle).order_by(Vehicle.id)
+        if make is not None:
+            statement = statement.where(Vehicle.make == make)
+        return list(self.session.scalars(statement))
 
     def update(
         self, vehicle_id: int, make: str, model: str, category: str, price: int
