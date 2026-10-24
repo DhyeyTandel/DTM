@@ -9,6 +9,7 @@ from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import Settings
+from tests.credentials import ADMIN_EMAIL, ADMIN_PASSWORD
 
 BACKEND_DIRECTORY = Path(__file__).resolve().parent.parent
 DEFAULT_TEST_DATABASE_URL = "postgresql+psycopg://dtm:dtm@localhost:5433/dtm_test"
@@ -23,6 +24,13 @@ def test_database_url() -> str:
 @pytest.fixture
 def settings(test_database_url: str) -> Settings:
     return Settings(_env_file=None, database_url=test_database_url, secret_key=TEST_SECRET_KEY)
+
+
+@pytest.fixture
+def admin_settings(settings: Settings) -> Settings:
+    return settings.model_copy(
+        update={"admin_email": ADMIN_EMAIL, "admin_password": ADMIN_PASSWORD}
+    )
 
 
 @pytest.fixture(scope="session")

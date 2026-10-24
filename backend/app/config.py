@@ -8,3 +8,5 @@ class Settings(BaseSettings):
     secret_key: str
     token_algorithm: str = "HS256"
     token_lifetime_minutes: int = 60
+    admin_email: str | None = None
+    admin_password: str | None = None
