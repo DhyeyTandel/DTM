@@ -1,4 +1,7 @@
+import pytest
+
 from app.domain.category import Category
+from app.domain.errors import VehicleNotFound
 from app.services.vehicle_service import VehicleService
 from tests.unit.fakes import FakeVehicleRepository
 
@@ -28,3 +31,10 @@ def test_updating_a_vehicle_replaces_make_model_category_and_price() -> None:
     assert updated.model == "City"
     assert updated.category == Category.HATCHBACK
     assert updated.price == 1_200_000_00
+
+
+def test_updating_a_missing_vehicle_raises_vehicle_not_found() -> None:
+    service = VehicleService(FakeVehicleRepository())
+
+    with pytest.raises(VehicleNotFound):
+        service.update(1, "Honda", "City", Category.HATCHBACK, 1_200_000_00)

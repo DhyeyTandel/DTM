@@ -27,10 +27,13 @@ class FakeVehicleRepository:
         self.vehicles.append(vehicle)
         return vehicle
 
-    def update(self, vehicle_id: int, make: str, model: str, category: str, price: int) -> Vehicle:
-        vehicle = next(vehicle for vehicle in self.vehicles if vehicle.id == vehicle_id)
-        vehicle.make = make
-        vehicle.model = model
-        vehicle.category = category
-        vehicle.price = price
+    def update(
+        self, vehicle_id: int, make: str, model: str, category: str, price: int
+    ) -> Vehicle | None:
+        vehicle = next((vehicle for vehicle in self.vehicles if vehicle.id == vehicle_id), None)
+        if vehicle is not None:
+            vehicle.make = make
+            vehicle.model = model
+            vehicle.category = category
+            vehicle.price = price
         return vehicle
