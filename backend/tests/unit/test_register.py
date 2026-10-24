@@ -1,14 +1,15 @@
 import bcrypt
 import pytest
 
+from app.config import Settings
 from app.domain.errors import EmailAlreadyRegistered
 from app.domain.role import Role
 from app.services.auth_service import AuthService
 from tests.unit.fakes import FakeUserRepository
 
 
-def test_registering_a_new_email_creates_a_customer() -> None:
-    service = AuthService(FakeUserRepository())
+def test_registering_a_new_email_creates_a_customer(settings: Settings) -> None:
+    service = AuthService(FakeUserRepository(), settings)
 
     user = service.register("buyer@example.com", "correct horse")
 
@@ -16,9 +17,9 @@ def test_registering_a_new_email_creates_a_customer() -> None:
     assert user.role == Role.CUSTOMER
 
 
-def test_the_stored_password_is_a_hash_not_the_plain_text() -> None:
+def test_the_stored_password_is_a_hash_not_the_plain_text(settings: Settings) -> None:
     users = FakeUserRepository()
-    service = AuthService(users)
+    service = AuthService(users, settings)
 
     service.register("buyer@example.com", "correct horse")
 
@@ -27,17 +28,19 @@ def test_the_stored_password_is_a_hash_not_the_plain_text() -> None:
     assert bcrypt.checkpw(b"correct horse", stored_hash.encode())
 
 
-def test_registering_an_existing_email_is_refused() -> None:
-    service = AuthService(FakeUserRepository())
+def test_registering_an_existing_email_is_refused(settings: Settings) -> None:
+    service = AuthService(FakeUserRepository(), settings)
     service.register("buyer@example.com", "correct horse")
 
     with pytest.raises(EmailAlreadyRegistered):
         service.register("buyer@example.com", "another password")
 
 
-def test_the_email_is_trimmed_and_lowercased_before_it_is_stored_or_looked_up() -> None:
+def test_the_email_is_trimmed_and_lowercased_before_it_is_stored_or_looked_up(
+    settings: Settings,
+) -> None:
     users = FakeUserRepository()
-    service = AuthService(users)
+    service = AuthService(users, settings)
 
     service.register("  Buyer@Example.COM ", "correct horse")
 

@@ -4,6 +4,7 @@ from typing import Annotated
 from fastapi import Depends, Request
 from sqlalchemy.orm import Session
 
+from app.config import Settings
 from app.repositories.user_repository import SqlUserRepository
 from app.services.auth_service import AuthService
 
@@ -18,5 +19,12 @@ def get_session(request: Request) -> Iterator[Session]:
 SessionDependency = Annotated[Session, Depends(get_session, scope="function")]
 
 
-def get_auth_service(session: SessionDependency) -> AuthService:
-    return AuthService(SqlUserRepository(session))
+def get_settings(request: Request) -> Settings:
+    settings: Settings = request.app.state.settings
+    return settings
+
+
+def get_auth_service(
+    session: SessionDependency, settings: Annotated[Settings, Depends(get_settings)]
+) -> AuthService:
+    return AuthService(SqlUserRepository(session), settings)
