@@ -59,6 +59,9 @@ Admin seed
 - A-39 db: the database refuses a role outside the list (check constraint), and the repository lets that error through instead of calling it a duplicate email
 - A-38 db: running the seed script's entry point commits the admin, so a new session can read it
 - A-37 unit: the seed script refuses an admin password outside the byte limits, with a clear message (bcrypt would otherwise crash on it)
+- A-40 unit: seeding an empty vehicle table adds about fifteen vehicles covering every category, a few at zero stock, all inside the price and quantity limits
+- A-41 unit: seeding when the table already has a vehicle adds nothing
+- A-42 db: the seed entry point stocks the table, and running it twice does not duplicate the vehicles
 
 ## Vehicles (V1 to V4)
 
