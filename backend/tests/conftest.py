@@ -34,10 +34,15 @@ def admin_settings(settings: Settings) -> Settings:
 
 
 @pytest.fixture(scope="session")
-def database_engine(test_database_url: str) -> Iterator[Engine]:
-    migration_config = Config(str(BACKEND_DIRECTORY / "alembic.ini"))
-    migration_config.set_main_option("script_location", str(BACKEND_DIRECTORY / "alembic"))
-    migration_config.set_main_option("sqlalchemy.url", test_database_url)
+def migration_config(test_database_url: str) -> Config:
+    config = Config(str(BACKEND_DIRECTORY / "alembic.ini"))
+    config.set_main_option("script_location", str(BACKEND_DIRECTORY / "alembic"))
+    config.set_main_option("sqlalchemy.url", test_database_url)
+    return config
+
+
+@pytest.fixture(scope="session")
+def database_engine(test_database_url: str, migration_config: Config) -> Iterator[Engine]:
     command.upgrade(migration_config, "head")
 
     engine = create_engine(test_database_url)
