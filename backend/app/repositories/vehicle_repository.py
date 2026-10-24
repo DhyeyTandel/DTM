@@ -76,17 +76,14 @@ class SqlVehicleRepository:
         return self.session.scalar(statement) is not None
 
     def purchase(self, vehicle_id: int) -> Vehicle | None:
-        # Deliberately naive: read, check, then write. Replaced by one atomic update.
-        vehicle = self.session.get(Vehicle, vehicle_id)
-        if vehicle is None or vehicle.quantity <= 0:
-            return None
+        # The quantity check and the decrement are one statement, so two buyers cannot both pass it.
         statement = (
             update(Vehicle)
-            .where(Vehicle.id == vehicle_id)
-            .values(quantity=vehicle.quantity - 1)
+            .where(Vehicle.id == vehicle_id, Vehicle.quantity > 0)
+            .values(quantity=Vehicle.quantity - 1)
             .returning(Vehicle)
         )
-        return self.session.scalars(statement).one()
+        return self.session.scalars(statement).one_or_none()
 
     def exists(self, vehicle_id: int) -> bool:
         statement = select(Vehicle.id).where(Vehicle.id == vehicle_id)

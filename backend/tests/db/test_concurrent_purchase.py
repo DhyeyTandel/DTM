@@ -46,7 +46,7 @@ def stored_quantity(session_factory: sessionmaker[Session], vehicle_id: int) -> 
 
 
 def buy_at_the_same_moment(session_factory: sessionmaker[Session], vehicle_id: int) -> list[bool]:
-    """Every buyer waits at the barrier, then all purchase together. True means the buyer got one."""
+    """All buyers wait at the barrier, then purchase together. True means a buyer got one."""
     barrier = threading.Barrier(BUYER_COUNT)
 
     def buy() -> bool:
