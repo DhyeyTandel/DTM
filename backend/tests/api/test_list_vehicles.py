@@ -16,6 +16,19 @@ def test_a_customer_listing_vehicles_gets_all_of_them(
     assert response.json() == [toyota, honda]
 
 
+def test_list_and_search_responses_include_the_image_url(
+    client: TestClient, admin_headers: dict[str, str], buyer_headers: dict[str, str]
+) -> None:
+    image_url = "https://upload.wikimedia.org/wikipedia/commons/a/a1/Corolla.jpg"
+    client.post(VEHICLES_URL, json={**VALID_VEHICLE, "image_url": image_url}, headers=admin_headers)
+
+    listed = client.get(VEHICLES_URL, headers=buyer_headers).json()
+    searched = client.get(f"{VEHICLES_URL}/search", headers=buyer_headers).json()
+
+    assert [vehicle["image_url"] for vehicle in listed] == [image_url]
+    assert [vehicle["image_url"] for vehicle in searched] == [image_url]
+
+
 def test_a_vehicle_with_zero_stock_is_listed(
     client: TestClient, admin_headers: dict[str, str], buyer_headers: dict[str, str]
 ) -> None:
