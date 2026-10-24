@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from sqlalchemy import select, update
+from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
 from app.models.vehicle import Vehicle
@@ -42,4 +42,5 @@ class SqlVehicleRepository:
         return self.session.scalars(statement).one_or_none()
 
     def delete(self, vehicle_id: int) -> bool:
-        raise NotImplementedError
+        statement = delete(Vehicle).where(Vehicle.id == vehicle_id).returning(Vehicle.id)
+        return self.session.scalar(statement) is not None

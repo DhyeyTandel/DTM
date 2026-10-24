@@ -39,3 +39,10 @@ def update_vehicle(
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
 ) -> Vehicle:
     return service.update(vehicle_id, body.make, body.model, body.category, body.price)
+
+
+@router.delete("/{vehicle_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_vehicle(
+    vehicle_id: VehicleId, service: Annotated[VehicleService, Depends(get_vehicle_service)]
+) -> None:
+    service.delete(vehicle_id)
