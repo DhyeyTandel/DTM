@@ -17,6 +17,6 @@ def read_user_id(token: str, secret_key: str, algorithm: str) -> int:
         claims = jwt.decode(
             token, secret_key, algorithms=[algorithm], options={"require": REQUIRED_CLAIMS}
         )
-    except jwt.PyJWTError as error:
+        return int(claims["sub"])
+    except (jwt.PyJWTError, ValueError) as error:
         raise NotAuthenticated from error
-    return int(claims["sub"])
