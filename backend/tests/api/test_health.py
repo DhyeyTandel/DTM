@@ -13,8 +13,9 @@ def test_health_returns_ok(client: TestClient) -> None:
     assert response.json() == {"status": "ok"}
 
 
-def test_health_returns_503_when_database_does_not_answer() -> None:
-    app = create_app(Settings(database_url=UNREACHABLE_DATABASE_URL))
+def test_health_returns_503_when_database_does_not_answer(settings: Settings) -> None:
+    unreachable_settings = settings.model_copy(update={"database_url": UNREACHABLE_DATABASE_URL})
+    app = create_app(unreachable_settings)
 
     response = TestClient(app).get("/api/health")
 

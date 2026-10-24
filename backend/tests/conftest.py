@@ -12,6 +12,7 @@ from app.config import Settings
 
 BACKEND_DIRECTORY = Path(__file__).resolve().parent.parent
 DEFAULT_TEST_DATABASE_URL = "postgresql+psycopg://dtm:dtm@localhost:5433/dtm_test"
+TEST_SECRET_KEY = "test-secret-key-that-is-long-enough-for-hs256"
 
 
 @pytest.fixture(scope="session")
@@ -21,7 +22,7 @@ def test_database_url() -> str:
 
 @pytest.fixture
 def settings(test_database_url: str) -> Settings:
-    return Settings(database_url=test_database_url)
+    return Settings(_env_file=None, database_url=test_database_url, secret_key=TEST_SECRET_KEY)
 
 
 @pytest.fixture(scope="session")
