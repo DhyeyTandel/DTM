@@ -34,3 +34,9 @@ def test_with_no_vehicles_the_list_is_empty(
 
     assert response.status_code == 200
     assert response.json() == []
+
+
+def test_listing_vehicles_without_a_token_returns_401(client: TestClient) -> None:
+    response = client.get(VEHICLES_URL)
+
+    assert response.status_code == 401
