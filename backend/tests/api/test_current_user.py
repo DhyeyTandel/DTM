@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import UTC, datetime, timedelta
 from typing import Annotated
 
 import jwt
@@ -99,5 +99,21 @@ def test_an_authorization_header_without_the_bearer_scheme_returns_401(
     probe_client: TestClient, buyer_token: str
 ) -> None:
     response = probe_client.get(PROBE_URL, headers={"Authorization": f"Basic {buyer_token}"})
+
+    assert response.status_code == 401
+
+
+@pytest.mark.parametrize("missing_claim", ["exp", "sub"])
+def test_a_signed_token_missing_a_claim_returns_401(
+    probe_client: TestClient, settings: Settings, buyer_token: str, missing_claim: str
+) -> None:
+    claims = {
+        "sub": str(user_id_of(buyer_token)),
+        "exp": datetime.now(UTC) + timedelta(minutes=5),
+    }
+    del claims[missing_claim]
+    token = jwt.encode(claims, settings.secret_key, algorithm=settings.token_algorithm)
+
+    response = probe_client.get(PROBE_URL, headers=bearer(token))
 
     assert response.status_code == 401
