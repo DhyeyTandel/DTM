@@ -25,3 +25,11 @@ def test_wrong_password_and_unknown_email_both_return_the_same_401(client: TestC
     assert wrong_password.status_code == 401
     assert unknown_email.status_code == 401
     assert wrong_password.json() == unknown_email.json()
+
+
+def test_login_matches_the_email_ignoring_letter_case(client: TestClient) -> None:
+    client.post(REGISTER_URL, json=CREDENTIALS)
+
+    response = client.post(LOGIN_URL, json={**CREDENTIALS, "email": " Buyer@EXAMPLE.com "})
+
+    assert response.status_code == 200
