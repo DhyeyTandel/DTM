@@ -155,3 +155,27 @@ def test_a_make_or_model_over_the_maximum_length_returns_422(
     )
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize("field", ["make", "model"])
+def test_a_make_or_model_is_stored_without_surrounding_spaces(
+    client: TestClient, admin_headers: dict[str, str], field: str
+) -> None:
+    padded = f"  {VALID_VEHICLE[field]}  "
+
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, field: padded}, headers=admin_headers
+    )
+
+    assert response.json()[field] == VALID_VEHICLE[field]
+
+
+@pytest.mark.parametrize("field", ["make", "model"])
+def test_a_make_or_model_of_only_spaces_returns_422(
+    client: TestClient, admin_headers: dict[str, str], field: str
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, field: "   "}, headers=admin_headers
+    )
+
+    assert response.status_code == 422
