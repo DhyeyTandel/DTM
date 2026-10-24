@@ -4,6 +4,8 @@ from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from app.domain.category import Category
 from app.limits import (
+    IMAGE_URL_MAX_LENGTH,
+    IMAGE_URL_SCHEME,
     MAKE_MAX_LENGTH,
     MODEL_MAX_LENGTH,
     PRICE_MAX,
@@ -21,6 +23,10 @@ Make = Annotated[
 Model = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MODEL_MAX_LENGTH)
 ]
+# A plain string, not HttpUrl: HttpUrl rewrites the address, which could pass the column length.
+ImageUrl = Annotated[
+    str, StringConstraints(max_length=IMAGE_URL_MAX_LENGTH, pattern=rf"^{IMAGE_URL_SCHEME}\S+$")
+]
 Price = Annotated[int, Field(strict=True, ge=PRICE_MIN, le=PRICE_MAX)]
 Quantity = Annotated[int, Field(strict=True, ge=QUANTITY_MIN, le=QUANTITY_MAX)]
 
@@ -33,7 +39,7 @@ class VehicleCreate(RequestSchema):
     category: Category
     price: Price
     quantity: Quantity
-    image_url: str | None = None
+    image_url: ImageUrl | None = None
 
 
 class VehicleUpdate(RequestSchema):
