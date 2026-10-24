@@ -13,8 +13,12 @@ from app.limits import (
 )
 from app.schemas.base import RequestSchema
 
-Make = Annotated[str, StringConstraints(min_length=1, max_length=MAKE_MAX_LENGTH)]
-Model = Annotated[str, StringConstraints(min_length=1, max_length=MODEL_MAX_LENGTH)]
+Make = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MAKE_MAX_LENGTH)
+]
+Model = Annotated[
+    str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MODEL_MAX_LENGTH)
+]
 Price = Annotated[int, Field(strict=True, ge=PRICE_MIN, le=PRICE_MAX)]
 
 Quantity = Annotated[int, Field(strict=True, ge=QUANTITY_MIN, le=QUANTITY_MAX)]
