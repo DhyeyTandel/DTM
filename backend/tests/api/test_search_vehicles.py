@@ -29,3 +29,24 @@ def test_searching_without_a_token_returns_401(client: TestClient) -> None:
     response = client.get(SEARCH_URL)
 
     assert response.status_code == 401
+
+
+def test_a_search_with_no_match_returns_200_and_an_empty_list(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    add_vehicle(client, admin_headers)
+
+    response = client.get(SEARCH_URL, params={"make": "ferrari"}, headers=admin_headers)
+
+    assert response.status_code == 200
+    assert response.json() == []
+
+
+def test_out_of_stock_vehicles_are_included_in_the_results(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    sold_out = add_vehicle(client, admin_headers, quantity=0)
+
+    response = client.get(SEARCH_URL, params={"make": "toyota"}, headers=admin_headers)
+
+    assert response.json() == [sold_out]
