@@ -8,3 +8,7 @@ class EmailAlreadyRegistered(DomainError):
 
 class InvalidCredentials(DomainError):
     message = "Invalid email or password"
+
+
+class NotAuthenticated(DomainError):
+    message = "Not authenticated"
