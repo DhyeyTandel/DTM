@@ -27,6 +27,9 @@ class FakeVehicleRepository:
         self.vehicles.append(vehicle)
         return vehicle
 
+    def list_all(self) -> list[Vehicle]:
+        return list(self.vehicles)
+
     def update(
         self, vehicle_id: int, make: str, model: str, category: str, price: int
     ) -> Vehicle | None:

@@ -12,6 +12,9 @@ class VehicleService:
         vehicle = Vehicle(make=make, model=model, category=category, price=price, quantity=quantity)
         return self.vehicles.add(vehicle)
 
+    def list_all(self) -> list[Vehicle]:
+        return self.vehicles.list_all()
+
     def update(
         self, vehicle_id: int, make: str, model: str, category: Category, price: int
     ) -> Vehicle:

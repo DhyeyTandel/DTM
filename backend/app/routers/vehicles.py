@@ -20,3 +20,10 @@ def add_vehicle(
     body: VehicleCreate, service: Annotated[VehicleService, Depends(get_vehicle_service)]
 ) -> Vehicle:
     return service.add(body.make, body.model, body.category, body.price, body.quantity)
+
+
+@router.get("", response_model=list[VehicleResponse])
+def list_vehicles(
+    service: Annotated[VehicleService, Depends(get_vehicle_service)],
+) -> list[Vehicle]:
+    return service.list_all()

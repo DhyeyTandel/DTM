@@ -1,5 +1,6 @@
 from typing import Protocol
 
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.models.vehicle import Vehicle
@@ -7,6 +8,8 @@ from app.models.vehicle import Vehicle
 
 class VehicleRepository(Protocol):
     def add(self, vehicle: Vehicle) -> Vehicle: ...
+
+    def list_all(self) -> list[Vehicle]: ...
 
     def update(
         self, vehicle_id: int, make: str, model: str, category: str, price: int
@@ -23,6 +26,9 @@ class SqlVehicleRepository:
         self.session.add(vehicle)
         self.session.flush()
         return vehicle
+
+    def list_all(self) -> list[Vehicle]:
+        return list(self.session.scalars(select(Vehicle).order_by(Vehicle.id)))
 
     def update(
         self, vehicle_id: int, make: str, model: str, category: str, price: int
