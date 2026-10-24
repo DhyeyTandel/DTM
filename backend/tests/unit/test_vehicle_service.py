@@ -38,3 +38,13 @@ def test_updating_a_missing_vehicle_raises_vehicle_not_found() -> None:
 
     with pytest.raises(VehicleNotFound):
         service.update(1, "Honda", "City", Category.HATCHBACK, 1_200_000_00)
+
+
+def test_deleting_a_vehicle_removes_it() -> None:
+    vehicles = FakeVehicleRepository()
+    service = VehicleService(vehicles)
+    added = service.add("Toyota", "Corolla", Category.SEDAN, 1_500_000_00, 5)
+
+    service.delete(added.id)
+
+    assert vehicles.vehicles == []

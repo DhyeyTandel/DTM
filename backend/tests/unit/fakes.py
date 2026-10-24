@@ -37,3 +37,9 @@ class FakeVehicleRepository:
             vehicle.category = category
             vehicle.price = price
         return vehicle
+
+    def delete(self, vehicle_id: int) -> bool:
+        remaining = [vehicle for vehicle in self.vehicles if vehicle.id != vehicle_id]
+        was_deleted = len(remaining) < len(self.vehicles)
+        self.vehicles = remaining
+        return was_deleted
