@@ -223,3 +223,39 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — The session dependency is declared with `Depends(get_session, scope="function")`, so its commit runs when the route function returns, before the response goes out. The session is opened with `with`, commits after `yield`, and an exception skips the commit so closing the session rolls back.
 
 **Why** — By default code after `yield` runs after the response is sent. A failed commit, such as a duplicate email (A-08), would then reach the client as a success. This is written down now and applied when `get_session` is first built.
+
+## [2026-10-25] The users table: named unique and check constraints, sized columns
+
+**Decision** — `users` has a unique constraint on `email` (`uq_users_email`) and a check constraint on `role` (`ck_users_role`, built from the `Role` enum). Both are named, so the repository can tell a duplicate email from any other integrity error by constraint name. `email` is 320 characters, `password_hash` 100, `role` 20.
+
+**Why** — The database is the last line of defence when two requests race or a bug writes a bad role, and a named constraint lets the code answer each failure correctly. A-39 exists because an unnamed integrity error was first reported as a duplicate email. The sizes are the longest valid email, a bcrypt hash with room to spare, and a short word.
+
+## [2026-10-25] A database failure on health is a 503
+
+**Decision** — `GET /api/health` returns 503 with `{"detail": "Database unavailable"}` when the query raises `OperationalError`. Any other exception is still a 500.
+
+**Why** — A health check exists to say whether the service can do its job. 503 tells a load balancer or Caddy the instance is unhealthy, and the 500 for unexpected errors would look like a bug in our code.
+
+## [2026-10-25] Login takes the email as a plain string
+
+**Decision** — `LoginRequest.email` is a `str`, not `EmailStr`. Register still validates with `EmailStr`.
+
+**Why** — Login must give the same 401 for a wrong password and an unknown email. If login validated the format, a malformed email would be a 422 and tell the caller something the 401 hides. A malformed email cannot match a stored one anyway.
+
+## [2026-10-25] The seed is a plain function, with a thin wrapper around it
+
+**Decision** — `seed_admin(users, settings)` is a function that takes a repository and settings. `run_seed` opens a session and commits. `main` reads `Settings()`, turns `InvalidAdminSettings` into a message and exit. No class and no command line framework.
+
+**Why** — Each layer is testable on its own: the function with a fake repository (A-32, A-37), the wrapper against Postgres (A-38). A class would hold no state worth keeping.
+
+## [2026-10-25] Tests swap the session factory after `create_app`
+
+**Decision** — `create_app(settings)` builds its own session factory from `settings.database_url`. API tests then replace `app.state.session_factory` with one that rolls back after each test. `create_app` takes no factory argument.
+
+**Why** — Creating an engine does not connect, so building a real one that the test throws away is harmless. A factory parameter would exist only for tests, and nothing in production would use it.
+
+## [2026-10-25] A token must carry `exp` and `sub`
+
+**Decision** — Decoding passes `options={"require": ["exp", "sub"]}`. A validly signed token missing either, or with a `sub` that is not a number, is a 401.
+
+**Why** — PyJWT checks `exp` only when it is present, so a token signed without one would never expire. A-35 and A-36 test this. The claim names are constants in `tokens.py`.
