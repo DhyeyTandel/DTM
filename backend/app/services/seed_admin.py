@@ -1,11 +1,11 @@
 from app.config import Settings
+from app.domain.email import normalise_email
 from app.domain.errors import InvalidAdminSettings
 from app.domain.role import Role
 from app.limits import PASSWORD_MAX_BYTES, PASSWORD_MIN_BYTES
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.security.passwords import hash_password, password_fits_limits
-from app.services.auth_service import normalise_email
 
 MISSING_SETTINGS_MESSAGE = "ADMIN_EMAIL and ADMIN_PASSWORD must both be set to seed the admin"
 BAD_PASSWORD_MESSAGE = (

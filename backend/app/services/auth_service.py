@@ -1,16 +1,13 @@
 from datetime import timedelta
 
 from app.config import Settings
+from app.domain.email import normalise_email
 from app.domain.errors import EmailAlreadyRegistered, InvalidCredentials
 from app.domain.role import Role
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
 from app.security.passwords import hash_password, verify_password
 from app.security.tokens import create_access_token
-
-
-def normalise_email(email: str) -> str:
-    return email.strip().lower()
 
 
 class AuthService:
