@@ -1,0 +1,12 @@
+from app.domain.category import Category
+from app.models.vehicle import Vehicle
+from app.repositories.vehicle_repository import VehicleRepository
+
+
+class VehicleService:
+    def __init__(self, vehicles: VehicleRepository) -> None:
+        self.vehicles = vehicles
+
+    def add(self, make: str, model: str, category: Category, price: int, quantity: int) -> Vehicle:
+        vehicle = Vehicle(make=make, model=model, category=category, price=price, quantity=quantity)
+        return self.vehicles.add(vehicle)
