@@ -122,3 +122,28 @@ def test_searching_by_part_of_the_model_returns_the_matching_vehicles(
     response = client.get(SEARCH_URL, params={"model": "COROL"}, headers=admin_headers)
 
     assert response.json() == [corolla]
+
+
+@pytest.mark.parametrize("field", ["make", "model"])
+@pytest.mark.parametrize("blank", ["", "   "])
+def test_blank_search_text_behaves_like_no_filter(
+    client: TestClient, admin_headers: dict[str, str], field: str, blank: str
+) -> None:
+    everything = [
+        add_vehicle(client, admin_headers),
+        add_vehicle(client, admin_headers, make="Honda"),
+    ]
+
+    response = client.get(SEARCH_URL, params={field: blank}, headers=admin_headers)
+
+    assert response.json() == everything
+
+
+def test_spaces_around_search_text_are_ignored(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    toyota = add_vehicle(client, admin_headers)
+
+    response = client.get(SEARCH_URL, params={"make": "  toyota  "}, headers=admin_headers)
+
+    assert response.json() == [toyota]
