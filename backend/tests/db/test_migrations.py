@@ -2,7 +2,7 @@ from alembic import command
 from alembic.config import Config
 from sqlalchemy import Engine, inspect
 
-APP_TABLES = {"users", "vehicles"}
+APP_TABLES = {"users", "vehicles", "purchases"}
 
 
 def table_names(engine: Engine) -> set[str]:
