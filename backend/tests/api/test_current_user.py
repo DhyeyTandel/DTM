@@ -63,3 +63,18 @@ def test_a_token_signed_with_a_different_secret_returns_401(
     response = probe_client.get(PROBE_URL, headers=bearer(forged_token))
 
     assert response.status_code == 401
+
+
+def test_an_expired_token_returns_401(
+    probe_client: TestClient, settings: Settings, buyer_token: str
+) -> None:
+    expired_token = create_access_token(
+        user_id_of(buyer_token),
+        settings.secret_key,
+        settings.token_algorithm,
+        timedelta(minutes=-1),
+    )
+
+    response = probe_client.get(PROBE_URL, headers=bearer(expired_token))
+
+    assert response.status_code == 401
