@@ -2,6 +2,7 @@ import pytest
 from fastapi.testclient import TestClient
 
 from app.limits import (
+    IMAGE_URL_MAX_LENGTH,
     MAKE_MAX_LENGTH,
     MODEL_MAX_LENGTH,
     PRICE_MAX,
@@ -43,6 +44,40 @@ def test_adding_a_vehicle_without_an_image_url_returns_null_for_it(
 
     assert response.status_code == 201
     assert response.json()["image_url"] is None
+
+
+@pytest.mark.parametrize(
+    "image_url",
+    [
+        "http://example.com/car.jpg",
+        "javascript:alert(1)",
+        "https://example.com/my car.jpg",
+        "https://example.com/car.jpg\n",
+        "",
+        "https://",
+        "https://" + "a" * IMAGE_URL_MAX_LENGTH,
+    ],
+)
+def test_an_image_url_that_is_not_a_short_https_address_returns_422(
+    client: TestClient, admin_headers: dict[str, str], image_url: str
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "image_url": image_url}, headers=admin_headers
+    )
+
+    assert response.status_code == 422
+
+
+def test_an_image_url_of_exactly_the_maximum_length_is_accepted(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    image_url = "https://" + "a" * (IMAGE_URL_MAX_LENGTH - len("https://"))
+
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "image_url": image_url}, headers=admin_headers
+    )
+
+    assert response.status_code == 201
 
 
 def test_adding_a_vehicle_without_a_token_returns_401(client: TestClient) -> None:
