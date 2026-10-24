@@ -1,19 +1,21 @@
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, StringConstraints
+from pydantic import BaseModel, ConfigDict, Field, StringConstraints
 
 from app.domain.category import Category
+from app.limits import PRICE_MAX, PRICE_MIN
 from app.schemas.base import RequestSchema
 
 Make = Annotated[str, StringConstraints(min_length=1)]
 Model = Annotated[str, StringConstraints(min_length=1)]
+Price = Annotated[int, Field(ge=PRICE_MIN, le=PRICE_MAX)]
 
 
 class VehicleCreate(RequestSchema):
     make: Make
     model: Model
     category: Category
-    price: int
+    price: Price
     quantity: int
 
 
