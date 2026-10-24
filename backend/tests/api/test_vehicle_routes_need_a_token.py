@@ -10,6 +10,7 @@ VEHICLE_ROUTES = [
     ("PUT", f"{VEHICLES_URL}/1"),
     ("DELETE", f"{VEHICLES_URL}/1"),
     ("POST", f"{VEHICLES_URL}/1/purchase"),
+    ("POST", f"{VEHICLES_URL}/1/restock"),
 ]
 
 
