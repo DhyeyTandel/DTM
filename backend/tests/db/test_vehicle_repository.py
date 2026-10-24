@@ -113,3 +113,14 @@ def test_a_search_by_model_returns_only_that_model(
         found = SqlVehicleRepository(session).search(model="Corolla")
 
         assert found == [corolla]
+
+
+def test_a_search_by_category_returns_only_that_category(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        _sedan, suv = add_vehicles(session, build_vehicle(), build_vehicle(category="suv"))
+
+        found = SqlVehicleRepository(session).search(category="suv")
+
+        assert found == [suv]
