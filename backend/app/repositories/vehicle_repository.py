@@ -28,7 +28,13 @@ class VehicleRepository(Protocol):
     ) -> list[Vehicle]: ...
 
     def update(
-        self, vehicle_id: int, make: str, model: str, category: str, price: int
+        self,
+        vehicle_id: int,
+        make: str,
+        model: str,
+        category: str,
+        price: int,
+        image_url: str | None,
     ) -> Vehicle | None: ...
 
     def delete(self, vehicle_id: int) -> bool: ...
@@ -87,12 +93,18 @@ class SqlVehicleRepository:
         return list(self.session.scalars(statement))
 
     def update(
-        self, vehicle_id: int, make: str, model: str, category: str, price: int
+        self,
+        vehicle_id: int,
+        make: str,
+        model: str,
+        category: str,
+        price: int,
+        image_url: str | None,
     ) -> Vehicle | None:
         statement = (
             update(Vehicle)
             .where(Vehicle.id == vehicle_id)
-            .values(make=make, model=model, category=category, price=price)
+            .values(make=make, model=model, category=category, price=price, image_url=image_url)
             .returning(Vehicle)
         )
         return self.session.scalars(statement).one_or_none()

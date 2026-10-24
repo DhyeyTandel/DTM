@@ -56,7 +56,9 @@ def update_vehicle(
     body: VehicleUpdate,
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
 ) -> Vehicle:
-    return service.update(vehicle_id, body.make, body.model, body.category, body.price)
+    return service.update(
+        vehicle_id, body.make, body.model, body.category, body.price, body.image_url
+    )
 
 
 @router.delete(

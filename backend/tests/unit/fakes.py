@@ -63,7 +63,13 @@ class FakeVehicleRepository:
         return list(self.vehicles)
 
     def update(
-        self, vehicle_id: int, make: str, model: str, category: str, price: int
+        self,
+        vehicle_id: int,
+        make: str,
+        model: str,
+        category: str,
+        price: int,
+        image_url: str | None,
     ) -> Vehicle | None:
         vehicle = next((vehicle for vehicle in self.vehicles if vehicle.id == vehicle_id), None)
         if vehicle is not None:
@@ -71,6 +77,7 @@ class FakeVehicleRepository:
             vehicle.model = model
             vehicle.category = category
             vehicle.price = price
+            vehicle.image_url = image_url
         return vehicle
 
     def delete(self, vehicle_id: int) -> bool:

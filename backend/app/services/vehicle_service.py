@@ -54,9 +54,15 @@ class VehicleService:
         )
 
     def update(
-        self, vehicle_id: int, make: str, model: str, category: Category, price: int
+        self,
+        vehicle_id: int,
+        make: str,
+        model: str,
+        category: Category,
+        price: int,
+        image_url: str | None,
     ) -> Vehicle:
-        vehicle = self.vehicles.update(vehicle_id, make, model, category, price)
+        vehicle = self.vehicles.update(vehicle_id, make, model, category, price, image_url)
         if vehicle is None:
             raise VehicleNotFound
         return vehicle

@@ -47,6 +47,7 @@ class VehicleUpdate(RequestSchema):
     model: Model
     category: Category
     price: Price
+    image_url: ImageUrl | None
 
 
 class RestockRequest(RequestSchema):
