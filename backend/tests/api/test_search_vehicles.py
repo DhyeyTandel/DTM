@@ -111,3 +111,14 @@ def test_searching_by_category_returns_only_that_category(
     response = client.get(SEARCH_URL, params={"category": "suv"}, headers=admin_headers)
 
     assert response.json() == [suv]
+
+
+def test_searching_by_part_of_the_model_returns_the_matching_vehicles(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    corolla = add_vehicle(client, admin_headers)
+    add_vehicle(client, admin_headers, model="Camry")
+
+    response = client.get(SEARCH_URL, params={"model": "COROL"}, headers=admin_headers)
+
+    assert response.json() == [corolla]
