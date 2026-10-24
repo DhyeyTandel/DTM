@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from app.dependencies import get_vehicle_service, require_admin
+from app.dependencies import get_current_user, get_vehicle_service, require_admin
 from app.models.vehicle import Vehicle
 from app.schemas.vehicle import VehicleCreate, VehicleResponse
 from app.services.vehicle_service import VehicleService
@@ -22,7 +22,7 @@ def add_vehicle(
     return service.add(body.make, body.model, body.category, body.price, body.quantity)
 
 
-@router.get("", response_model=list[VehicleResponse])
+@router.get("", response_model=list[VehicleResponse], dependencies=[Depends(get_current_user)])
 def list_vehicles(
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
 ) -> list[Vehicle]:
