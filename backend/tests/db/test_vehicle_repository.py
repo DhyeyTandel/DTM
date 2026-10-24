@@ -91,3 +91,14 @@ def test_a_search_with_no_filters_returns_every_vehicle(
         found = SqlVehicleRepository(session).search()
 
         assert found == added
+
+
+def test_a_search_by_make_returns_only_that_make(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        toyota, _honda = add_vehicles(session, build_vehicle(), build_vehicle(make="Honda"))
+
+        found = SqlVehicleRepository(session).search(make="Toyota")
+
+        assert found == [toyota]
