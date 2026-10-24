@@ -150,3 +150,51 @@ def test_a_search_by_maximum_price_returns_vehicles_at_or_below_it(
         found = SqlVehicleRepository(session).search(max_price=1_500_000_00)
 
         assert found == [cheap]
+
+
+def test_a_search_by_price_range_returns_vehicles_inside_it(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        _cheap, middle, _expensive = add_vehicles(
+            session,
+            build_vehicle(price=1_000_000_00),
+            build_vehicle(price=2_000_000_00),
+            build_vehicle(price=3_000_000_00),
+        )
+
+        found = SqlVehicleRepository(session).search(min_price=1_500_000_00, max_price=2_500_000_00)
+
+        assert found == [middle]
+
+
+def test_a_price_equal_to_the_minimum_or_maximum_is_included(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        added = add_vehicles(
+            session, build_vehicle(price=1_000_000_00), build_vehicle(price=2_000_000_00)
+        )
+
+        found = SqlVehicleRepository(session).search(min_price=1_000_000_00, max_price=2_000_000_00)
+
+        assert found == added
+
+
+def test_several_filters_together_all_have_to_match(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        match, *_others = add_vehicles(
+            session,
+            build_vehicle(category="suv", price=2_000_000_00),
+            build_vehicle(make="Honda", category="suv", price=2_000_000_00),
+            build_vehicle(category="sedan", price=2_000_000_00),
+            build_vehicle(category="suv", price=9_000_000_00),
+        )
+
+        found = SqlVehicleRepository(session).search(
+            make="Toyota", category="suv", min_price=1_000_000_00, max_price=3_000_000_00
+        )
+
+        assert found == [match]
