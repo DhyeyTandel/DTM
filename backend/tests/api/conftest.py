@@ -38,3 +38,8 @@ def admin_token(client: TestClient, rolled_back_session_factory: sessionmaker[Se
         session.commit()
     token: str = client.post("/api/auth/login", json=credentials).json()["access_token"]
     return token
+
+
+@pytest.fixture
+def admin_headers(admin_token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {admin_token}"}
