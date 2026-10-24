@@ -26,13 +26,16 @@ def test_adding_a_vehicle_stores_make_model_category_price_and_quantity() -> Non
     assert stored.quantity == 5
 
 
-def test_updating_a_vehicle_replaces_make_model_category_and_price() -> None:
+def test_updating_a_vehicle_replaces_make_model_category_price_and_image_url() -> None:
     vehicles = FakeVehicleRepository()
     service = VehicleService(vehicles)
     added = service.add("Toyota", "Corolla", Category.SEDAN, 1_500_000_00, 5)
 
-    updated = service.update(added.id, "Honda", "City", Category.HATCHBACK, 1_200_000_00)
+    updated = service.update(
+        added.id, "Honda", "City", Category.HATCHBACK, 1_200_000_00, "https://example.com/city.jpg"
+    )
 
+    assert updated.image_url == "https://example.com/city.jpg"
     assert updated.make == "Honda"
     assert updated.model == "City"
     assert updated.category == Category.HATCHBACK
@@ -43,7 +46,7 @@ def test_updating_a_missing_vehicle_raises_vehicle_not_found() -> None:
     service = VehicleService(FakeVehicleRepository())
 
     with pytest.raises(VehicleNotFound):
-        service.update(1, "Honda", "City", Category.HATCHBACK, 1_200_000_00)
+        service.update(1, "Honda", "City", Category.HATCHBACK, 1_200_000_00, None)
 
 
 def test_deleting_a_vehicle_removes_it() -> None:

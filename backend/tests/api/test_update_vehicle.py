@@ -3,10 +3,17 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from app.limits import MAKE_MAX_LENGTH, PRICE_MAX, VEHICLE_ID_MAX
+from app.limits import IMAGE_URL_MAX_LENGTH, MAKE_MAX_LENGTH, PRICE_MAX, VEHICLE_ID_MAX
 from tests.vehicles import VEHICLES_URL
 
-NEW_FIELDS = {"make": "Honda", "model": "City", "category": "hatchback", "price": 1_200_000_00}
+NEW_FIELDS = {
+    "make": "Honda",
+    "model": "City",
+    "category": "hatchback",
+    "price": 1_200_000_00,
+    "image_url": None,
+}
+IMAGE_URL = "https://upload.wikimedia.org/wikipedia/commons/c/c1/City.jpg"
 
 
 def test_an_admin_updating_a_vehicle_gets_200_with_the_new_values(
@@ -18,6 +25,45 @@ def test_an_admin_updating_a_vehicle_gets_200_with_the_new_values(
 
     assert response.status_code == 200
     assert response.json() == {**stocked_vehicle, **NEW_FIELDS}
+
+
+def test_updating_replaces_the_image_url_and_null_clears_it(
+    client: TestClient, admin_headers: dict[str, str], stocked_vehicle: dict[str, Any]
+) -> None:
+    url = f"{VEHICLES_URL}/{stocked_vehicle['id']}"
+
+    replaced = client.put(url, json={**NEW_FIELDS, "image_url": IMAGE_URL}, headers=admin_headers)
+    cleared = client.put(url, json={**NEW_FIELDS, "image_url": None}, headers=admin_headers)
+
+    assert replaced.json()["image_url"] == IMAGE_URL
+    assert cleared.json()["image_url"] is None
+
+
+@pytest.mark.parametrize(
+    "image_url",
+    [
+        "http://example.com/car.jpg",
+        "javascript:alert(1)",
+        "https://example.com/my car.jpg",
+        "",
+        "https://",
+        "https://" + "a" * IMAGE_URL_MAX_LENGTH,
+    ],
+)
+def test_an_update_with_a_bad_image_url_returns_422_and_the_vehicle_is_unchanged(
+    client: TestClient,
+    admin_headers: dict[str, str],
+    stocked_vehicle: dict[str, Any],
+    image_url: str,
+) -> None:
+    response = client.put(
+        f"{VEHICLES_URL}/{stocked_vehicle['id']}",
+        json={**NEW_FIELDS, "image_url": image_url},
+        headers=admin_headers,
+    )
+
+    assert response.status_code == 422
+    assert client.get(VEHICLES_URL, headers=admin_headers).json() == [stocked_vehicle]
 
 
 def test_a_customer_updating_a_vehicle_gets_403_and_nothing_changes(

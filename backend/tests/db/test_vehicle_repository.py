@@ -58,7 +58,7 @@ def test_a_vehicle_without_an_image_url_is_accepted_and_has_none(
         assert vehicle.image_url is None
 
 
-def test_updating_changes_only_the_four_editable_columns(
+def test_updating_changes_only_the_five_editable_columns(
     committed_session_factory: sessionmaker[Session],
 ) -> None:
     with committed_session_factory() as setup_session:
@@ -75,7 +75,7 @@ def test_updating_changes_only_the_four_editable_columns(
             buying_session.commit()
 
         updated = SqlVehicleRepository(editing_session).update(
-            vehicle_id, "Honda", "City", "hatchback", 1_200_000_00
+            vehicle_id, "Honda", "City", "hatchback", 1_200_000_00, "https://example.com/city.jpg"
         )
         assert updated is not None
         returned_quantity = updated.quantity
@@ -84,7 +84,11 @@ def test_updating_changes_only_the_four_editable_columns(
     with committed_session_factory() as checking_session:
         stored = checking_session.get(Vehicle, vehicle_id)
         assert stored is not None
-        assert (stored.make, stored.quantity) == ("Honda", 4)
+        assert (stored.make, stored.image_url, stored.quantity) == (
+            "Honda",
+            "https://example.com/city.jpg",
+            4,
+        )
     assert returned_quantity == 4
 
 
