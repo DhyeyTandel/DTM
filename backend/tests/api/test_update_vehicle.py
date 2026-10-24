@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from app.limits import MAKE_MAX_LENGTH, PRICE_MAX
+from app.limits import MAKE_MAX_LENGTH, PRICE_MAX, VEHICLE_ID_MAX
 from tests.vehicles import VEHICLES_URL
 
 NEW_FIELDS = {"make": "Honda", "model": "City", "category": "hatchback", "price": 1_200_000_00}
@@ -113,3 +113,12 @@ def test_an_updated_make_or_model_is_trimmed_and_spaces_alone_return_422(
 
     assert padded.json()[field] == "Padded"
     assert blank.status_code == 422
+
+
+@pytest.mark.parametrize("vehicle_id", ["abc", "0", "-1", str(VEHICLE_ID_MAX + 1)])
+def test_an_id_that_is_not_a_valid_vehicle_id_returns_422(
+    client: TestClient, admin_headers: dict[str, str], vehicle_id: str
+) -> None:
+    response = client.put(f"{VEHICLES_URL}/{vehicle_id}", json=NEW_FIELDS, headers=admin_headers)
+
+    assert response.status_code == 422
