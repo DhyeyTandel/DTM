@@ -3,6 +3,8 @@ from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 from app.limits import PASSWORD_MAX_BYTES, PASSWORD_MIN_BYTES
 from app.schemas.base import RequestSchema
 
+TOKEN_TYPE = "bearer"
+
 
 class RegisterRequest(RequestSchema):
     email: EmailStr
@@ -14,6 +16,16 @@ class RegisterRequest(RequestSchema):
         if not PASSWORD_MIN_BYTES <= len(password.encode()) <= PASSWORD_MAX_BYTES:
             raise ValueError(f"Password must be {PASSWORD_MIN_BYTES} to {PASSWORD_MAX_BYTES} bytes")
         return password
+
+
+class LoginRequest(RequestSchema):
+    email: str
+    password: str
+
+
+class TokenResponse(BaseModel):
+    access_token: str
+    token_type: str = TOKEN_TYPE
 
 
 class UserResponse(BaseModel):
