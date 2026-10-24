@@ -4,6 +4,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 from app.domain.category import Category
 from app.limits import (
+    IMAGE_URL_MAX_LENGTH,
+    IMAGE_URL_SCHEME,
     MAKE_MAX_LENGTH,
     MODEL_MAX_LENGTH,
     PRICE_MAX,
@@ -24,6 +26,10 @@ class Vehicle(Base):
         CheckConstraint(f"category IN ({CATEGORY_VALUES})", name="ck_vehicles_category"),
         CheckConstraint(f"price BETWEEN {PRICE_MIN} AND {PRICE_MAX}", name="ck_vehicles_price"),
         CheckConstraint(
+            f"image_url IS NULL OR image_url LIKE '{IMAGE_URL_SCHEME}%'",
+            name="ck_vehicles_image_url",
+        ),
+        CheckConstraint(
             f"quantity BETWEEN {QUANTITY_MIN} AND {QUANTITY_MAX}", name="ck_vehicles_quantity"
         ),
     )
@@ -34,3 +40,4 @@ class Vehicle(Base):
     category: Mapped[str] = mapped_column(String(CATEGORY_COLUMN_LENGTH))
     price: Mapped[int] = mapped_column(BigInteger)
     quantity: Mapped[int]
+    image_url: Mapped[str | None] = mapped_column(String(IMAGE_URL_MAX_LENGTH))

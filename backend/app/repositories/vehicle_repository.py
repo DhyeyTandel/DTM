@@ -8,7 +8,15 @@ from app.models.vehicle import Vehicle
 
 
 class VehicleRepository(Protocol):
-    def add(self, make: str, model: str, category: str, price: int, quantity: int) -> Vehicle: ...
+    def add(
+        self,
+        make: str,
+        model: str,
+        category: str,
+        price: int,
+        quantity: int,
+        image_url: str | None = None,
+    ) -> Vehicle: ...
 
     def search(
         self,
@@ -36,8 +44,23 @@ class SqlVehicleRepository:
     def __init__(self, session: Session) -> None:
         self.session = session
 
-    def add(self, make: str, model: str, category: str, price: int, quantity: int) -> Vehicle:
-        vehicle = Vehicle(make=make, model=model, category=category, price=price, quantity=quantity)
+    def add(
+        self,
+        make: str,
+        model: str,
+        category: str,
+        price: int,
+        quantity: int,
+        image_url: str | None = None,
+    ) -> Vehicle:
+        vehicle = Vehicle(
+            make=make,
+            model=model,
+            category=category,
+            price=price,
+            quantity=quantity,
+            image_url=image_url,
+        )
         self.session.add(vehicle)
         self.session.flush()
         return vehicle

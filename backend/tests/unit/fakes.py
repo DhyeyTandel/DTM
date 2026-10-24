@@ -31,8 +31,23 @@ class FakeVehicleRepository:
     def __init__(self) -> None:
         self.vehicles: list[Vehicle] = []
 
-    def add(self, make: str, model: str, category: str, price: int, quantity: int) -> Vehicle:
-        vehicle = Vehicle(make=make, model=model, category=category, price=price, quantity=quantity)
+    def add(
+        self,
+        make: str,
+        model: str,
+        category: str,
+        price: int,
+        quantity: int,
+        image_url: str | None = None,
+    ) -> Vehicle:
+        vehicle = Vehicle(
+            make=make,
+            model=model,
+            category=category,
+            price=price,
+            quantity=quantity,
+            image_url=image_url,
+        )
         vehicle.id = len(self.vehicles) + 1
         self.vehicles.append(vehicle)
         return vehicle
