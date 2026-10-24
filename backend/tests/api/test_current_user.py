@@ -32,3 +32,9 @@ def test_a_valid_token_gives_the_signed_in_user(probe_client: TestClient, buyer_
     assert response.status_code == 200
     assert response.json()["email"] == "buyer@example.com"
     assert response.json()["role"] == "customer"
+
+
+def test_a_malformed_token_returns_401(probe_client: TestClient) -> None:
+    response = probe_client.get(PROBE_URL, headers={"Authorization": "Bearer not-a-token"})
+
+    assert response.status_code == 401
