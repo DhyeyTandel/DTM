@@ -1,7 +1,14 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app.limits import PRICE_MAX, PRICE_MIN, QUANTITY_MAX, QUANTITY_MIN
+from app.limits import (
+    MAKE_MAX_LENGTH,
+    MODEL_MAX_LENGTH,
+    PRICE_MAX,
+    PRICE_MIN,
+    QUANTITY_MAX,
+    QUANTITY_MIN,
+)
 from tests.vehicles import VALID_VEHICLE, VEHICLES_URL
 
 
@@ -133,3 +140,18 @@ def test_a_quantity_at_either_end_of_the_range_is_accepted(
 
     assert response.status_code == 201
     assert response.json()["quantity"] == quantity
+
+
+@pytest.mark.parametrize(
+    ("field", "longest"), [("make", MAKE_MAX_LENGTH), ("model", MODEL_MAX_LENGTH)]
+)
+def test_a_make_or_model_over_the_maximum_length_returns_422(
+    client: TestClient, admin_headers: dict[str, str], field: str, longest: int
+) -> None:
+    too_long = "a" * (longest + 1)
+
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, field: too_long}, headers=admin_headers
+    )
+
+    assert response.status_code == 422
