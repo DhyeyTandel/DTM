@@ -23,3 +23,9 @@ def test_searching_by_make_returns_the_matching_vehicles(
 
     assert response.status_code == 200
     assert response.json() == [toyota]
+
+
+def test_searching_without_a_token_returns_401(client: TestClient) -> None:
+    response = client.get(SEARCH_URL)
+
+    assert response.status_code == 401
