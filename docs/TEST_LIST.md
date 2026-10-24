@@ -56,6 +56,7 @@ Admin seed
 - A-30 db: running the seed script twice leaves exactly one admin
 - A-31 db: if the admin email is already a customer, the seed makes it an admin and sets the configured password
 - A-32 unit: the seed script fails with a clear message when the admin settings are missing
+- A-39 db: the database refuses a role outside the list (check constraint), and the repository lets that error through instead of calling it a duplicate email
 - A-38 db: running the seed script's entry point commits the admin, so a new session can read it
 - A-37 unit: the seed script refuses an admin password outside the byte limits, with a clear message (bcrypt would otherwise crash on it)
 
