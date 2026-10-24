@@ -22,5 +22,9 @@ class VehicleNotFound(DomainError):
     message = "Vehicle not found"
 
 
+class InvalidPriceRange(DomainError):
+    message = "Minimum price must not be above maximum price"
+
+
 class InvalidAdminSettings(Exception):
     pass
