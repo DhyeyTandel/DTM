@@ -3,7 +3,7 @@ from typing import Any
 import pytest
 from fastapi.testclient import TestClient
 
-from app.limits import PRICE_MAX
+from app.limits import PRICE_MAX, SEARCH_TEXT_MAX_LENGTH
 from tests.vehicles import VALID_VEHICLE, VEHICLES_URL
 
 SEARCH_URL = f"{VEHICLES_URL}/search"
@@ -147,3 +147,14 @@ def test_spaces_around_search_text_are_ignored(
     response = client.get(SEARCH_URL, params={"make": "  toyota  "}, headers=admin_headers)
 
     assert response.json() == [toyota]
+
+
+@pytest.mark.parametrize("field", ["make", "model"])
+def test_search_text_over_the_maximum_length_returns_422(
+    client: TestClient, admin_headers: dict[str, str], field: str
+) -> None:
+    too_long = "a" * (SEARCH_TEXT_MAX_LENGTH + 1)
+
+    response = client.get(SEARCH_URL, params={field: too_long}, headers=admin_headers)
+
+    assert response.status_code == 422
