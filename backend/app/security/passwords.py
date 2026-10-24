@@ -12,7 +12,6 @@ def hash_password(password: str) -> str:
 
 
 def verify_password(password: str, password_hash: str) -> bool:
-    encoded_password = password.encode()
-    if len(encoded_password) > PASSWORD_MAX_BYTES:
+    if not password_fits_limits(password):
         return False
-    return bcrypt.checkpw(encoded_password, password_hash.encode())
+    return bcrypt.checkpw(password.encode(), password_hash.encode())

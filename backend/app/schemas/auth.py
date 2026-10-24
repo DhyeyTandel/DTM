@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, field_validator
 
 from app.limits import PASSWORD_MAX_BYTES, PASSWORD_MIN_BYTES
 from app.schemas.base import RequestSchema
+from app.security.passwords import password_fits_limits
 
 TOKEN_TYPE = "bearer"
 
@@ -13,7 +14,7 @@ class RegisterRequest(RequestSchema):
     @field_validator("password")
     @classmethod
     def password_must_fit_the_byte_limits(cls, password: str) -> str:
-        if not PASSWORD_MIN_BYTES <= len(password.encode()) <= PASSWORD_MAX_BYTES:
+        if not password_fits_limits(password):
             raise ValueError(f"Password must be {PASSWORD_MIN_BYTES} to {PASSWORD_MAX_BYTES} bytes")
         return password
 
