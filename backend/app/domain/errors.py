@@ -16,3 +16,7 @@ class NotAuthenticated(DomainError):
 
 class AdminRequired(DomainError):
     message = "Admin access required"
+
+
+class InvalidAdminSettings(Exception):
+    pass
