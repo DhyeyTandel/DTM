@@ -1,12 +1,17 @@
-from pydantic import BaseModel, ConfigDict
+from typing import Annotated
+
+from pydantic import BaseModel, ConfigDict, StringConstraints
 
 from app.domain.category import Category
 from app.schemas.base import RequestSchema
 
+Make = Annotated[str, StringConstraints(min_length=1)]
+Model = Annotated[str, StringConstraints(min_length=1)]
+
 
 class VehicleCreate(RequestSchema):
-    make: str
-    model: str
+    make: Make
+    model: Model
     category: Category
     price: int
     quantity: int
