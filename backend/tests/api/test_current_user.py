@@ -5,6 +5,7 @@ import jwt
 import pytest
 from fastapi import Depends, FastAPI
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import Settings
 from app.dependencies import get_current_user
@@ -76,5 +77,19 @@ def test_an_expired_token_returns_401(
     )
 
     response = probe_client.get(PROBE_URL, headers=bearer(expired_token))
+
+    assert response.status_code == 401
+
+
+def test_a_valid_token_for_a_user_that_no_longer_exists_returns_401(
+    probe_client: TestClient,
+    rolled_back_session_factory: sessionmaker[Session],
+    buyer_token: str,
+) -> None:
+    with rolled_back_session_factory() as session:
+        session.query(User).delete()
+        session.commit()
+
+    response = probe_client.get(PROBE_URL, headers=bearer(buyer_token))
 
     assert response.status_code == 401
