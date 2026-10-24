@@ -1,3 +1,4 @@
+import pytest
 from fastapi.testclient import TestClient
 
 REGISTER_URL = "/api/auth/register"
@@ -30,3 +31,12 @@ def test_register_with_a_duplicate_email_returns_409(client: TestClient) -> None
 
     assert response.status_code == 409
     assert "detail" in response.json()
+
+
+def test_register_with_a_role_field_returns_422_and_creates_no_account(
+    client: TestClient,
+) -> None:
+    response = client.post(REGISTER_URL, json={**VALID_REGISTRATION, "role": "admin"})
+
+    assert response.status_code == 422
+    assert client.post(REGISTER_URL, json=VALID_REGISTRATION).status_code == 201
