@@ -3,6 +3,7 @@ from typing import Annotated
 from fastapi import APIRouter, Depends, Path, Query, status
 
 from app.dependencies import get_current_user, get_vehicle_service, require_admin
+from app.domain.category import Category
 from app.limits import PRICE_MAX, VEHICLE_ID_MAX
 from app.models.vehicle import Vehicle
 from app.schemas.vehicle import VehicleCreate, VehicleResponse, VehicleUpdate
@@ -59,7 +60,8 @@ def delete_vehicle(
 def search_vehicles(
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
     make: str | None = None,
+    category: Category | None = None,
     min_price: PriceBound | None = None,
     max_price: PriceBound | None = None,
 ) -> list[Vehicle]:
-    return service.search(make=make, min_price=min_price, max_price=max_price)
+    return service.search(make=make, category=category, min_price=min_price, max_price=max_price)
