@@ -1,7 +1,7 @@
 import bcrypt
 import pytest
-from app.domain.errors import EmailAlreadyRegistered
 
+from app.domain.errors import EmailAlreadyRegistered
 from app.domain.role import Role
 from app.services.auth_service import AuthService
 from tests.unit.fakes import FakeUserRepository
