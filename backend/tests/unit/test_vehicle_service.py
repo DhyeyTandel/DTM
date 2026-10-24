@@ -15,3 +15,16 @@ def test_adding_a_vehicle_stores_make_model_category_price_and_quantity() -> Non
     assert stored.category == Category.SEDAN
     assert stored.price == 1_500_000_00
     assert stored.quantity == 5
+
+
+def test_updating_a_vehicle_replaces_make_model_category_and_price() -> None:
+    vehicles = FakeVehicleRepository()
+    service = VehicleService(vehicles)
+    added = service.add("Toyota", "Corolla", Category.SEDAN, 1_500_000_00, 5)
+
+    updated = service.update(added.id, "Honda", "City", Category.HATCHBACK, 1_200_000_00)
+
+    assert updated.make == "Honda"
+    assert updated.model == "City"
+    assert updated.category == Category.HATCHBACK
+    assert updated.price == 1_200_000_00
