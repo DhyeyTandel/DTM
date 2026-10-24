@@ -25,6 +25,14 @@ def upgrade() -> None:
         sa.Column("category", sa.String(length=20), nullable=False),
         sa.Column("price", sa.BigInteger(), nullable=False),
         sa.Column("quantity", sa.Integer(), nullable=False),
+        sa.CheckConstraint("char_length(make) >= 1", name="ck_vehicles_make"),
+        sa.CheckConstraint("char_length(model) >= 1", name="ck_vehicles_model"),
+        sa.CheckConstraint(
+            "category IN ('sedan', 'suv', 'hatchback', 'coupe', 'truck', 'ev')",
+            name="ck_vehicles_category",
+        ),
+        sa.CheckConstraint("price BETWEEN 1 AND 100000000000", name="ck_vehicles_price"),
+        sa.CheckConstraint("quantity BETWEEN 0 AND 10000", name="ck_vehicles_quantity"),
     )
 
 
