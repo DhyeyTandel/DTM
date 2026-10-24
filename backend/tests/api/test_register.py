@@ -46,3 +46,14 @@ def test_register_with_an_invalid_email_returns_422(client: TestClient) -> None:
     response = client.post(REGISTER_URL, json={**VALID_REGISTRATION, "email": "not-an-email"})
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize("missing_field", ["email", "password"])
+def test_register_without_email_or_password_returns_422(
+    client: TestClient, missing_field: str
+) -> None:
+    body = {key: value for key, value in VALID_REGISTRATION.items() if key != missing_field}
+
+    response = client.post(REGISTER_URL, json=body)
+
+    assert response.status_code == 422
