@@ -84,7 +84,7 @@ Written down so it is a decision, not an oversight.
 - Refresh tokens. Access tokens just expire, and the user logs in again.
 - Email verification.
 - Pagination. The list returns everything.
-- Purchase history. Nothing records who bought what.
+- Purchase history screens. A purchase is recorded (see `DECISIONS.md`, "Purchases are recorded"), but nothing shows or reports it.
 - Hiding the login timing difference between an unknown email and a wrong password.
 
 ## Answers to the open questions

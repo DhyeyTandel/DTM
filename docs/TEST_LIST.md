@@ -41,7 +41,7 @@ Token checks
 - A-35 api: a validly signed token with no `exp` or no `sub` claim returns 401 (a token that never expires must not work)
 - A-36 api: a validly signed token whose `sub` is not a number returns 401
 - A-34 api: a valid token gives the dependency the signed-in user (the case every other token check is the opposite of)
-- A-20 api: a request with no token returns 401 on every vehicle and inventory route
+- A-20 api: a request with no token returns 401 on every vehicle and inventory route (a table of method and path, including purchase and restock)
 - A-21 api: a malformed token returns 401
 - A-22 api: a token signed with a different secret returns 401
 - A-23 api: an expired token returns 401
@@ -161,8 +161,17 @@ Restock
 - I-23 api: missing id returns 404
 - I-24 api: amount of zero, negative, above the maximum, decimal or missing returns 422
 - I-25 api: restocking a sold-out vehicle makes it purchasable again
-- I-26 db: a restock past 10000 raises `StockLimitExceeded` and quantity is unchanged
+- I-26 db: a restock past 10000 raises `StockLimitExceeded` and quantity is unchanged. The update itself refuses it (`quantity + amount <= 10000` in the `WHERE`), not the check constraint
 - I-27 api: a restock past 10000 returns 409 and quantity is unchanged
+
+Purchase record and constraint
+- I-28 unit: a purchase records who bought which vehicle, with its make, model and price at that moment
+- I-29 db: a purchase writes one `purchases` row: user id, vehicle id, snapshot make, model and price, and `created_at`
+- I-30 db: a purchase of a missing or sold-out vehicle writes no row
+- I-31 db: deleting a purchased vehicle succeeds, and its purchase rows keep the snapshot with `vehicle_id` null
+- I-32 db: in the concurrent test of I-09, the number of `purchases` rows equals the number of successes
+- I-33 db: the database refuses a quantity of 10001 written directly (`ck_vehicles_quantity`, the upper-bound twin of I-07)
+- I-34 db: if the purchase row cannot be written, the stock change is rolled back with it (one transaction)
 
 ## Edge cases and cross-cutting
 

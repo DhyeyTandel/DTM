@@ -303,3 +303,19 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — The app refuses to start when `SECRET_KEY` is not set. An empty value is not checked.
 
 **Why** — A required field in `Settings` already does this, and a minimum length would be a second rule for a case the deployment does not produce. The test removes `SECRET_KEY` from the environment and passes no env file, so a developer's own `.env` cannot make it pass.
+
+## [2026-10-25] Purchases are recorded
+
+**Supersedes** — The "no purchase history" part of "Also left out", and the matching line in `STORIES.md`.
+
+**Decision** — Every successful purchase writes one row in `purchases`: `user_id` (required, a foreign key to `users`), `vehicle_id` (nullable, `ON DELETE SET NULL`), `make`, `model` and `price` copied from the vehicle at purchase time, and `created_at`. The row is written in the same session as the stock update, so both commit or both roll back. The service passes plain fields, taken from the vehicle the update returned. Nothing reads the table yet.
+
+**Why** — "What does delete do to it" was the reason to skip it. `SET NULL` plus the snapshot answers that: a deleted car leaves its sales readable. The user id has no `ON DELETE` rule, so a user with purchases cannot be deleted; there is no user delete today. One transaction means stock cannot drop without a record, and a rolled back sale leaves no record.
+
+## [2026-10-25] Restock refuses past the cap inside the update
+
+**Supersedes** — The part of "Quantity is capped at 10000, and a restock past it is a 409" that has the check constraint raise `StockLimitExceeded`.
+
+**Decision** — Restock is `UPDATE ... SET quantity = quantity + :amount WHERE id = :id AND quantity + :amount <= 10000 RETURNING`. No row back: the service asks whether the vehicle exists and raises `VehicleNotFound` (404) or `StockLimitExceeded` (409). `ck_vehicles_quantity` stays as the last line of defence, with its own test. `OutOfStock` and `StockLimitExceeded` both map to 409.
+
+**Why** — It is the same shape as purchase, so one idea explains both, and no database error is turned into a domain error by catching it. The follow-up read only picks which error to raise, never whether the update happened.
