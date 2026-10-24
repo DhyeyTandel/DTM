@@ -1,6 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from app.limits import PRICE_MAX, PRICE_MIN
 from tests.vehicles import VALID_VEHICLE, VEHICLES_URL
 
 
@@ -75,3 +76,26 @@ def test_an_empty_make_or_model_returns_422(
     response = client.post(VEHICLES_URL, json={**VALID_VEHICLE, field: ""}, headers=admin_headers)
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize("price", [0, -1, PRICE_MAX + 1])
+def test_a_price_outside_the_range_returns_422(
+    client: TestClient, admin_headers: dict[str, str], price: int
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "price": price}, headers=admin_headers
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize("price", [PRICE_MIN, PRICE_MAX])
+def test_a_price_at_either_end_of_the_range_is_accepted(
+    client: TestClient, admin_headers: dict[str, str], price: int
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "price": price}, headers=admin_headers
+    )
+
+    assert response.status_code == 201
+    assert response.json()["price"] == price
