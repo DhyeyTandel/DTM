@@ -52,7 +52,9 @@ def delete_vehicle(
     service.delete(vehicle_id)
 
 
-@router.get("/search", response_model=list[VehicleResponse])
+@router.get(
+    "/search", response_model=list[VehicleResponse], dependencies=[Depends(get_current_user)]
+)
 def search_vehicles(
     service: Annotated[VehicleService, Depends(get_vehicle_service)], make: str | None = None
 ) -> list[Vehicle]:
