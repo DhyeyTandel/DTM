@@ -1,4 +1,7 @@
+import pytest
+
 from app.config import Settings
+from app.domain.errors import InvalidCredentials
 from app.services.auth_service import AuthService
 from tests.unit.fakes import FakeUserRepository
 
@@ -18,3 +21,10 @@ def test_login_with_correct_credentials_returns_an_access_token(settings: Settin
     token = service.login(EMAIL, PASSWORD)
 
     assert token
+
+
+def test_login_with_a_wrong_password_raises_invalid_credentials(settings: Settings) -> None:
+    service = build_service_with_registered_buyer(settings)
+
+    with pytest.raises(InvalidCredentials):
+        service.login(EMAIL, "wrong password")
