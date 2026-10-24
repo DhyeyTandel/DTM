@@ -264,3 +264,59 @@ def test_a_purchase_at_zero_stock_changes_nothing_and_returns_nothing(
 
         session.refresh(added)
         assert added.quantity == 0
+
+
+def test_a_restock_adds_to_the_current_quantity_and_keeps_a_purchase_made_in_between(
+    committed_session_factory: sessionmaker[Session],
+) -> None:
+    with committed_session_factory() as setup_session:
+        vehicle_id = SqlVehicleRepository(setup_session).add(**build_vehicle(quantity=5)).id
+        setup_session.commit()
+
+    with committed_session_factory() as restocking_session:
+        restocking_session.get(Vehicle, vehicle_id)
+        with committed_session_factory() as buying_session:
+            assert SqlVehicleRepository(buying_session).purchase(vehicle_id) is not None
+            buying_session.commit()
+
+        restocked = SqlVehicleRepository(restocking_session).restock(vehicle_id, 10)
+        assert restocked is not None
+        returned_quantity = restocked.quantity
+        restocking_session.commit()
+
+    with committed_session_factory() as checking_session:
+        stored = checking_session.get(Vehicle, vehicle_id)
+        assert stored is not None
+        assert stored.quantity == 14
+    assert returned_quantity == 14
+
+
+def test_a_restock_to_exactly_the_limit_is_accepted(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        (added,) = add_vehicles(session, build_vehicle(quantity=QUANTITY_MAX - 10))
+
+        restocked = SqlVehicleRepository(session).restock(added.id, 10)
+
+        assert restocked is not None
+        assert restocked.quantity == QUANTITY_MAX
+
+
+def test_a_restock_past_the_limit_changes_nothing_and_returns_nothing(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        (added,) = add_vehicles(session, build_vehicle(quantity=QUANTITY_MAX - 10))
+
+        assert SqlVehicleRepository(session).restock(added.id, 11) is None
+
+        session.refresh(added)
+        assert added.quantity == QUANTITY_MAX - 10
+
+
+def test_restocking_a_missing_vehicle_returns_nothing(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        assert SqlVehicleRepository(session).restock(999_999, 10) is None
