@@ -343,3 +343,9 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — `make test-report` starts the test database, runs the suite with `pytest-html` and `pytest-cov` (branch coverage), and writes `docs/test-report/report.html` and `docs/test-report/coverage/`. Both are committed. The target deletes the `.gitignore` that coverage writes into its folder.
 
 **Why** — The brief asks for a test report, and one command means it is never out of date by hand. Committing it means a reviewer can read it without running anything.
+
+## [2026-10-25] No CORS
+
+**Decision** — The API has no CORS middleware. In production Caddy serves the frontend and proxies `/api` to the backend on one origin. In development the Vite dev server proxies `/api` to the backend, so the browser also sees one origin. E-10 is retired in `TEST_LIST.md`, and its ID is not reused.
+
+**Why** — CORS only matters when the browser calls another origin. With one origin there is nothing to allow, and an allow list is a setting that can be wrong. Leaving it out means a stray cross-origin page cannot call the API from a browser by accident. The cost: the frontend must always call relative `/api/...` paths, and the Vite proxy and the Caddy `/api` route have to exist (both come with the frontend and deploy work).

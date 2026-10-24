@@ -192,7 +192,7 @@ Data and format
 - E-09 api: a body that is not valid JSON returns 422
 
 Operations
-- E-10 api: CORS allows only the configured frontend origin
+- E-10 retired: no CORS, the browser only talks to its own origin (see DECISIONS, "No CORS")
 - E-11 api: `GET /api/health` returns 200 when the database answers
 - E-12 unit: the app refuses to start when the secret key setting is missing (the test removes `SECRET_KEY` from the environment and passes no env file)
 - E-13 db: migrations run from an empty database up to head, and down again. It ends with an upgrade to head, because the test database is shared and a downgrade to base would drop the schema for every test after it.
