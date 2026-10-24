@@ -17,3 +17,11 @@ def app(settings: Settings, rolled_back_session_factory: sessionmaker[Session]) 
 @pytest.fixture
 def client(app: FastAPI) -> TestClient:
     return TestClient(app)
+
+
+@pytest.fixture
+def buyer_token(client: TestClient) -> str:
+    credentials = {"email": "buyer@example.com", "password": "correct horse"}
+    client.post("/api/auth/register", json=credentials)
+    token: str = client.post("/api/auth/login", json=credentials).json()["access_token"]
+    return token

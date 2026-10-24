@@ -24,3 +24,11 @@ def test_a_request_with_no_token_returns_401(probe_client: TestClient) -> None:
 
     assert response.status_code == 401
     assert "detail" in response.json()
+
+
+def test_a_valid_token_gives_the_signed_in_user(probe_client: TestClient, buyer_token: str) -> None:
+    response = probe_client.get(PROBE_URL, headers={"Authorization": f"Bearer {buyer_token}"})
+
+    assert response.status_code == 200
+    assert response.json()["email"] == "buyer@example.com"
+    assert response.json()["role"] == "customer"
