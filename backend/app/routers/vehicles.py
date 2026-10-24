@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Path, Query, status
 
 from app.dependencies import get_current_user, get_vehicle_service, require_admin
 from app.domain.category import Category
-from app.limits import PRICE_MAX, VEHICLE_ID_MAX
+from app.limits import PRICE_MAX, SEARCH_TEXT_MAX_LENGTH, VEHICLE_ID_MAX
 from app.models.vehicle import Vehicle
 from app.schemas.vehicle import VehicleCreate, VehicleResponse, VehicleUpdate
 from app.services.vehicle_service import VehicleService
@@ -13,6 +13,7 @@ router = APIRouter(prefix="/vehicles")
 
 VehicleId = Annotated[int, Path(ge=1, le=VEHICLE_ID_MAX)]
 PriceBound = Annotated[int, Query(ge=0, le=PRICE_MAX)]
+SearchText = Annotated[str, Query(max_length=SEARCH_TEXT_MAX_LENGTH)]
 
 
 @router.post(
@@ -59,8 +60,8 @@ def delete_vehicle(
 )
 def search_vehicles(
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
-    make: str | None = None,
-    model: str | None = None,
+    make: SearchText | None = None,
+    model: SearchText | None = None,
     category: Category | None = None,
     min_price: PriceBound | None = None,
     max_price: PriceBound | None = None,
