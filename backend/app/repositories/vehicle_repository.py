@@ -49,9 +49,9 @@ class SqlVehicleRepository:
     ) -> list[Vehicle]:
         statement = select(Vehicle).order_by(Vehicle.id)
         if make is not None:
-            statement = statement.where(Vehicle.make == make)
+            statement = statement.where(Vehicle.make.icontains(make, autoescape=True))
         if model is not None:
-            statement = statement.where(Vehicle.model == model)
+            statement = statement.where(Vehicle.model.icontains(model, autoescape=True))
         if category is not None:
             statement = statement.where(Vehicle.category == category)
         if min_price is not None:
