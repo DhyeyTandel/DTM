@@ -32,6 +32,8 @@ def build_vehicle(**changes: object) -> dict[str, Any]:
         ({"category": "bus"}, "ck_vehicles_category"),
         ({"make": ""}, "ck_vehicles_make"),
         ({"model": ""}, "ck_vehicles_model"),
+        ({"image_url": "http://example.com/car.jpg"}, "ck_vehicles_image_url"),
+        ({"image_url": "javascript:alert(1)"}, "ck_vehicles_image_url"),
     ],
 )
 def test_the_database_refuses_a_vehicle_that_breaks_a_check_constraint(
@@ -45,6 +47,15 @@ def test_the_database_refuses_a_vehicle_that_breaks_a_check_constraint(
 
     assert isinstance(refused.value.orig, CheckViolation)
     assert refused.value.orig.diag.constraint_name == constraint
+
+
+def test_a_vehicle_without_an_image_url_is_accepted_and_has_none(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        vehicle = SqlVehicleRepository(session).add(**build_vehicle())
+
+        assert vehicle.image_url is None
 
 
 def test_updating_changes_only_the_four_editable_columns(
