@@ -64,3 +64,11 @@ class FakeVehicleRepository:
 
     def exists(self, vehicle_id: int) -> bool:
         return any(vehicle.id == vehicle_id for vehicle in self.vehicles)
+
+
+class FakePurchaseRepository:
+    def __init__(self) -> None:
+        self.recorded: list[tuple[int, int, str, str, int]] = []
+
+    def add(self, user_id: int, vehicle_id: int, make: str, model: str, price: int) -> None:
+        self.recorded.append((user_id, vehicle_id, make, model, price))

@@ -62,4 +62,3 @@ def test_a_minimum_price_above_the_maximum_raises_invalid_price_range() -> None:
 
     with pytest.raises(InvalidPriceRange):
         service.search(min_price=2_000_000_00, max_price=1_000_000_00)
-
