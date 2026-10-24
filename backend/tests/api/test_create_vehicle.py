@@ -99,3 +99,14 @@ def test_a_price_at_either_end_of_the_range_is_accepted(
 
     assert response.status_code == 201
     assert response.json()["price"] == price
+
+
+@pytest.mark.parametrize("price", [10.5, 100.0, "100", True])
+def test_a_price_that_is_not_a_whole_number_returns_422(
+    client: TestClient, admin_headers: dict[str, str], price: object
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "price": price}, headers=admin_headers
+    )
+
+    assert response.status_code == 422
