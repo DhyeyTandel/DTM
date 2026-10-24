@@ -198,3 +198,16 @@ def test_several_filters_together_all_have_to_match(
         )
 
         assert found == [match]
+
+
+def test_make_and_model_match_on_part_of_the_text_ignoring_case(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        corolla, _city = add_vehicles(
+            session, build_vehicle(), build_vehicle(make="Honda", model="City")
+        )
+        repository = SqlVehicleRepository(session)
+
+        assert repository.search(make="toy") == [corolla]
+        assert repository.search(model="OROL") == [corolla]
