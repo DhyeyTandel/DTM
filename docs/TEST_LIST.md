@@ -35,6 +35,7 @@ Login
 - A-17 api: `POST /api/auth/login` with a JSON body returns 200 with a bearer token
 - A-18 api: wrong password and unknown email both return 401 with the same body
 - A-19 api: login email match ignores letter case
+- A-33 unit: a password over the byte limit raises `InvalidCredentials` at login, because bcrypt refuses to read it
 
 Token checks
 - A-20 api: a request with no token returns 401 on every vehicle and inventory route
@@ -173,6 +174,7 @@ Operations
 - E-12 unit: the app refuses to start when the secret key setting is missing
 - E-13 db: migrations run from an empty database up to head, and down again. It ends with an upgrade to head, because the test database is shared and a downgrade to base would drop the schema for every test after it.
 - E-14 api: `GET /api/health` returns 200 with status `ok` (the plain check that proves the test loop; E-11 adds the database)
+- E-15 api: `GET /api/health` returns 503 with a `detail` message when the database does not answer
 
 ## Frontend (F)
 
