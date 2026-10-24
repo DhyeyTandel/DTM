@@ -27,9 +27,6 @@ class FakeVehicleRepository:
         self.vehicles.append(vehicle)
         return vehicle
 
-    def list_all(self) -> list[Vehicle]:
-        return list(self.vehicles)
-
     def search(
         self,
         make: str | None = None,

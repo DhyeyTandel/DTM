@@ -9,8 +9,6 @@ from app.models.vehicle import Vehicle
 class VehicleRepository(Protocol):
     def add(self, vehicle: Vehicle) -> Vehicle: ...
 
-    def list_all(self) -> list[Vehicle]: ...
-
     def search(
         self,
         make: str | None = None,
@@ -35,9 +33,6 @@ class SqlVehicleRepository:
         self.session.add(vehicle)
         self.session.flush()
         return vehicle
-
-    def list_all(self) -> list[Vehicle]:
-        return list(self.session.scalars(select(Vehicle).order_by(Vehicle.id)))
 
     def search(
         self,

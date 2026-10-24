@@ -19,7 +19,7 @@ class VehicleService:
         return self.vehicles.add(vehicle)
 
     def list_all(self) -> list[Vehicle]:
-        return self.vehicles.list_all()
+        return self.vehicles.search()
 
     def search(
         self,
