@@ -10,12 +10,10 @@ def seed_admin(users: UserRepository, settings: Settings) -> User:
     assert settings.admin_email is not None
     assert settings.admin_password is not None
     email = normalise_email(settings.admin_email)
-    existing = users.find_by_email(email)
-    if existing is not None:
-        return existing
-    admin = User(
-        email=email,
-        password_hash=hash_password(settings.admin_password),
-        role=Role.ADMIN,
-    )
-    return users.add(admin)
+    password_hash = hash_password(settings.admin_password)
+    admin = users.find_by_email(email)
+    if admin is None:
+        return users.add(User(email=email, password_hash=password_hash, role=Role.ADMIN))
+    admin.role = Role.ADMIN
+    admin.password_hash = password_hash
+    return admin
