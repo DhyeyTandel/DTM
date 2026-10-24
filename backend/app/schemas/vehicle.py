@@ -32,6 +32,13 @@ class VehicleCreate(RequestSchema):
     quantity: Quantity
 
 
+class VehicleUpdate(RequestSchema):
+    make: Make
+    model: Model
+    category: Category
+    price: Price
+
+
 class VehicleResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

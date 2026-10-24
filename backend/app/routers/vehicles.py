@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, status
 
 from app.dependencies import get_current_user, get_vehicle_service, require_admin
 from app.models.vehicle import Vehicle
-from app.schemas.vehicle import VehicleCreate, VehicleResponse
+from app.schemas.vehicle import VehicleCreate, VehicleResponse, VehicleUpdate
 from app.services.vehicle_service import VehicleService
 
 router = APIRouter(prefix="/vehicles")
@@ -27,3 +27,12 @@ def list_vehicles(
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
 ) -> list[Vehicle]:
     return service.list_all()
+
+
+@router.put("/{vehicle_id}", response_model=VehicleResponse)
+def update_vehicle(
+    vehicle_id: int,
+    body: VehicleUpdate,
+    service: Annotated[VehicleService, Depends(get_vehicle_service)],
+) -> Vehicle:
+    return service.update(vehicle_id, body.make, body.model, body.category, body.price)

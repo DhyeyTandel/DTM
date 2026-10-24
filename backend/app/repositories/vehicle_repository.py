@@ -1,6 +1,6 @@
 from typing import Protocol
 
-from sqlalchemy import select
+from sqlalchemy import select, update
 from sqlalchemy.orm import Session
 
 from app.models.vehicle import Vehicle
@@ -33,7 +33,13 @@ class SqlVehicleRepository:
     def update(
         self, vehicle_id: int, make: str, model: str, category: str, price: int
     ) -> Vehicle | None:
-        raise NotImplementedError
+        statement = (
+            update(Vehicle)
+            .where(Vehicle.id == vehicle_id)
+            .values(make=make, model=model, category=category, price=price)
+            .returning(Vehicle)
+        )
+        return self.session.scalars(statement).one_or_none()
 
     def delete(self, vehicle_id: int) -> bool:
         raise NotImplementedError
