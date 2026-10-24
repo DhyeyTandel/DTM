@@ -19,3 +19,6 @@ class VehicleService:
         if vehicle is None:
             raise VehicleNotFound
         return vehicle
+
+    def delete(self, vehicle_id: int) -> None:
+        self.vehicles.delete(vehicle_id)
