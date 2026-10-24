@@ -91,3 +91,23 @@ def test_a_price_bound_that_is_negative_not_whole_or_too_large_returns_422(
     response = client.get(SEARCH_URL, params={bound: value}, headers=admin_headers)
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize("category", ["bus", "SUV"])
+def test_a_category_outside_the_list_returns_422(
+    client: TestClient, admin_headers: dict[str, str], category: str
+) -> None:
+    response = client.get(SEARCH_URL, params={"category": category}, headers=admin_headers)
+
+    assert response.status_code == 422
+
+
+def test_searching_by_category_returns_only_that_category(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    add_vehicle(client, admin_headers, category="sedan")
+    suv = add_vehicle(client, admin_headers, category="suv")
+
+    response = client.get(SEARCH_URL, params={"category": "suv"}, headers=admin_headers)
+
+    assert response.json() == [suv]
