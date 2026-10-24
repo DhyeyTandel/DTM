@@ -1,4 +1,5 @@
 from app.models.user import User
+from app.models.vehicle import Vehicle
 
 
 class FakeUserRepository:
@@ -15,3 +16,13 @@ class FakeUserRepository:
 
     def find_by_id(self, user_id: int) -> User | None:
         return next((user for user in self.users if user.id == user_id), None)
+
+
+class FakeVehicleRepository:
+    def __init__(self) -> None:
+        self.vehicles: list[Vehicle] = []
+
+    def add(self, vehicle: Vehicle) -> Vehicle:
+        vehicle.id = len(self.vehicles) + 1
+        self.vehicles.append(vehicle)
+        return vehicle
