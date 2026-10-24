@@ -1,6 +1,8 @@
 import pytest
 from fastapi.testclient import TestClient
 
+from app.limits import PASSWORD_MAX_BYTES, PASSWORD_MIN_BYTES
+
 REGISTER_URL = "/api/auth/register"
 VALID_REGISTRATION = {"email": "buyer@example.com", "password": "correct horse"}
 
@@ -55,5 +57,22 @@ def test_register_without_email_or_password_returns_422(
     body = {key: value for key, value in VALID_REGISTRATION.items() if key != missing_field}
 
     response = client.post(REGISTER_URL, json=body)
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize(
+    "password",
+    [
+        "a" * (PASSWORD_MIN_BYTES - 1),
+        "a" * (PASSWORD_MAX_BYTES + 1),
+        "€" * (PASSWORD_MAX_BYTES // 3 + 1),
+    ],
+    ids=["too short", "too long", "too long in bytes but short in characters"],
+)
+def test_register_with_a_password_outside_the_length_limits_returns_422(
+    client: TestClient, password: str
+) -> None:
+    response = client.post(REGISTER_URL, json={**VALID_REGISTRATION, "password": password})
 
     assert response.status_code == 422
