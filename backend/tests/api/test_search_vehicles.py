@@ -50,3 +50,32 @@ def test_out_of_stock_vehicles_are_included_in_the_results(
     response = client.get(SEARCH_URL, params={"make": "toyota"}, headers=admin_headers)
 
     assert response.json() == [sold_out]
+
+
+def test_a_minimum_price_above_the_maximum_returns_422(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    response = client.get(
+        SEARCH_URL,
+        params={"min_price": 2_000_000_00, "max_price": 1_000_000_00},
+        headers=admin_headers,
+    )
+
+    assert response.status_code == 422
+    assert "detail" in response.json()
+
+
+def test_a_price_range_narrows_the_results(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    add_vehicle(client, admin_headers, price=1_000_000_00)
+    middle = add_vehicle(client, admin_headers, price=2_000_000_00)
+    add_vehicle(client, admin_headers, price=3_000_000_00)
+
+    response = client.get(
+        SEARCH_URL,
+        params={"min_price": 1_500_000_00, "max_price": 2_500_000_00},
+        headers=admin_headers,
+    )
+
+    assert response.json() == [middle]
