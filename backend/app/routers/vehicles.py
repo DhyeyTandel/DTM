@@ -4,15 +4,21 @@ from fastapi import APIRouter, Depends, Path, Query, status
 
 from app.dependencies import get_current_user, get_vehicle_service, require_admin
 from app.domain.category import Category
-from app.limits import PRICE_MAX, SEARCH_TEXT_MAX_LENGTH, VEHICLE_ID_MAX
+from app.limits import (
+    PRICE_BOUND_MIN,
+    PRICE_MAX,
+    SEARCH_TEXT_MAX_LENGTH,
+    VEHICLE_ID_MAX,
+    VEHICLE_ID_MIN,
+)
 from app.models.vehicle import Vehicle
 from app.schemas.vehicle import VehicleCreate, VehicleResponse, VehicleUpdate
 from app.services.vehicle_service import VehicleService
 
 router = APIRouter(prefix="/vehicles")
 
-VehicleId = Annotated[int, Path(ge=1, le=VEHICLE_ID_MAX)]
-PriceBound = Annotated[int, Query(ge=0, le=PRICE_MAX)]
+VehicleId = Annotated[int, Path(ge=VEHICLE_ID_MIN, le=VEHICLE_ID_MAX)]
+PriceBound = Annotated[int, Query(ge=PRICE_BOUND_MIN, le=PRICE_MAX)]
 SearchText = Annotated[str, Query(max_length=SEARCH_TEXT_MAX_LENGTH)]
 
 

@@ -7,5 +7,8 @@ PRICE_MIN = 1
 PRICE_MAX = 10**11
 QUANTITY_MIN = 0
 QUANTITY_MAX = 10000
+VEHICLE_ID_MIN = 1
 VEHICLE_ID_MAX = 2_147_483_647
+# A search bound of 0 means no lower limit, even though no price is below PRICE_MIN.
+PRICE_BOUND_MIN = 0
 SEARCH_TEXT_MAX_LENGTH = 50
