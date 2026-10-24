@@ -5,6 +5,7 @@ from app.domain.role import Role
 from app.models.user import User
 from app.repositories.user_repository import SqlUserRepository
 from app.security.passwords import hash_password, verify_password
+from app.seed import run_seed
 from app.services.seed_admin import seed_admin
 from tests.credentials import ADMIN_EMAIL, ADMIN_PASSWORD
 
@@ -55,3 +56,14 @@ def test_an_existing_customer_with_the_admin_email_becomes_the_admin_with_the_ne
         assert admin.role == Role.ADMIN
         assert verify_password(ADMIN_PASSWORD, admin.password_hash)
         assert not verify_password("the first registrant's password", admin.password_hash)
+
+
+def test_the_seed_entry_point_commits_the_admin(
+    committed_session_factory: sessionmaker[Session], admin_settings: Settings
+) -> None:
+    run_seed(admin_settings, committed_session_factory)
+
+    with committed_session_factory() as new_session:
+        admin = SqlUserRepository(new_session).find_by_email(ADMIN_EMAIL)
+        assert admin is not None
+        assert admin.role == Role.ADMIN
