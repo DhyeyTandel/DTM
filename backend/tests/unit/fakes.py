@@ -54,3 +54,13 @@ class FakeVehicleRepository:
         was_deleted = len(remaining) < len(self.vehicles)
         self.vehicles = remaining
         return was_deleted
+
+    def purchase(self, vehicle_id: int) -> Vehicle | None:
+        vehicle = next((vehicle for vehicle in self.vehicles if vehicle.id == vehicle_id), None)
+        if vehicle is None or vehicle.quantity == 0:
+            return None
+        vehicle.quantity -= 1
+        return vehicle
+
+    def exists(self, vehicle_id: int) -> bool:
+        return any(vehicle.id == vehicle_id for vehicle in self.vehicles)

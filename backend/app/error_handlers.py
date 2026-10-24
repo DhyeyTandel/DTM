@@ -8,6 +8,7 @@ from app.domain.errors import (
     InvalidCredentials,
     InvalidPriceRange,
     NotAuthenticated,
+    OutOfStock,
     VehicleNotFound,
 )
 
@@ -17,6 +18,7 @@ STATUS_BY_ERROR: dict[type[DomainError], int] = {
     NotAuthenticated: status.HTTP_401_UNAUTHORIZED,
     AdminRequired: status.HTTP_403_FORBIDDEN,
     VehicleNotFound: status.HTTP_404_NOT_FOUND,
+    OutOfStock: status.HTTP_409_CONFLICT,
     InvalidPriceRange: status.HTTP_422_UNPROCESSABLE_CONTENT,
 }
 

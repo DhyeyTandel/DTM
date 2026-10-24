@@ -24,6 +24,10 @@ class VehicleRepository(Protocol):
 
     def delete(self, vehicle_id: int) -> bool: ...
 
+    def purchase(self, vehicle_id: int) -> Vehicle | None: ...
+
+    def exists(self, vehicle_id: int) -> bool: ...
+
 
 class SqlVehicleRepository:
     def __init__(self, session: Session) -> None:
@@ -69,4 +73,21 @@ class SqlVehicleRepository:
 
     def delete(self, vehicle_id: int) -> bool:
         statement = delete(Vehicle).where(Vehicle.id == vehicle_id).returning(Vehicle.id)
+        return self.session.scalar(statement) is not None
+
+    def purchase(self, vehicle_id: int) -> Vehicle | None:
+        # Deliberately naive: read, check, then write. Replaced by one atomic update.
+        vehicle = self.session.get(Vehicle, vehicle_id)
+        if vehicle is None or vehicle.quantity <= 0:
+            return None
+        statement = (
+            update(Vehicle)
+            .where(Vehicle.id == vehicle_id)
+            .values(quantity=vehicle.quantity - 1)
+            .returning(Vehicle)
+        )
+        return self.session.scalars(statement).one()
+
+    def exists(self, vehicle_id: int) -> bool:
+        statement = select(Vehicle.id).where(Vehicle.id == vehicle_id)
         return self.session.scalar(statement) is not None

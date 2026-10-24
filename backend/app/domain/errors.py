@@ -22,6 +22,10 @@ class VehicleNotFound(DomainError):
     message = "Vehicle not found"
 
 
+class OutOfStock(DomainError):
+    message = "Vehicle is out of stock"
+
+
 class InvalidPriceRange(DomainError):
     message = "Minimum price must not be above maximum price"
 
