@@ -12,3 +12,7 @@ class InvalidCredentials(DomainError):
 
 class NotAuthenticated(DomainError):
     message = "Not authenticated"
+
+
+class AdminRequired(DomainError):
+    message = "Admin access required"

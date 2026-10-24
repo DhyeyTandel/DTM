@@ -6,7 +6,8 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 
 from app.config import Settings
-from app.domain.errors import NotAuthenticated
+from app.domain.errors import AdminRequired, NotAuthenticated
+from app.domain.role import Role
 from app.models.user import User
 from app.repositories.user_repository import SqlUserRepository, UserRepository
 from app.security.tokens import read_user_id
@@ -53,4 +54,10 @@ def get_current_user(
     user = users.find_by_id(user_id)
     if user is None:
         raise NotAuthenticated
+    return user
+
+
+def require_admin(user: Annotated[User, Depends(get_current_user)]) -> User:
+    if user.role != Role.ADMIN:
+        raise AdminRequired
     return user
