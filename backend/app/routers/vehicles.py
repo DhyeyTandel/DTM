@@ -29,7 +29,7 @@ def list_vehicles(
     return service.list_all()
 
 
-@router.put("/{vehicle_id}", response_model=VehicleResponse)
+@router.put("/{vehicle_id}", response_model=VehicleResponse, dependencies=[Depends(require_admin)])
 def update_vehicle(
     vehicle_id: int,
     body: VehicleUpdate,
