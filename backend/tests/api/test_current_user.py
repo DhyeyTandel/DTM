@@ -117,3 +117,14 @@ def test_a_signed_token_missing_a_claim_returns_401(
     response = probe_client.get(PROBE_URL, headers=bearer(token))
 
     assert response.status_code == 401
+
+
+def test_a_signed_token_with_a_non_numeric_sub_returns_401(
+    probe_client: TestClient, settings: Settings
+) -> None:
+    claims = {"sub": "not-a-number", "exp": datetime.now(UTC) + timedelta(minutes=5)}
+    token = jwt.encode(claims, settings.secret_key, algorithm=settings.token_algorithm)
+
+    response = probe_client.get(PROBE_URL, headers=bearer(token))
+
+    assert response.status_code == 401
