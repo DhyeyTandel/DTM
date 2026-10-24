@@ -62,6 +62,7 @@ Admin seed
 - A-40 unit: seeding an empty vehicle table adds about fifteen vehicles covering every category, a few at zero stock, all inside the price and quantity limits
 - A-41 unit: seeding when the table already has a vehicle adds nothing
 - A-42 db: the seed entry point stocks the table, and running it twice does not duplicate the vehicles
+- A-43 unit: every seeded vehicle has its own https image url, inside the length limit, with no whitespace
 
 ## Vehicles (V1 to V4)
 
@@ -80,6 +81,13 @@ Create
 - V-33 api: a body missing any of make, model, category, price or quantity returns 422
 - V-34 db: the database refuses a price outside 1 to 10^11, a quantity above 10000, a category outside the list, and an empty make or model (one named check constraint each)
 
+Image url (added after the first backend phase)
+- V-35 db: the database refuses an image url that is not https (`ck_vehicles_image_url`, http and `javascript:` cases) and accepts a vehicle with none
+- V-36 api: `POST /api/vehicles` with an https `image_url` returns 201 and echoes it; without one the response has `image_url: null`
+- V-37 api: an `image_url` that is `http`, `javascript:`, contains a space or a trailing newline, is empty, is only `https://`, or is over 500 characters returns 422, on create and on update; exactly 500 is accepted
+- V-38 api: `PUT` replaces `image_url`, `null` clears it, leaving it out returns 422
+- V-39 api: list and search responses include `image_url` (passes as soon as V-36 does, because every response shares one schema, so it has no red step)
+
 List
 - V-12 api: `GET /api/vehicles` as customer returns all vehicles
 - V-13 api: vehicles with quantity zero are included
@@ -87,16 +95,16 @@ List
 - V-15 api: without a token returns 401
 
 Update
-- V-16 unit: updating replaces make, model, category and price
+- V-16 unit: updating replaces make, model, category, price and image url
 - V-17 unit: updating a missing id raises `VehicleNotFound`
 - V-18 api: `PUT /api/vehicles/{id}` as admin returns 200 with the new values
 - V-19 api: as customer returns 403
 - V-20 api: missing id returns 404
 - V-21 api: a `quantity` field in the body returns 422 and stock is unchanged
-- V-22 api: a body missing any of make, model, category or price returns 422
+- V-22 api: a body missing any of make, model, category, price or image_url returns 422 (image_url may be `null`, but it must be there)
 - V-23 api: invalid values return 422 and the stored vehicle is unchanged
 - V-24 api: an id that is not a number, is zero or negative, or is above the maximum id returns 422
-- V-25 db: updating changes only the four editable columns, so a purchase made just before is not overwritten
+- V-25 db: updating changes only the five editable columns (make, model, category, price, image url), so a purchase made just before is not overwritten
 
 Delete
 - V-26 unit: deleting removes the vehicle

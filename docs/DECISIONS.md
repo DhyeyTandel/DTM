@@ -349,3 +349,57 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — The API has no CORS middleware. In production Caddy serves the frontend and proxies `/api` to the backend on one origin. In development the Vite dev server proxies `/api` to the backend, so the browser also sees one origin. E-10 is retired in `TEST_LIST.md`, and its ID is not reused.
 
 **Why** — CORS only matters when the browser calls another origin. With one origin there is nothing to allow, and an allow list is a setting that can be wrong. Leaving it out means a stray cross-origin page cannot call the API from a browser by accident. The cost: the frontend must always call relative `/api/...` paths, and the Vite proxy and the Caddy `/api` route have to exist (both come with the frontend and deploy work).
+
+## [2026-10-25] Vehicles have an optional image url
+
+**Decision** — `vehicles.image_url` is a nullable `String(500)`. It is accepted on create and update, and every vehicle response carries it (`null` when there is none). It must be `https` and at most 500 characters. The request schema checks it with a plain string and the pattern `^https://\S+$`, not `HttpUrl`. The database has one check, `ck_vehicles_image_url` (`image_url IS NULL OR image_url LIKE 'https://%'`), and the length is left to the column type, as it is for make and model. Migration 0004 writes the literals out.
+
+**Why** — The brief does not ask for images, but a listing without photos fails its "visually appealing" requirement. `HttpUrl` rewrites the address (it can add a trailing slash or encode characters), so a 500 character input could grow past the column and reach the database as a 500; a plain string stays as sent. The pattern also refuses spaces, an empty string and `https://` alone. The https rule keeps the page from loading mixed content and refuses `javascript:` addresses.
+
+**Found along the way** — The architect's review caught the `HttpUrl` problem and the duplicated length check before any code was written.
+
+## [2026-10-25] PUT replaces five fields; image_url is required but nullable
+
+**Supersedes** — The "four fields" in "PUT replaces four fields and never touches quantity" and in "PUT with quantity in the body is a 422". Everything else in them stands, and V-25 still proves quantity is never written.
+
+**Decision** — PUT requires make, model, category, price and `image_url`. `image_url` may be a string or `null`. `null` clears the image. Leaving the field out is a 422. The repository `update` has no default for it. Create keeps it optional, because "no image" is the natural meaning of leaving it out there.
+
+**Why** — The first plan was "omitted means NULL". The architect flagged it as a hidden default: a client or an edit form that forgets the field would wipe the image and still get 200. Required but nullable is the same rule as the other four fields, and clearing an image takes an explicit `null`. The cost is that existing PUT tests had to carry `image_url: null`, and a client written before this change gets 422 until it sends the field.
+
+## [2026-10-25] Seed photos come from Wikimedia Commons; existing databases are not backfilled
+
+**Decision** — Each of the sixteen sample cars has a Commons photo, shown through a 960 pixel thumbnail on `thumb.wikimedia.org`. The address is built from a folder and a file name by one small function. Each photo was fetched and looked at, and `docs/IMAGE_CREDITS.md` names the author and licence of each. The seed still only fills an empty table, so a database that was seeded before this change keeps its cars without photos. Nobody has deployed one yet.
+
+**Why** — Real photos make the list look like a dealership instead of a table, and Commons licences allow it if the author is credited. Backfilling would need an update rule for the seed ("set the image where it is empty"), which is a second seed behaviour to explain for a case that does not exist yet. Two photos are not exactly the car in the listing (a Hyundai Accent sold as the Verna, and a Nexon that does not show it is the EV); the credits file says so. If Caddy sets a Content-Security-Policy, `img-src` must allow `thumb.wikimedia.org`.
+
+## [2026-10-25] The user repository takes plain fields
+
+**Supersedes** — The last sentence of "Purchase moves to its own service" ("The user repository still takes a `User`").
+
+**Decision** — `UserRepository.add(email, password_hash, role)` builds the `User` itself. Promoting an existing account in the seed is `make_admin(user_id, password_hash)`, one `UPDATE ... RETURNING` like the vehicle update. `AuthService` and `seed_admin` build and change no ORM object. The db tests that called `add(User(...))` now call it with fields.
+
+**Why** — Same reason as the vehicle repository: a service that knows nothing about ORM objects can be tested with a fake that has the same plain signature. `make_admin` came from the architect's review; I had planned to keep mutating the loaded user in `seed_admin`, which is exactly what this change was meant to remove.
+
+## [2026-10-25] Frontend: TanStack Query for server state
+
+**Decision** — Server state (the vehicle list, search results, the current user) lives in TanStack Query. There is no hand-written cache, no `useEffect` that fetches, and no copy of server data in component state.
+
+**Why** — Caching, refetching and request status are solved problems, and hand-rolled versions are where stale data comes from. It also makes the 409 case simple: invalidating the list query refetches it, which is what F-07 asks for.
+
+## [2026-10-25] Frontend: after a purchase the count comes from the server
+
+**Decision** — A purchase is not applied optimistically. The button waits for the response, and the new quantity is the one the server returns (or, on a 409, the list is refetched).
+
+**Why** — With several buyers, a count lowered in the browser before the server answers can show stock that is not there, and a rollback would flicker. The purchase is one fast request, so waiting costs little. The button is disabled while the request runs (F-05).
+
+## [2026-10-25] Frontend: the token is kept in localStorage
+
+**Decision** — The access token is stored in `localStorage` and sent as a bearer header. A 401 from any request clears it and sends the user to the login page.
+
+**Why** — An httpOnly cookie is safer against XSS, but it needs CSRF protection and more backend work (setting and clearing the cookie, a CSRF token or SameSite rules, reading the token from the cookie instead of the header). For this scope the tradeoff is `localStorage` plus the 60 minute expiry: a stolen token stops working within the hour, and the frontend sets no HTML from user text. The cost is real: any script that runs on the page can read the token. If the app grew, moving to a cookie is the first change I would make.
+
+## [2026-10-25] Frontend: stack, layers and CI
+
+**Decision** — Vite, React, TypeScript, Tailwind, React Router, TanStack Query. Tests are Vitest, React Testing Library and MSW. CI gets a second job next to the backend one: eslint, prettier and `tsc`, then the tests. Components never call `fetch`: there is one api module, data reaches components through hooks, and repeated UI bits are small shared components. In development Vite proxies `/api` to the backend, in production Caddy does (see "No CORS").
+
+**Why** — MSW lets the tests run the real api module against fake responses, so the api layer is covered and not replaced. `TEST_LIST.md` still says the api layer is replaced by a fake at its module boundary (the F section); when the frontend tests are written, that line is brought in line with this entry in the test list, not here.

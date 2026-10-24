@@ -23,13 +23,14 @@ Roles: **visitor** (no account), **customer** (registered), **admin** (seeded).
 
 ## Vehicles
 
-**V1. Add a vehicle.** As an admin, I want to add a vehicle with make, model, category, price and starting quantity, so that it appears in the catalogue.
+**V1. Add a vehicle.** As an admin, I want to add a vehicle with make, model, category, price and starting quantity, and optionally a photo address, so that it appears in the catalogue.
+- The photo address must be https and at most 500 characters. A listing without one gets a placeholder in the UI.
 - Customers cannot add vehicles.
 
 **V2. Browse vehicles.** As a customer, I want to see every vehicle, including ones with zero stock, so that I know what the dealership carries and what is sold out.
 
 **V3. Update a vehicle.** As an admin, I want to correct a vehicle's make, model, category or price, so that the catalogue stays accurate.
-- Make, model, category and price are all required, and replace the old values.
+- Make, model, category, price and image url are all required, and replace the old values. The image url may be `null`, which removes the photo.
 - Quantity is not accepted here. A request that includes it is refused. Stock only moves through purchase and restock.
 
 **V4. Delete a vehicle.** As an admin, I want to delete a vehicle, so that models we no longer carry disappear.
