@@ -1,24 +1,36 @@
+from typing import NamedTuple
+
 from app.domain.category import Category
 from app.repositories.vehicle_repository import VehicleRepository
 
-# Prices are in paise. A quantity of zero shows how the list handles a sold-out car.
-SAMPLE_VEHICLES: list[tuple[str, str, Category, int, int]] = [
-    ("Maruti Suzuki", "Swift", Category.HATCHBACK, 7_50_000_00, 12),
-    ("Tata", "Tiago", Category.HATCHBACK, 6_00_000_00, 8),
-    ("Hyundai", "i20", Category.HATCHBACK, 8_50_000_00, 0),
-    ("Honda", "City", Category.SEDAN, 12_50_000_00, 6),
-    ("Hyundai", "Verna", Category.SEDAN, 11_50_000_00, 4),
-    ("Skoda", "Slavia", Category.SEDAN, 13_00_000_00, 0),
-    ("Toyota", "Fortuner", Category.SUV, 38_00_000_00, 3),
-    ("Mahindra", "XUV700", Category.SUV, 18_00_000_00, 7),
-    ("Hyundai", "Creta", Category.SUV, 15_00_000_00, 10),
-    ("BMW", "2 Series Gran Coupe", Category.COUPE, 45_00_000_00, 2),
-    ("Audi", "A5", Category.COUPE, 60_00_000_00, 0),
-    ("Toyota", "Hilux", Category.TRUCK, 30_00_000_00, 5),
-    ("Isuzu", "D-Max V-Cross", Category.TRUCK, 25_00_000_00, 4),
-    ("Tata", "Nexon EV", Category.EV, 15_00_000_00, 9),
-    ("MG", "ZS EV", Category.EV, 19_00_000_00, 3),
-    ("Hyundai", "Ioniq 5", Category.EV, 46_00_000_00, 1),
+
+class SampleVehicle(NamedTuple):
+    make: str
+    model: str
+    category: Category
+    price: int
+    quantity: int
+
+
+# Prices are paise, grouped as lakhs: 7_50_000_00 is 7,50,000 rupees.
+# Zero stock is there to show sold-out cars.
+SAMPLE_VEHICLES = [
+    SampleVehicle("Maruti Suzuki", "Swift", Category.HATCHBACK, 7_50_000_00, 12),
+    SampleVehicle("Tata", "Tiago", Category.HATCHBACK, 6_00_000_00, 8),
+    SampleVehicle("Hyundai", "i20", Category.HATCHBACK, 8_50_000_00, 0),
+    SampleVehicle("Honda", "City", Category.SEDAN, 12_50_000_00, 6),
+    SampleVehicle("Hyundai", "Verna", Category.SEDAN, 11_50_000_00, 4),
+    SampleVehicle("Skoda", "Slavia", Category.SEDAN, 13_00_000_00, 0),
+    SampleVehicle("Toyota", "Fortuner", Category.SUV, 38_00_000_00, 3),
+    SampleVehicle("Mahindra", "XUV700", Category.SUV, 18_00_000_00, 7),
+    SampleVehicle("Hyundai", "Creta", Category.SUV, 15_00_000_00, 10),
+    SampleVehicle("BMW", "2 Series Gran Coupe", Category.COUPE, 45_00_000_00, 2),
+    SampleVehicle("Audi", "A5", Category.COUPE, 60_00_000_00, 0),
+    SampleVehicle("Toyota", "Hilux", Category.TRUCK, 30_00_000_00, 5),
+    SampleVehicle("Isuzu", "D-Max V-Cross", Category.TRUCK, 25_00_000_00, 4),
+    SampleVehicle("Tata", "Nexon EV", Category.EV, 15_00_000_00, 9),
+    SampleVehicle("MG", "ZS EV", Category.EV, 19_00_000_00, 3),
+    SampleVehicle("Hyundai", "Ioniq 5", Category.EV, 46_00_000_00, 1),
 ]
 
 
@@ -26,5 +38,5 @@ def seed_vehicles(vehicles: VehicleRepository) -> None:
     # Only an empty table is seeded, so a redeploy does not duplicate the cars.
     if vehicles.search():
         return
-    for make, model, category, price, quantity in SAMPLE_VEHICLES:
-        vehicles.add(make, model, category, price, quantity)
+    for sample in SAMPLE_VEHICLES:
+        vehicles.add(sample.make, sample.model, sample.category, sample.price, sample.quantity)

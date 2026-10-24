@@ -63,7 +63,7 @@ class VehicleService:
         vehicle = self.vehicles.restock(vehicle_id, amount)
         if vehicle is not None:
             return vehicle
-        # Only picks which error to raise. Whether the restock happened was decided by the update.
+        # Only picks which error to raise; the update already decided nothing was restocked.
         if not self.vehicles.exists(vehicle_id):
             raise VehicleNotFound
         raise StockLimitExceeded

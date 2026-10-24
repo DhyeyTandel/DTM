@@ -97,6 +97,7 @@ def test_ten_buyers_of_the_last_unit_give_one_success_and_stock_zero(
 
     assert outcomes.count(True) == 1
     assert stored_quantity(committed_session_factory, vehicle_id) == 0
+    assert stored_purchase_count(committed_session_factory) == 1
 
 
 def test_ten_buyers_against_three_in_stock_give_three_successes_and_stock_zero(

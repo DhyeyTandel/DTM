@@ -144,7 +144,7 @@ Purchase
 - I-05 db: purchase of the last unit succeeds and leaves quantity zero
 - I-06 db: purchase at zero stock changes nothing and returns nothing
 - I-07 db: the database refuses a negative quantity (check constraint, last line of defence)
-- I-08 db: two concurrent purchases of the last unit give one success and one `OutOfStock`. Each thread uses its own session, waits on a `threading.Barrier` right before the update so they really overlap, and closes its session before the test ends so the truncate does not wait on a lock.
+- I-08 db: ten concurrent purchases of the last unit give one success and nine `OutOfStock`. Each thread uses its own session, waits on a `threading.Barrier` right before the update so they really overlap, and closes its session before the test ends so the truncate does not wait on a lock.
 - I-09 db: N concurrent purchases against stock below N give exactly stock-many successes, the rest `OutOfStock`, final quantity zero. Same rules as I-08, and the engine pool must be at least N connections (the default allows 15) or threads wait on the pool and run one after another.
 - I-10 api: `POST /api/vehicles/{id}/purchase` as customer returns 200 with the full vehicle and its new quantity
 - I-11 api: an admin purchase returns 200 and is handled exactly like a customer's
@@ -164,7 +164,7 @@ Restock
 - I-23 api: missing id returns 404
 - I-24 api: amount of zero, negative, above the maximum, decimal or missing returns 422
 - I-25 api: restocking a sold-out vehicle makes it purchasable again
-- I-26 db: a restock past 10000 raises `StockLimitExceeded` and quantity is unchanged. The update itself refuses it (`quantity + amount <= 10000` in the `WHERE`), not the check constraint
+- I-26 db: a restock past 10000 returns nothing and quantity is unchanged (the service raises `StockLimitExceeded`, covered by the unit tests). The update itself refuses it (`quantity + amount <= 10000` in the `WHERE`), not the check constraint
 - I-27 api: a restock past 10000 returns 409 and quantity is unchanged
 
 Purchase record and constraint
