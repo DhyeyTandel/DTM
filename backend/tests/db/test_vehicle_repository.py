@@ -227,3 +227,40 @@ def test_wildcards_and_the_escape_character_in_search_text_are_matched_literally
         found = SqlVehicleRepository(session).search(make=text)
 
         assert found == [literal]
+
+
+def test_a_purchase_lowers_quantity_by_exactly_one(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        (added,) = add_vehicles(session, build_vehicle(quantity=5))
+
+        purchased = SqlVehicleRepository(session).purchase(added.id)
+
+        assert purchased is not None
+        assert purchased.quantity == 4
+
+
+def test_a_purchase_of_the_last_unit_leaves_quantity_zero(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        (added,) = add_vehicles(session, build_vehicle(quantity=1))
+
+        purchased = SqlVehicleRepository(session).purchase(added.id)
+
+        assert purchased is not None
+        assert purchased.quantity == 0
+
+
+def test_a_purchase_at_zero_stock_changes_nothing_and_returns_nothing(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        (added,) = add_vehicles(session, build_vehicle(quantity=0))
+        repository = SqlVehicleRepository(session)
+
+        assert repository.purchase(added.id) is None
+
+        session.refresh(added)
+        assert added.quantity == 0
