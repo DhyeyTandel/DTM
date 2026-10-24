@@ -2,7 +2,12 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, Path, Query, status
 
-from app.dependencies import get_current_user, get_vehicle_service, require_admin
+from app.dependencies import (
+    get_current_user,
+    get_purchase_service,
+    get_vehicle_service,
+    require_admin,
+)
 from app.domain.category import Category
 from app.limits import (
     PRICE_BOUND_MIN,
@@ -11,8 +16,10 @@ from app.limits import (
     VEHICLE_ID_MAX,
     VEHICLE_ID_MIN,
 )
+from app.models.user import User
 from app.models.vehicle import Vehicle
 from app.schemas.vehicle import VehicleCreate, VehicleResponse, VehicleUpdate
+from app.services.purchase_service import PurchaseService
 from app.services.vehicle_service import VehicleService
 
 router = APIRouter(prefix="/vehicles")
@@ -75,3 +82,12 @@ def search_vehicles(
     return service.search(
         make=make, model=model, category=category, min_price=min_price, max_price=max_price
     )
+
+
+@router.post("/{vehicle_id}/purchase", response_model=VehicleResponse)
+def purchase_vehicle(
+    vehicle_id: VehicleId,
+    user: Annotated[User, Depends(get_current_user)],
+    service: Annotated[PurchaseService, Depends(get_purchase_service)],
+) -> Vehicle:
+    return service.purchase(user.id, vehicle_id)

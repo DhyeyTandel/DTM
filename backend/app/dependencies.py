@@ -9,10 +9,12 @@ from app.config import Settings
 from app.domain.errors import AdminRequired, NotAuthenticated
 from app.domain.role import Role
 from app.models.user import User
+from app.repositories.purchase_repository import PurchaseRepository, SqlPurchaseRepository
 from app.repositories.user_repository import SqlUserRepository, UserRepository
 from app.repositories.vehicle_repository import SqlVehicleRepository, VehicleRepository
 from app.security.tokens import read_user_id
 from app.services.auth_service import AuthService
+from app.services.purchase_service import PurchaseService
 from app.services.vehicle_service import VehicleService
 
 
@@ -41,10 +43,21 @@ def get_vehicle_repository(session: SessionDependency) -> VehicleRepository:
     return SqlVehicleRepository(session)
 
 
+def get_purchase_repository(session: SessionDependency) -> PurchaseRepository:
+    return SqlPurchaseRepository(session)
+
+
 def get_vehicle_service(
     vehicles: Annotated[VehicleRepository, Depends(get_vehicle_repository)],
 ) -> VehicleService:
     return VehicleService(vehicles)
+
+
+def get_purchase_service(
+    vehicles: Annotated[VehicleRepository, Depends(get_vehicle_repository)],
+    purchases: Annotated[PurchaseRepository, Depends(get_purchase_repository)],
+) -> PurchaseService:
+    return PurchaseService(vehicles, purchases)
 
 
 def get_auth_service(

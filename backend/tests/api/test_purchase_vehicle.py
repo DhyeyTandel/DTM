@@ -17,7 +17,7 @@ def test_a_customer_purchase_returns_the_full_vehicle_with_one_less_in_stock(
     response = client.post(purchase_url(stocked_vehicle["id"]), headers=buyer_headers)
 
     assert response.status_code == 200
-    assert response.json() == {**stocked_vehicle, "quantity": VALID_VEHICLE["quantity"] - 1}
+    assert response.json() == {**stocked_vehicle, "quantity": stocked_vehicle["quantity"] - 1}
 
 
 def test_an_admin_purchase_is_handled_like_a_customers(
@@ -26,7 +26,7 @@ def test_an_admin_purchase_is_handled_like_a_customers(
     response = client.post(purchase_url(stocked_vehicle["id"]), headers=admin_headers)
 
     assert response.status_code == 200
-    assert response.json()["quantity"] == VALID_VEHICLE["quantity"] - 1
+    assert response.json()["quantity"] == stocked_vehicle["quantity"] - 1
 
 
 def test_purchasing_a_sold_out_vehicle_returns_409_and_stock_stays_zero(
@@ -59,4 +59,4 @@ def test_a_body_sent_to_purchase_is_not_read_and_exactly_one_unit_is_bought(
     )
 
     assert response.status_code == 200
-    assert response.json()["quantity"] == VALID_VEHICLE["quantity"] - 1
+    assert response.json()["quantity"] == stocked_vehicle["quantity"] - 1
