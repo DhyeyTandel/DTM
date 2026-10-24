@@ -1,7 +1,9 @@
 from typing import Any
 
+import pytest
 from fastapi.testclient import TestClient
 
+from app.limits import PRICE_MAX
 from tests.vehicles import VALID_VEHICLE, VEHICLES_URL
 
 SEARCH_URL = f"{VEHICLES_URL}/search"
@@ -79,3 +81,13 @@ def test_a_price_range_narrows_the_results(
     )
 
     assert response.json() == [middle]
+
+
+@pytest.mark.parametrize("bound", ["min_price", "max_price"])
+@pytest.mark.parametrize("value", ["-1", "10.5", "abc", str(PRICE_MAX + 1)])
+def test_a_price_bound_that_is_negative_not_whole_or_too_large_returns_422(
+    client: TestClient, admin_headers: dict[str, str], bound: str, value: str
+) -> None:
+    response = client.get(SEARCH_URL, params={bound: value}, headers=admin_headers)
+
+    assert response.status_code == 422
