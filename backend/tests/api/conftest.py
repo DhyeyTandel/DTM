@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from fastapi import FastAPI
 from fastapi.testclient import TestClient
@@ -7,6 +9,7 @@ from app.config import Settings
 from app.domain.role import Role
 from app.main import create_app
 from app.models.user import User
+from tests.vehicles import VALID_VEHICLE, VEHICLES_URL
 
 
 @pytest.fixture
@@ -48,3 +51,10 @@ def admin_headers(admin_token: str) -> dict[str, str]:
 @pytest.fixture
 def buyer_headers(buyer_token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {buyer_token}"}
+
+
+@pytest.fixture
+def stocked_vehicle(client: TestClient, admin_headers: dict[str, str]) -> dict[str, Any]:
+    response = client.post(VEHICLES_URL, json=VALID_VEHICLE, headers=admin_headers)
+    vehicle: dict[str, Any] = response.json()
+    return vehicle
