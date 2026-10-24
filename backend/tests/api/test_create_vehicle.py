@@ -1,7 +1,7 @@
 import pytest
 from fastapi.testclient import TestClient
 
-from app.limits import PRICE_MAX, PRICE_MIN
+from app.limits import PRICE_MAX, PRICE_MIN, QUANTITY_MAX, QUANTITY_MIN
 from tests.vehicles import VALID_VEHICLE, VEHICLES_URL
 
 
@@ -110,3 +110,26 @@ def test_a_price_that_is_not_a_whole_number_returns_422(
     )
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize("quantity", [QUANTITY_MIN - 1, QUANTITY_MAX + 1, 5.5, "5", True])
+def test_a_quantity_outside_the_range_or_not_a_whole_number_returns_422(
+    client: TestClient, admin_headers: dict[str, str], quantity: object
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "quantity": quantity}, headers=admin_headers
+    )
+
+    assert response.status_code == 422
+
+
+@pytest.mark.parametrize("quantity", [QUANTITY_MIN, QUANTITY_MAX])
+def test_a_quantity_at_either_end_of_the_range_is_accepted(
+    client: TestClient, admin_headers: dict[str, str], quantity: int
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "quantity": quantity}, headers=admin_headers
+    )
+
+    assert response.status_code == 201
+    assert response.json()["quantity"] == quantity
