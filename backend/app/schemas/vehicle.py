@@ -33,6 +33,7 @@ class VehicleCreate(RequestSchema):
     category: Category
     price: Price
     quantity: Quantity
+    image_url: str | None = None
 
 
 class VehicleUpdate(RequestSchema):
@@ -55,3 +56,4 @@ class VehicleResponse(BaseModel):
     category: str
     price: int
     quantity: int
+    image_url: str | None

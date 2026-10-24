@@ -38,7 +38,9 @@ SearchText = Annotated[str, Query(max_length=SEARCH_TEXT_MAX_LENGTH)]
 def add_vehicle(
     body: VehicleCreate, service: Annotated[VehicleService, Depends(get_vehicle_service)]
 ) -> Vehicle:
-    return service.add(body.make, body.model, body.category, body.price, body.quantity)
+    return service.add(
+        body.make, body.model, body.category, body.price, body.quantity, body.image_url
+    )
 
 
 @router.get("", response_model=list[VehicleResponse], dependencies=[Depends(get_current_user)])

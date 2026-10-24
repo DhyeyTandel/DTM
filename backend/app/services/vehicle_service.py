@@ -21,8 +21,16 @@ class VehicleService:
     def __init__(self, vehicles: VehicleRepository) -> None:
         self.vehicles = vehicles
 
-    def add(self, make: str, model: str, category: Category, price: int, quantity: int) -> Vehicle:
-        return self.vehicles.add(make, model, category, price, quantity)
+    def add(
+        self,
+        make: str,
+        model: str,
+        category: Category,
+        price: int,
+        quantity: int,
+        image_url: str | None = None,
+    ) -> Vehicle:
+        return self.vehicles.add(make, model, category, price, quantity, image_url)
 
     def list_all(self) -> list[Vehicle]:
         return self.vehicles.search()
