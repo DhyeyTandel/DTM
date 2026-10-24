@@ -21,3 +21,12 @@ def test_register_response_never_contains_the_password_or_its_hash(client: TestC
     assert "password_hash" not in response.json()
     assert VALID_REGISTRATION["password"] not in response.text
     assert "$2b$" not in response.text
+
+
+def test_register_with_a_duplicate_email_returns_409(client: TestClient) -> None:
+    client.post(REGISTER_URL, json=VALID_REGISTRATION)
+
+    response = client.post(REGISTER_URL, json=VALID_REGISTRATION)
+
+    assert response.status_code == 409
+    assert "detail" in response.json()
