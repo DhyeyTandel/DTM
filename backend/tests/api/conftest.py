@@ -43,3 +43,8 @@ def admin_token(client: TestClient, rolled_back_session_factory: sessionmaker[Se
 @pytest.fixture
 def admin_headers(admin_token: str) -> dict[str, str]:
     return {"Authorization": f"Bearer {admin_token}"}
+
+
+@pytest.fixture
+def buyer_headers(buyer_token: str) -> dict[str, str]:
+    return {"Authorization": f"Bearer {buyer_token}"}

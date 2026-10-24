@@ -18,3 +18,11 @@ def test_adding_a_vehicle_without_a_token_returns_401(client: TestClient) -> Non
     response = client.post(VEHICLES_URL, json=VALID_VEHICLE)
 
     assert response.status_code == 401
+
+
+def test_a_customer_adding_a_vehicle_gets_403(
+    client: TestClient, buyer_headers: dict[str, str]
+) -> None:
+    response = client.post(VEHICLES_URL, json=VALID_VEHICLE, headers=buyer_headers)
+
+    assert response.status_code == 403
