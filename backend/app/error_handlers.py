@@ -7,6 +7,7 @@ from app.domain.errors import (
     EmailAlreadyRegistered,
     InvalidCredentials,
     NotAuthenticated,
+    VehicleNotFound,
 )
 
 STATUS_BY_ERROR: dict[type[DomainError], int] = {
@@ -14,6 +15,7 @@ STATUS_BY_ERROR: dict[type[DomainError], int] = {
     InvalidCredentials: status.HTTP_401_UNAUTHORIZED,
     NotAuthenticated: status.HTTP_401_UNAUTHORIZED,
     AdminRequired: status.HTTP_403_FORBIDDEN,
+    VehicleNotFound: status.HTTP_404_NOT_FOUND,
 }
 
 

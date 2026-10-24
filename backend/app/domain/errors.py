@@ -18,5 +18,9 @@ class AdminRequired(DomainError):
     message = "Admin access required"
 
 
+class VehicleNotFound(DomainError):
+    message = "Vehicle not found"
+
+
 class InvalidAdminSettings(Exception):
     pass

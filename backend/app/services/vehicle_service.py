@@ -1,4 +1,5 @@
 from app.domain.category import Category
+from app.domain.errors import VehicleNotFound
 from app.models.vehicle import Vehicle
 from app.repositories.vehicle_repository import VehicleRepository
 
@@ -14,4 +15,7 @@ class VehicleService:
     def update(
         self, vehicle_id: int, make: str, model: str, category: Category, price: int
     ) -> Vehicle:
-        return self.vehicles.update(vehicle_id, make, model, category, price)
+        vehicle = self.vehicles.update(vehicle_id, make, model, category, price)
+        if vehicle is None:
+            raise VehicleNotFound
+        return vehicle
