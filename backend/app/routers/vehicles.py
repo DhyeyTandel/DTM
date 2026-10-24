@@ -56,6 +56,9 @@ def delete_vehicle(
     "/search", response_model=list[VehicleResponse], dependencies=[Depends(get_current_user)]
 )
 def search_vehicles(
-    service: Annotated[VehicleService, Depends(get_vehicle_service)], make: str | None = None
+    service: Annotated[VehicleService, Depends(get_vehicle_service)],
+    make: str | None = None,
+    min_price: int | None = None,
+    max_price: int | None = None,
 ) -> list[Vehicle]:
-    return service.search(make=make)
+    return service.search(make=make, min_price=min_price, max_price=max_price)
