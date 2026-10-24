@@ -12,3 +12,12 @@ def test_register_returns_201_with_id_email_and_customer_role(client: TestClient
     assert isinstance(body["id"], int)
     assert body["email"] == "buyer@example.com"
     assert body["role"] == "customer"
+
+
+def test_register_response_never_contains_the_password_or_its_hash(client: TestClient) -> None:
+    response = client.post(REGISTER_URL, json=VALID_REGISTRATION)
+
+    assert "password" not in response.json()
+    assert "password_hash" not in response.json()
+    assert VALID_REGISTRATION["password"] not in response.text
+    assert "$2b$" not in response.text
