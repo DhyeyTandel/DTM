@@ -259,3 +259,47 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — Decoding passes `options={"require": ["exp", "sub"]}`. A validly signed token missing either, or with a `sub` that is not a number, is a 401.
 
 **Why** — PyJWT checks `exp` only when it is present, so a token signed without one would never expire. A-35 and A-36 test this. The claim names are constants in `tokens.py`.
+
+## [2026-10-25] The vehicles table
+
+**Decision** — `vehicles` has an `Integer` id, `make` and `model` as `String(50)`, `category` as `String(20)`, `price` as `BigInteger` and `quantity` as `Integer`. Each rule is a named check constraint: `ck_vehicles_make` and `ck_vehicles_model` (`char_length >= 1`), `ck_vehicles_category` (the six categories), `ck_vehicles_price` (1 to 10^11) and `ck_vehicles_quantity` (0 to 10000). There is no unique constraint, so two vehicles with the same make and model are allowed. The migration writes the numbers and category names out in full and does not import them from the app.
+
+**Why** — The database is the last line of defence, as it is for `users`. An old migration must keep doing what it did when it was written, so it cannot read an enum that may change later. Next phase's `purchases.vehicle_id` will be a nullable `Integer` with `ForeignKey("vehicles.id", ondelete="SET NULL")`. That is a property of the purchases table, so `vehicles` needs nothing extra for it now. The upper length is already enforced by `String(50)`, which is why the length check only needs the lower end.
+
+## [2026-10-25] Quantity is capped at 10000, and a restock past it is a 409
+
+**Supersedes** — The "no cap on total quantity" part of "Restock limit is per request, not on total stock", and its choice of BigInteger for quantity.
+
+**Decision** — Quantity is 0 to 10000. Create checks it in the schema, and `ck_vehicles_quantity` checks it in the database. Restock stays a single `quantity = quantity + amount` update. When that pushes stock past the limit, the check constraint refuses it, the repository turns the violation into `StockLimitExceeded` (the same way it does for a duplicate email), and the answer is 409 with stock unchanged. The amount per request is still 1 to 1,000. Quantity is an `Integer`, because 10000 plus 1000 cannot overflow it. `StockLimitExceeded` and its tests (I-26, I-27) are built with restock, next phase.
+
+**Why** — The owner wants a database check on the upper limit. Without handling, a restock past it would be a 500. A conditional `WHERE quantity + :amount <= 10000` would change no row both for a missing vehicle and for an over-limit one, and would need a follow-up read to tell them apart. With the constraint, no row means missing and a violation means over the limit, and Postgres checks the new row even when requests overlap. It is 409 and not 422 because the amount is valid; it clashes with the current stock, as out of stock does.
+
+## [2026-10-25] Quantity is required when adding a vehicle
+
+**Decision** — `POST /api/vehicles` requires make, model, category, price and quantity. A missing quantity is a 422. There is no default.
+
+**Why** — The story says "starting quantity", and a default of 0 would let a typo create a vehicle nobody can buy without a warning.
+
+## [2026-10-25] Numbers in a body are strict integers, text is trimmed before it is measured
+
+**Decision** — `price` and `quantity` in request bodies are strict integers, so `"10"`, `10.0` and `true` are all 422. Search query values are not strict, because they arrive as strings. `make` and `model` are trimmed by the schema before the length check, so a value of only spaces is a 422 on create and update.
+
+**Why** — Pydantic by default turns `"10"` into 10, which would let V-09 pass without a 422. If trimming happened after the length check, `"   "` would pass the schema and reach `ck_vehicles_make` as a 500. Trimming first makes the schema the place that says no.
+
+## [2026-10-25] Search: bounds, blank text, and how text is matched
+
+**Decision** — `min_price` and `max_price` are integers from 0 to 10^11. Search text is trimmed, blank text counts as no filter, and text over 50 characters is a 422. `make` and `model` match with SQLAlchemy's `icontains(..., autoescape=True)`, so `%`, `_` and the escape character are matched literally. Category is an exact match. Results are ordered by id, as the list is. A minimum above the maximum is `InvalidPriceRange`, raised by the service, and maps to 422.
+
+**Why** — An unbounded integer such as 10^30 can reach the database as a data error instead of a 422. Matching the 50 character limit of make and model means longer text could never match anyway. `autoescape` is one argument, so there is no escaping code of ours to explain. A fixed order keeps the list stable between requests.
+
+## [2026-10-25] Delete and update are single statements
+
+**Decision** — Delete is `DELETE ... WHERE id = :id RETURNING id`, and update is `UPDATE ... SET make, model, category, price WHERE id = :id RETURNING`. No row back means `VehicleNotFound`. Neither reads first.
+
+**Why** — Read then delete lets two overlapping deletes both answer 204, which is the same mistake as read then write on purchase. Naming the four columns in the `UPDATE` makes it visible that quantity is never written.
+
+## [2026-10-25] E-12 means a missing SECRET_KEY
+
+**Decision** — The app refuses to start when `SECRET_KEY` is not set. An empty value is not checked.
+
+**Why** — A required field in `Settings` already does this, and a minimum length would be a second rule for a case the deployment does not produce. The test removes `SECRET_KEY` from the environment and passes no env file, so a developer's own `.env` cannot make it pass.

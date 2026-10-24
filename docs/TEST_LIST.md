@@ -69,11 +69,13 @@ Create
 - V-04 api: without a token returns 401
 - V-05 api: ids are unique across two creations
 - V-06 api: empty make or model returns 422
-- V-07 api: a category outside the fixed list returns 422
-- V-08 api: price of zero or less, or above 10^11 paise, returns 422
-- V-09 api: price sent as a decimal (`10.5`) or a string returns 422
-- V-10 api: negative quantity returns 422
+- V-07 api: a category outside the fixed list returns 422, including a wrong-case value (`SUV`)
+- V-08 api: price of 0, -1 or 10^11 + 1 returns 422; 1 and 10^11 are accepted
+- V-09 api: price sent as a decimal (`10.5`), a whole-number decimal (`10.0`), a string or a boolean returns 422
+- V-10 api: quantity of -1, above 10000, a decimal or a string returns 422; 0 and 10000 are accepted
 - V-11 api: two vehicles with the same make and model are allowed
+- V-33 api: a body missing any of make, model, category, price or quantity returns 422
+- V-34 db: the database refuses a price outside 1 to 10^11, a quantity above 10000, a category outside the list, and an empty make or model (one named check constraint each)
 
 List
 - V-12 api: `GET /api/vehicles` as customer returns all vehicles
@@ -116,17 +118,18 @@ Route is `GET /api/vehicles/search`. Filters combine with AND. Text filters igno
 - S-08 db: several filters together all have to match
 - S-09 db: make and model match on part of the text (`toy` finds `Toyota`)
 - S-10 db: a price exactly equal to the minimum or maximum is included
-- S-11 db: `%` and `_` in the search text are matched literally, not as wildcards
+- S-11 db: `%`, `_` and the escape character in the search text are matched literally, not as wildcards
 - S-12 unit: minimum price above maximum price raises `InvalidPriceRange`
 - S-13 api: `GET /api/vehicles/search?make=toyota` returns matching vehicles
 - S-14 api: no match returns 200 and an empty list, not 404
 - S-15 api: out of stock vehicles are included in results
 - S-16 api: minimum price above maximum price returns 422 (not 400)
-- S-17 api: negative or non-integer price bound returns 422
+- S-17 api: a negative, non-integer or above-10^11 price bound returns 422
 - S-18 api: a category outside the fixed list returns 422
 - S-19 api: without a token returns 401
-- S-20 api: `/search` is not read as a vehicle id (route order)
-- S-21 api: blank search text (`make=`) behaves like no filter
+- S-20 api: `/search` is not read as a vehicle id (route order). Covered by S-13 while there is no `GET /api/vehicles/{id}`: with no such route this cannot go red, so it gets no test of its own until one is added
+- S-21 api: blank search text (`make=` or only spaces) behaves like no filter
+- S-22 api: search text over 50 characters returns 422
 
 ## Inventory (I1, I2)
 
@@ -158,6 +161,8 @@ Restock
 - I-23 api: missing id returns 404
 - I-24 api: amount of zero, negative, above the maximum, decimal or missing returns 422
 - I-25 api: restocking a sold-out vehicle makes it purchasable again
+- I-26 db: a restock past 10000 raises `StockLimitExceeded` and quantity is unchanged
+- I-27 api: a restock past 10000 returns 409 and quantity is unchanged
 
 ## Edge cases and cross-cutting
 
@@ -170,14 +175,14 @@ Errors
 Data and format
 - E-05 db: price is stored and returned as an integer number of paise, and a price at the maximum (10^11) does not overflow
 - E-06 api: make and model over the maximum length return 422
-- E-07 api: make and model have surrounding whitespace trimmed
+- E-07 api: make and model have surrounding whitespace trimmed on create and update, and a value of only spaces returns 422
 - E-08 api: any endpoint that accepts a body rejects an unknown field with 422 (purchase takes no body, so it is not covered; see I-15)
 - E-09 api: a body that is not valid JSON returns 422
 
 Operations
 - E-10 api: CORS allows only the configured frontend origin
 - E-11 api: `GET /api/health` returns 200 when the database answers
-- E-12 unit: the app refuses to start when the secret key setting is missing
+- E-12 unit: the app refuses to start when the secret key setting is missing (the test removes `SECRET_KEY` from the environment and passes no env file)
 - E-13 db: migrations run from an empty database up to head, and down again. It ends with an upgrade to head, because the test database is shared and a downgrade to base would drop the schema for every test after it.
 - E-14 api: `GET /api/health` returns 200 with status `ok` (the plain check that proves the test loop; E-11 adds the database)
 - E-15 api: `GET /api/health` returns 503 with a `detail` message when the database does not answer
