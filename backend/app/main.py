@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 from app.config import Settings
 from app.database import build_session_factory
-from app.routers import health
+from app.routers import auth, health
 
 API_PREFIX = "/api"
 
@@ -12,6 +12,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.state.settings = settings
     app.state.session_factory = build_session_factory(settings.database_url)
     app.include_router(health.router, prefix=API_PREFIX)
+    app.include_router(auth.router, prefix=API_PREFIX)
     return app
 
 
