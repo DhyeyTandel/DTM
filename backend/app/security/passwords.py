@@ -1,6 +1,10 @@
 import bcrypt
 
-from app.limits import PASSWORD_MAX_BYTES
+from app.limits import PASSWORD_MAX_BYTES, PASSWORD_MIN_BYTES
+
+
+def password_fits_limits(password: str) -> bool:
+    return PASSWORD_MIN_BYTES <= len(password.encode()) <= PASSWORD_MAX_BYTES
 
 
 def hash_password(password: str) -> str:
