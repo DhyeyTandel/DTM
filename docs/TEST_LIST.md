@@ -38,6 +38,7 @@ Login
 - A-33 unit: a password over the byte limit raises `InvalidCredentials` at login, because bcrypt refuses to read it
 
 Token checks
+- A-34 api: a valid token gives the dependency the signed-in user (the case every other token check is the opposite of)
 - A-20 api: a request with no token returns 401 on every vehicle and inventory route
 - A-21 api: a malformed token returns 401
 - A-22 api: a token signed with a different secret returns 401
