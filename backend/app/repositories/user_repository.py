@@ -13,6 +13,8 @@ class UserRepository(Protocol):
 
     def find_by_email(self, email: str) -> User | None: ...
 
+    def find_by_id(self, user_id: int) -> User | None: ...
+
 
 class SqlUserRepository:
     def __init__(self, session: Session) -> None:
@@ -30,6 +32,9 @@ class SqlUserRepository:
 
     def find_by_email(self, email: str) -> User | None:
         return self.session.query(User).filter_by(email=email).one_or_none()
+
+    def find_by_id(self, user_id: int) -> User | None:
+        return self.session.get(User, user_id)
 
 
 def is_duplicate_email(error: IntegrityError) -> bool:

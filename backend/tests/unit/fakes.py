@@ -12,3 +12,6 @@ class FakeUserRepository:
 
     def find_by_email(self, email: str) -> User | None:
         return next((user for user in self.users if user.email == email), None)
+
+    def find_by_id(self, user_id: int) -> User | None:
+        return next((user for user in self.users if user.id == user_id), None)
