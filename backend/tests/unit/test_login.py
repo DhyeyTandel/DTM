@@ -28,3 +28,10 @@ def test_login_with_a_wrong_password_raises_invalid_credentials(settings: Settin
 
     with pytest.raises(InvalidCredentials):
         service.login(EMAIL, "wrong password")
+
+
+def test_login_with_an_unknown_email_raises_invalid_credentials(settings: Settings) -> None:
+    service = build_service_with_registered_buyer(settings)
+
+    with pytest.raises(InvalidCredentials):
+        service.login("nobody@example.com", PASSWORD)
