@@ -8,19 +8,30 @@ from alembic.config import Config
 from sqlalchemy import Engine, create_engine
 from sqlalchemy.orm import Session, sessionmaker
 
+from app.config import Settings
+
 BACKEND_DIRECTORY = Path(__file__).resolve().parent.parent
 DEFAULT_TEST_DATABASE_URL = "postgresql+psycopg://dtm:dtm@localhost:5433/dtm_test"
 
 
 @pytest.fixture(scope="session")
-def database_engine() -> Iterator[Engine]:
-    database_url = os.environ.get("TEST_DATABASE_URL", DEFAULT_TEST_DATABASE_URL)
+def test_database_url() -> str:
+    return os.environ.get("TEST_DATABASE_URL", DEFAULT_TEST_DATABASE_URL)
+
+
+@pytest.fixture
+def settings(test_database_url: str) -> Settings:
+    return Settings(database_url=test_database_url)
+
+
+@pytest.fixture(scope="session")
+def database_engine(test_database_url: str) -> Iterator[Engine]:
     migration_config = Config(str(BACKEND_DIRECTORY / "alembic.ini"))
     migration_config.set_main_option("script_location", str(BACKEND_DIRECTORY / "alembic"))
-    migration_config.set_main_option("sqlalchemy.url", database_url)
+    migration_config.set_main_option("sqlalchemy.url", test_database_url)
     command.upgrade(migration_config, "head")
 
-    engine = create_engine(database_url)
+    engine = create_engine(test_database_url)
     yield engine
     engine.dispose()
 
