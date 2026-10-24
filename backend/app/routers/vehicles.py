@@ -2,7 +2,7 @@ from typing import Annotated
 
 from fastapi import APIRouter, Depends, status
 
-from app.dependencies import get_current_user, get_vehicle_service
+from app.dependencies import get_vehicle_service, require_admin
 from app.models.vehicle import Vehicle
 from app.schemas.vehicle import VehicleCreate, VehicleResponse
 from app.services.vehicle_service import VehicleService
@@ -14,7 +14,7 @@ router = APIRouter(prefix="/vehicles")
     "",
     status_code=status.HTTP_201_CREATED,
     response_model=VehicleResponse,
-    dependencies=[Depends(get_current_user)],
+    dependencies=[Depends(require_admin)],
 )
 def add_vehicle(
     body: VehicleCreate, service: Annotated[VehicleService, Depends(get_vehicle_service)]
