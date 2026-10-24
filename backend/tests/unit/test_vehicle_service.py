@@ -48,3 +48,10 @@ def test_deleting_a_vehicle_removes_it() -> None:
     service.delete(added.id)
 
     assert vehicles.vehicles == []
+
+
+def test_deleting_a_missing_vehicle_raises_vehicle_not_found() -> None:
+    service = VehicleService(FakeVehicleRepository())
+
+    with pytest.raises(VehicleNotFound):
+        service.delete(1)
