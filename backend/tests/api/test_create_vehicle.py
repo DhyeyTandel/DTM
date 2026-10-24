@@ -12,3 +12,9 @@ def test_an_admin_adding_a_vehicle_gets_201_with_the_vehicle_and_its_id(
     assert response.status_code == 201
     assert isinstance(body["id"], int)
     assert {key: body[key] for key in VALID_VEHICLE} == VALID_VEHICLE
+
+
+def test_adding_a_vehicle_without_a_token_returns_401(client: TestClient) -> None:
+    response = client.post(VEHICLES_URL, json=VALID_VEHICLE)
+
+    assert response.status_code == 401
