@@ -27,8 +27,7 @@ class AuthService:
 
     def login(self, email: str, password: str) -> str:
         user = self.users.find_by_email(normalise_email(email))
-        assert user is not None
-        if not verify_password(password, user.password_hash):
+        if user is None or not verify_password(password, user.password_hash):
             raise InvalidCredentials
         return create_access_token(
             user.id,
