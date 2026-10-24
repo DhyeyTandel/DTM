@@ -319,3 +319,27 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 **Decision** — Restock is `UPDATE ... SET quantity = quantity + :amount WHERE id = :id AND quantity + :amount <= 10000 RETURNING`. No row back: the service asks whether the vehicle exists and raises `VehicleNotFound` (404) or `StockLimitExceeded` (409). `ck_vehicles_quantity` stays as the last line of defence, with its own test. `OutOfStock` and `StockLimitExceeded` both map to 409.
 
 **Why** — It is the same shape as purchase, so one idea explains both, and no database error is turned into a domain error by catching it. The follow-up read only picks which error to raise, never whether the update happened.
+
+## [2026-10-25] Purchase moves to its own service
+
+**Decision** — `PurchaseService` holds both the vehicle and purchase repositories and has `purchase(user_id, vehicle_id)`. `VehicleService` keeps add, list, search, update, delete and restock. Repositories take plain fields (`VehicleRepository.add(make, model, category, price, quantity)`), so no service builds or changes an ORM object.
+
+**Why** — Purchase is the only operation that writes two tables, so it is the only one that needs two repositories. Putting it in `VehicleService` would have changed that service's constructor and every test that builds it. The user repository still takes a `User`; the same change there was not asked for.
+
+## [2026-10-25] One error shape, including the unexpected 500
+
+**Decision** — Every error body is a JSON object with the single key `detail`. It is a string everywhere except a 422 from request validation, where it is FastAPI's list of problems. An exception nobody handled is a 500 with the fixed text "Internal server error". The real error and trace stay in the server log.
+
+**Why** — A check found one gap: an unhandled exception answered plain text, with no `detail`. The 422 list is kept because it says which field is wrong, which the frontend can use; flattening it to a string would lose that. E-01 and E-02 now have tests.
+
+## [2026-10-25] The seed adds sample vehicles only to an empty table
+
+**Decision** — `seed_vehicles` inserts sixteen cars (all six categories, three at zero stock, prices in paise) when the vehicle table has no rows, and nothing otherwise. `run_seed` calls it after `seed_admin` and commits once. The admin logic is unchanged.
+
+**Why** — The seed runs on every deploy. Checking for an empty table is the simplest rule that keeps a redeploy from duplicating cars. The cost: if the owner deletes every car, the next deploy puts the samples back.
+
+## [2026-10-25] The test report is one make target
+
+**Decision** — `make test-report` starts the test database, runs the suite with `pytest-html` and `pytest-cov` (branch coverage), and writes `docs/test-report/report.html` and `docs/test-report/coverage/`. Both are committed. The target deletes the `.gitignore` that coverage writes into its folder.
+
+**Why** — The brief asks for a test report, and one command means it is never out of date by hand. Committing it means a reviewer can read it without running anything.
