@@ -33,3 +33,14 @@ def test_registering_an_existing_email_is_refused() -> None:
 
     with pytest.raises(EmailAlreadyRegistered):
         service.register("buyer@example.com", "another password")
+
+
+def test_the_email_is_trimmed_and_lowercased_before_it_is_stored_or_looked_up() -> None:
+    users = FakeUserRepository()
+    service = AuthService(users)
+
+    service.register("  Buyer@Example.COM ", "correct horse")
+
+    assert users.users[0].email == "buyer@example.com"
+    with pytest.raises(EmailAlreadyRegistered):
+        service.register("BUYER@example.com  ", "another password")
