@@ -1,13 +1,16 @@
 from typing import Annotated
 
-from fastapi import APIRouter, Depends, status
+from fastapi import APIRouter, Depends, Path, status
 
 from app.dependencies import get_current_user, get_vehicle_service, require_admin
+from app.limits import VEHICLE_ID_MAX
 from app.models.vehicle import Vehicle
 from app.schemas.vehicle import VehicleCreate, VehicleResponse, VehicleUpdate
 from app.services.vehicle_service import VehicleService
 
 router = APIRouter(prefix="/vehicles")
+
+VehicleId = Annotated[int, Path(ge=1, le=VEHICLE_ID_MAX)]
 
 
 @router.post(
@@ -31,7 +34,7 @@ def list_vehicles(
 
 @router.put("/{vehicle_id}", response_model=VehicleResponse, dependencies=[Depends(require_admin)])
 def update_vehicle(
-    vehicle_id: int,
+    vehicle_id: VehicleId,
     body: VehicleUpdate,
     service: Annotated[VehicleService, Depends(get_vehicle_service)],
 ) -> Vehicle:
