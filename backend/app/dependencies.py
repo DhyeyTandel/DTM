@@ -20,6 +20,8 @@ def get_session(request: Request) -> Iterator[Session]:
         session.commit()
 
 
+bearer_scheme = HTTPBearer(auto_error=False)
+
 # Every user of the session must declare it this way, or FastAPI may open a second one.
 SessionDependency = Annotated[Session, Depends(get_session, scope="function")]
 
@@ -38,9 +40,6 @@ def get_auth_service(
     settings: Annotated[Settings, Depends(get_settings)],
 ) -> AuthService:
     return AuthService(users, settings)
-
-
-bearer_scheme = HTTPBearer(auto_error=False)
 
 
 def get_current_user(
