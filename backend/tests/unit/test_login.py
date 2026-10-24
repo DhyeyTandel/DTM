@@ -5,6 +5,7 @@ import pytest
 
 from app.config import Settings
 from app.domain.errors import InvalidCredentials
+from app.limits import PASSWORD_MAX_BYTES
 from app.services.auth_service import AuthService
 from tests.unit.fakes import FakeUserRepository
 
@@ -53,3 +54,12 @@ def test_the_token_carries_only_the_user_id_and_an_expiry_from_config(
     assert set(claims) == {"sub", "exp"}
     assert claims["sub"] == "1"
     assert abs(claims["exp"] - expected_expiry.timestamp()) < 5
+
+
+def test_login_with_a_password_over_the_byte_limit_raises_invalid_credentials(
+    settings: Settings,
+) -> None:
+    service = build_service_with_registered_buyer(settings)
+
+    with pytest.raises(InvalidCredentials):
+        service.login(EMAIL, "a" * (PASSWORD_MAX_BYTES + 1))
