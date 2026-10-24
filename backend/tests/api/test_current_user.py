@@ -9,6 +9,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.config import Settings
 from app.dependencies import get_current_user
+from app.domain.role import Role
 from app.models.user import User
 from app.security.tokens import create_access_token
 
@@ -128,3 +129,17 @@ def test_a_signed_token_with_a_non_numeric_sub_returns_401(
     response = probe_client.get(PROBE_URL, headers=bearer(token))
 
     assert response.status_code == 401
+
+
+def test_the_role_comes_from_the_database_not_the_token(
+    probe_client: TestClient,
+    rolled_back_session_factory: sessionmaker[Session],
+    buyer_token: str,
+) -> None:
+    with rolled_back_session_factory() as session:
+        session.query(User).update({User.role: Role.ADMIN})
+        session.commit()
+
+    response = probe_client.get(PROBE_URL, headers=bearer(buyer_token))
+
+    assert response.json()["role"] == "admin"
