@@ -9,7 +9,6 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.domain.errors import OutOfStock
 from app.domain.role import Role
 from app.models.purchase import Purchase
-from app.models.user import User
 from app.models.vehicle import Vehicle
 from app.repositories.purchase_repository import SqlPurchaseRepository
 from app.repositories.user_repository import SqlUserRepository
@@ -45,8 +44,9 @@ def stock_vehicle(session_factory: sessionmaker[Session], quantity: int) -> int:
 
 def add_buyer(session_factory: sessionmaker[Session]) -> int:
     with session_factory() as session:
-        buyer = User(email="buyer@example.com", password_hash="not-a-real-hash", role=Role.CUSTOMER)
-        buyer_id = SqlUserRepository(session).add(buyer).id
+        buyer_id = (
+            SqlUserRepository(session).add("buyer@example.com", "not-a-real-hash", Role.CUSTOMER).id
+        )
         session.commit()
     return buyer_id
 

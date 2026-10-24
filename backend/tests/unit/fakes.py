@@ -1,3 +1,4 @@
+from app.domain.role import Role
 from app.limits import QUANTITY_MAX
 from app.models.user import User
 from app.models.vehicle import Vehicle
@@ -7,9 +8,16 @@ class FakeUserRepository:
     def __init__(self) -> None:
         self.users: list[User] = []
 
-    def add(self, user: User) -> User:
+    def add(self, email: str, password_hash: str, role: str) -> User:
+        user = User(email=email, password_hash=password_hash, role=role)
         user.id = len(self.users) + 1
         self.users.append(user)
+        return user
+
+    def make_admin(self, user_id: int, password_hash: str) -> User:
+        user = next(user for user in self.users if user.id == user_id)
+        user.role = Role.ADMIN
+        user.password_hash = password_hash
         return user
 
     def find_by_email(self, email: str) -> User | None:

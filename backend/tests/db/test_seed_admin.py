@@ -41,13 +41,7 @@ def test_an_existing_customer_with_the_admin_email_becomes_the_admin_with_the_ne
 ) -> None:
     with rolled_back_session_factory() as session:
         users = SqlUserRepository(session)
-        users.add(
-            User(
-                email=ADMIN_EMAIL,
-                password_hash=hash_password("the first registrant's password"),
-                role=Role.CUSTOMER,
-            )
-        )
+        users.add(ADMIN_EMAIL, hash_password("the first registrant's password"), Role.CUSTOMER)
 
         seed_admin(users, admin_settings)
 

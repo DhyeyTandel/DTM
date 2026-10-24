@@ -4,12 +4,7 @@ from sqlalchemy.orm import Session, sessionmaker
 
 from app.domain.errors import EmailAlreadyRegistered
 from app.domain.role import Role
-from app.models.user import User
 from app.repositories.user_repository import SqlUserRepository
-
-
-def build_user(email: str) -> User:
-    return User(email=email, password_hash="not-a-real-hash", role=Role.CUSTOMER)
 
 
 def test_inserting_the_same_email_twice_raises_email_already_registered(
@@ -17,19 +12,15 @@ def test_inserting_the_same_email_twice_raises_email_already_registered(
 ) -> None:
     with rolled_back_session_factory() as session:
         users = SqlUserRepository(session)
-        users.add(build_user("buyer@example.com"))
+        users.add("buyer@example.com", "not-a-real-hash", Role.CUSTOMER)
 
         with pytest.raises(EmailAlreadyRegistered):
-            users.add(build_user("buyer@example.com"))
+            users.add("buyer@example.com", "not-a-real-hash", Role.CUSTOMER)
 
 
 def test_a_role_outside_the_list_is_refused_and_not_reported_as_a_duplicate_email(
     rolled_back_session_factory: sessionmaker[Session],
 ) -> None:
-    unknown_role_user = User(
-        email="buyer@example.com", password_hash="not-a-real-hash", role="superuser"
-    )
-
     with rolled_back_session_factory() as session:
         with pytest.raises(IntegrityError):
-            SqlUserRepository(session).add(unknown_role_user)
+            SqlUserRepository(session).add("buyer@example.com", "not-a-real-hash", "superuser")

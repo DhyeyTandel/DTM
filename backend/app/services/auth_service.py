@@ -19,8 +19,7 @@ class AuthService:
         email = normalise_email(email)
         if self.users.find_by_email(email) is not None:
             raise EmailAlreadyRegistered
-        user = User(email=email, password_hash=hash_password(password), role=Role.CUSTOMER)
-        return self.users.add(user)
+        return self.users.add(email, hash_password(password), Role.CUSTOMER)
 
     def login(self, email: str, password: str) -> str:
         user = self.users.find_by_email(normalise_email(email))

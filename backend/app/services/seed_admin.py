@@ -20,9 +20,7 @@ def seed_admin(users: UserRepository, settings: Settings) -> User:
         raise InvalidAdminSettings(BAD_PASSWORD_MESSAGE)
     email = normalise_email(settings.admin_email)
     password_hash = hash_password(settings.admin_password)
-    admin = users.find_by_email(email)
-    if admin is None:
-        return users.add(User(email=email, password_hash=password_hash, role=Role.ADMIN))
-    admin.role = Role.ADMIN
-    admin.password_hash = password_hash
-    return admin
+    existing = users.find_by_email(email)
+    if existing is None:
+        return users.add(email, password_hash, Role.ADMIN)
+    return users.make_admin(existing.id, password_hash)

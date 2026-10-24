@@ -6,7 +6,6 @@ from sqlalchemy.orm import Session, sessionmaker
 from app.domain.errors import OutOfStock, VehicleNotFound
 from app.domain.role import Role
 from app.models.purchase import Purchase
-from app.models.user import User
 from app.models.vehicle import Vehicle
 from app.repositories.purchase_repository import SqlPurchaseRepository
 from app.repositories.user_repository import SqlUserRepository
@@ -18,8 +17,7 @@ UNKNOWN_ID = 999_999
 
 
 def add_buyer(session: Session) -> int:
-    buyer = User(email="buyer@example.com", password_hash="not-a-real-hash", role=Role.CUSTOMER)
-    return SqlUserRepository(session).add(buyer).id
+    return SqlUserRepository(session).add("buyer@example.com", "not-a-real-hash", Role.CUSTOMER).id
 
 
 def add_vehicle(session: Session, quantity: int = 5) -> int:
