@@ -3,6 +3,7 @@ from typing import Protocol
 from sqlalchemy import delete, select, update
 from sqlalchemy.orm import Session
 
+from app.limits import QUANTITY_MAX
 from app.models.vehicle import Vehicle
 
 
@@ -25,6 +26,8 @@ class VehicleRepository(Protocol):
     def delete(self, vehicle_id: int) -> bool: ...
 
     def purchase(self, vehicle_id: int) -> Vehicle | None: ...
+
+    def restock(self, vehicle_id: int, amount: int) -> Vehicle | None: ...
 
     def exists(self, vehicle_id: int) -> bool: ...
 
@@ -81,6 +84,16 @@ class SqlVehicleRepository:
             update(Vehicle)
             .where(Vehicle.id == vehicle_id, Vehicle.quantity > 0)
             .values(quantity=Vehicle.quantity - 1)
+            .returning(Vehicle)
+        )
+        return self.session.scalars(statement).one_or_none()
+
+    def restock(self, vehicle_id: int, amount: int) -> Vehicle | None:
+        # The cap check and the addition are one statement, like purchase.
+        statement = (
+            update(Vehicle)
+            .where(Vehicle.id == vehicle_id, Vehicle.quantity + amount <= QUANTITY_MAX)
+            .values(quantity=Vehicle.quantity + amount)
             .returning(Vehicle)
         )
         return self.session.scalars(statement).one_or_none()

@@ -1,3 +1,4 @@
+from app.limits import QUANTITY_MAX
 from app.models.user import User
 from app.models.vehicle import Vehicle
 
@@ -60,6 +61,13 @@ class FakeVehicleRepository:
         if vehicle is None or vehicle.quantity == 0:
             return None
         vehicle.quantity -= 1
+        return vehicle
+
+    def restock(self, vehicle_id: int, amount: int) -> Vehicle | None:
+        vehicle = next((vehicle for vehicle in self.vehicles if vehicle.id == vehicle_id), None)
+        if vehicle is None or vehicle.quantity + amount > QUANTITY_MAX:
+            return None
+        vehicle.quantity += amount
         return vehicle
 
     def exists(self, vehicle_id: int) -> bool:

@@ -1,5 +1,11 @@
 from app.domain.category import Category
-from app.domain.errors import InvalidPriceRange, VehicleNotFound
+from app.domain.errors import (
+    InvalidPriceRange,
+    InvalidQuantity,
+    StockLimitExceeded,
+    VehicleNotFound,
+)
+from app.limits import RESTOCK_AMOUNT_MAX, RESTOCK_AMOUNT_MIN
 from app.models.vehicle import Vehicle
 from app.repositories.vehicle_repository import VehicleRepository
 
@@ -50,3 +56,14 @@ class VehicleService:
     def delete(self, vehicle_id: int) -> None:
         if not self.vehicles.delete(vehicle_id):
             raise VehicleNotFound
+
+    def restock(self, vehicle_id: int, amount: int) -> Vehicle:
+        if not RESTOCK_AMOUNT_MIN <= amount <= RESTOCK_AMOUNT_MAX:
+            raise InvalidQuantity
+        vehicle = self.vehicles.restock(vehicle_id, amount)
+        if vehicle is not None:
+            return vehicle
+        # Only picks which error to raise. Whether the restock happened was decided by the update.
+        if not self.vehicles.exists(vehicle_id):
+            raise VehicleNotFound
+        raise StockLimitExceeded
