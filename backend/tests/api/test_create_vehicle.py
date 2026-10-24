@@ -35,6 +35,7 @@ def test_a_customer_adding_a_vehicle_gets_403(
     response = client.post(VEHICLES_URL, json=VALID_VEHICLE, headers=buyer_headers)
 
     assert response.status_code == 403
+    assert "detail" in response.json()
 
 
 def test_two_vehicles_get_different_ids(client: TestClient, admin_headers: dict[str, str]) -> None:
