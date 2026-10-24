@@ -1,11 +1,11 @@
 import pytest
-from app.models.purchase import Purchase
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session, sessionmaker
 
 from app.domain.errors import OutOfStock, VehicleNotFound
 from app.domain.role import Role
+from app.models.purchase import Purchase
 from app.models.user import User
 from app.models.vehicle import Vehicle
 from app.repositories.purchase_repository import SqlPurchaseRepository

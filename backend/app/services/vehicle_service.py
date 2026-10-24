@@ -1,5 +1,5 @@
 from app.domain.category import Category
-from app.domain.errors import InvalidPriceRange, OutOfStock, VehicleNotFound
+from app.domain.errors import InvalidPriceRange, VehicleNotFound
 from app.models.vehicle import Vehicle
 from app.repositories.vehicle_repository import VehicleRepository
 
@@ -50,12 +50,3 @@ class VehicleService:
     def delete(self, vehicle_id: int) -> None:
         if not self.vehicles.delete(vehicle_id):
             raise VehicleNotFound
-
-    def purchase(self, vehicle_id: int) -> Vehicle:
-        vehicle = self.vehicles.purchase(vehicle_id)
-        if vehicle is not None:
-            return vehicle
-        # Only picks which error to raise. Whether the purchase happened was decided by the update.
-        if not self.vehicles.exists(vehicle_id):
-            raise VehicleNotFound
-        raise OutOfStock
