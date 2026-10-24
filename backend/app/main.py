@@ -4,7 +4,7 @@ from app.config import Settings
 from app.database import build_session_factory
 from app.domain.errors import DomainError
 from app.error_handlers import handle_domain_error
-from app.routers import auth, health
+from app.routers import auth, health, vehicles
 
 API_PREFIX = "/api"
 
@@ -16,6 +16,7 @@ def create_app(settings: Settings) -> FastAPI:
     app.add_exception_handler(DomainError, handle_domain_error)
     app.include_router(health.router, prefix=API_PREFIX)
     app.include_router(auth.router, prefix=API_PREFIX)
+    app.include_router(vehicles.router, prefix=API_PREFIX)
     return app
 
 

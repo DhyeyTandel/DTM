@@ -10,8 +10,10 @@ from app.domain.errors import AdminRequired, NotAuthenticated
 from app.domain.role import Role
 from app.models.user import User
 from app.repositories.user_repository import SqlUserRepository, UserRepository
+from app.repositories.vehicle_repository import SqlVehicleRepository, VehicleRepository
 from app.security.tokens import read_user_id
 from app.services.auth_service import AuthService
+from app.services.vehicle_service import VehicleService
 
 
 def get_session(request: Request) -> Iterator[Session]:
@@ -33,6 +35,16 @@ def get_settings(request: Request) -> Settings:
 
 def get_user_repository(session: SessionDependency) -> UserRepository:
     return SqlUserRepository(session)
+
+
+def get_vehicle_repository(session: SessionDependency) -> VehicleRepository:
+    return SqlVehicleRepository(session)
+
+
+def get_vehicle_service(
+    vehicles: Annotated[VehicleRepository, Depends(get_vehicle_repository)],
+) -> VehicleService:
+    return VehicleService(vehicles)
 
 
 def get_auth_service(
