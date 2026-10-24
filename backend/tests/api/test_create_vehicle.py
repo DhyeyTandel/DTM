@@ -66,3 +66,12 @@ def test_a_body_missing_a_field_returns_422(
     response = client.post(VEHICLES_URL, json=body, headers=admin_headers)
 
     assert response.status_code == 422
+
+
+@pytest.mark.parametrize("field", ["make", "model"])
+def test_an_empty_make_or_model_returns_422(
+    client: TestClient, admin_headers: dict[str, str], field: str
+) -> None:
+    response = client.post(VEHICLES_URL, json={**VALID_VEHICLE, field: ""}, headers=admin_headers)
+
+    assert response.status_code == 422
