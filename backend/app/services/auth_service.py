@@ -1,11 +1,11 @@
 from datetime import timedelta
 
 from app.config import Settings
-from app.domain.errors import EmailAlreadyRegistered
+from app.domain.errors import EmailAlreadyRegistered, InvalidCredentials
 from app.domain.role import Role
 from app.models.user import User
 from app.repositories.user_repository import UserRepository
-from app.security.passwords import hash_password
+from app.security.passwords import hash_password, verify_password
 from app.security.tokens import create_access_token
 
 
@@ -28,6 +28,8 @@ class AuthService:
     def login(self, email: str, password: str) -> str:
         user = self.users.find_by_email(normalise_email(email))
         assert user is not None
+        if not verify_password(password, user.password_hash):
+            raise InvalidCredentials
         return create_access_token(
             user.id,
             self.settings.secret_key,
