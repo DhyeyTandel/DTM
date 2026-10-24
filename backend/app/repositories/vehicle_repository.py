@@ -7,7 +7,7 @@ from app.models.vehicle import Vehicle
 
 
 class VehicleRepository(Protocol):
-    def add(self, vehicle: Vehicle) -> Vehicle: ...
+    def add(self, make: str, model: str, category: str, price: int, quantity: int) -> Vehicle: ...
 
     def search(
         self,
@@ -29,7 +29,8 @@ class SqlVehicleRepository:
     def __init__(self, session: Session) -> None:
         self.session = session
 
-    def add(self, vehicle: Vehicle) -> Vehicle:
+    def add(self, make: str, model: str, category: str, price: int, quantity: int) -> Vehicle:
+        vehicle = Vehicle(make=make, model=model, category=category, price=price, quantity=quantity)
         self.session.add(vehicle)
         self.session.flush()
         return vehicle

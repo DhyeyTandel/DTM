@@ -1,3 +1,5 @@
+from typing import Any
+
 import pytest
 from psycopg.errors import CheckViolation
 from sqlalchemy import update
@@ -9,15 +11,15 @@ from app.models.vehicle import Vehicle
 from app.repositories.vehicle_repository import SqlVehicleRepository
 
 
-def build_vehicle(**changes: object) -> Vehicle:
-    fields: dict[str, object] = {
+def build_vehicle(**changes: object) -> dict[str, Any]:
+    fields: dict[str, Any] = {
         "make": "Toyota",
         "model": "Corolla",
         "category": "sedan",
         "price": 1_500_000_00,
         "quantity": 5,
     }
-    return Vehicle(**{**fields, **changes})
+    return {**fields, **changes}
 
 
 @pytest.mark.parametrize(
@@ -39,7 +41,7 @@ def test_the_database_refuses_a_vehicle_that_breaks_a_check_constraint(
 ) -> None:
     with rolled_back_session_factory() as session:
         with pytest.raises(IntegrityError) as refused:
-            SqlVehicleRepository(session).add(build_vehicle(**changes))
+            SqlVehicleRepository(session).add(**build_vehicle(**changes))
 
     assert isinstance(refused.value.orig, CheckViolation)
     assert refused.value.orig.diag.constraint_name == constraint
@@ -49,7 +51,7 @@ def test_updating_changes_only_the_four_editable_columns(
     committed_session_factory: sessionmaker[Session],
 ) -> None:
     with committed_session_factory() as setup_session:
-        vehicle = SqlVehicleRepository(setup_session).add(build_vehicle(quantity=5))
+        vehicle = SqlVehicleRepository(setup_session).add(**build_vehicle(quantity=5))
         vehicle_id = vehicle.id
         setup_session.commit()
 
@@ -75,9 +77,9 @@ def test_updating_changes_only_the_four_editable_columns(
     assert returned_quantity == 4
 
 
-def add_vehicles(session: Session, *vehicles: Vehicle) -> list[Vehicle]:
+def add_vehicles(session: Session, *vehicles: dict[str, Any]) -> list[Vehicle]:
     repository = SqlVehicleRepository(session)
-    return [repository.add(vehicle) for vehicle in vehicles]
+    return [repository.add(**fields) for fields in vehicles]
 
 
 def test_a_search_with_no_filters_returns_every_vehicle(
