@@ -124,3 +124,16 @@ def test_a_search_by_category_returns_only_that_category(
         found = SqlVehicleRepository(session).search(category="suv")
 
         assert found == [suv]
+
+
+def test_a_search_by_minimum_price_returns_vehicles_at_or_above_it(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        _cheap, expensive = add_vehicles(
+            session, build_vehicle(price=1_000_000_00), build_vehicle(price=2_000_000_00)
+        )
+
+        found = SqlVehicleRepository(session).search(min_price=1_500_000_00)
+
+        assert found == [expensive]
