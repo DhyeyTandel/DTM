@@ -50,3 +50,10 @@ def delete_vehicle(
     vehicle_id: VehicleId, service: Annotated[VehicleService, Depends(get_vehicle_service)]
 ) -> None:
     service.delete(vehicle_id)
+
+
+@router.get("/search", response_model=list[VehicleResponse])
+def search_vehicles(
+    service: Annotated[VehicleService, Depends(get_vehicle_service)], make: str | None = None
+) -> list[Vehicle]:
+    return service.search(make=make)
