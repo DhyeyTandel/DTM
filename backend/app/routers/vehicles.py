@@ -18,7 +18,7 @@ from app.limits import (
 )
 from app.models.user import User
 from app.models.vehicle import Vehicle
-from app.schemas.vehicle import VehicleCreate, VehicleResponse, VehicleUpdate
+from app.schemas.vehicle import RestockRequest, VehicleCreate, VehicleResponse, VehicleUpdate
 from app.services.purchase_service import PurchaseService
 from app.services.vehicle_service import VehicleService
 
@@ -91,3 +91,14 @@ def purchase_vehicle(
     service: Annotated[PurchaseService, Depends(get_purchase_service)],
 ) -> Vehicle:
     return service.purchase(user.id, vehicle_id)
+
+
+@router.post(
+    "/{vehicle_id}/restock", response_model=VehicleResponse, dependencies=[Depends(require_admin)]
+)
+def restock_vehicle(
+    vehicle_id: VehicleId,
+    body: RestockRequest,
+    service: Annotated[VehicleService, Depends(get_vehicle_service)],
+) -> Vehicle:
+    return service.restock(vehicle_id, body.amount)

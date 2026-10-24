@@ -10,6 +10,8 @@ from app.limits import (
     PRICE_MIN,
     QUANTITY_MAX,
     QUANTITY_MIN,
+    RESTOCK_AMOUNT_MAX,
+    RESTOCK_AMOUNT_MIN,
 )
 from app.schemas.base import RequestSchema
 
@@ -21,6 +23,8 @@ Model = Annotated[
 ]
 Price = Annotated[int, Field(strict=True, ge=PRICE_MIN, le=PRICE_MAX)]
 Quantity = Annotated[int, Field(strict=True, ge=QUANTITY_MIN, le=QUANTITY_MAX)]
+
+RestockAmount = Annotated[int, Field(strict=True, ge=RESTOCK_AMOUNT_MIN, le=RESTOCK_AMOUNT_MAX)]
 
 
 class VehicleCreate(RequestSchema):
@@ -36,6 +40,10 @@ class VehicleUpdate(RequestSchema):
     model: Model
     category: Category
     price: Price
+
+
+class RestockRequest(RequestSchema):
+    amount: RestockAmount
 
 
 class VehicleResponse(BaseModel):
