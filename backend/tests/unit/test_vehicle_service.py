@@ -1,7 +1,7 @@
 import pytest
 
 from app.domain.category import Category
-from app.domain.errors import VehicleNotFound
+from app.domain.errors import InvalidPriceRange, VehicleNotFound
 from app.services.vehicle_service import VehicleService
 from tests.unit.fakes import FakeVehicleRepository
 
@@ -55,3 +55,10 @@ def test_deleting_a_missing_vehicle_raises_vehicle_not_found() -> None:
 
     with pytest.raises(VehicleNotFound):
         service.delete(1)
+
+
+def test_a_minimum_price_above_the_maximum_raises_invalid_price_range() -> None:
+    service = VehicleService(FakeVehicleRepository())
+
+    with pytest.raises(InvalidPriceRange):
+        service.search(min_price=2_000_000_00, max_price=1_000_000_00)
