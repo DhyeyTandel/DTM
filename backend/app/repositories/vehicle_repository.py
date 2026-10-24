@@ -17,6 +17,7 @@ class VehicleRepository(Protocol):
         model: str | None = None,
         category: str | None = None,
         min_price: int | None = None,
+        max_price: int | None = None,
     ) -> list[Vehicle]: ...
 
     def update(
@@ -44,6 +45,7 @@ class SqlVehicleRepository:
         model: str | None = None,
         category: str | None = None,
         min_price: int | None = None,
+        max_price: int | None = None,
     ) -> list[Vehicle]:
         statement = select(Vehicle).order_by(Vehicle.id)
         if make is not None:
@@ -54,6 +56,8 @@ class SqlVehicleRepository:
             statement = statement.where(Vehicle.category == category)
         if min_price is not None:
             statement = statement.where(Vehicle.price >= min_price)
+        if max_price is not None:
+            statement = statement.where(Vehicle.price <= max_price)
         return list(self.session.scalars(statement))
 
     def update(

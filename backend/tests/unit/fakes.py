@@ -36,6 +36,7 @@ class FakeVehicleRepository:
         model: str | None = None,
         category: str | None = None,
         min_price: int | None = None,
+        max_price: int | None = None,
     ) -> list[Vehicle]:
         return list(self.vehicles)
 
