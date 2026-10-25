@@ -6,6 +6,7 @@ import { InventoryPage } from './pages/InventoryPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { StylePage } from './pages/StylePage'
+import { VehicleDetailPage } from './pages/VehicleDetailPage'
 import { VehicleFormPage } from './pages/VehicleFormPage'
 
 export function App() {
@@ -17,6 +18,7 @@ export function App() {
         <Route path="/style" element={<StylePage />} />
         <Route element={<RequireAuth />}>
           <Route path="/" element={<InventoryPage />} />
+          <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
           <Route element={<RequireAdmin />}>
             <Route path="/admin/vehicles/new" element={<VehicleFormPage />} />
           </Route>

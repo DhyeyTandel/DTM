@@ -63,7 +63,8 @@ test('buying from the vehicle page shows the count the server returned', async (
     http.post('/api/vehicles/12/purchase', () => HttpResponse.json({ ...honda, quantity: 1 })),
   )
   renderApp('/vehicles/12', 'customer')
-  const page = within(await screen.findByRole('main'))
+  await screen.findByRole('heading', { level: 1, name: 'Honda City' })
+  const page = within(screen.getByRole('main'))
 
   await userEvent.click(page.getByRole('button', { name: /purchase/i }))
 
