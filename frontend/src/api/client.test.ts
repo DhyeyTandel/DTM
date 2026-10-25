@@ -1,7 +1,7 @@
 import { http, HttpResponse } from 'msw'
 import { expect, test } from 'vitest'
 import { server } from '../test/setup'
-import { getToken, setToken } from '../auth/token'
+import { TOKEN_STORAGE_KEY, getToken } from '../auth/token'
 import { ApiError, request } from './client'
 
 function echoAuthorizationHeader() {
@@ -14,7 +14,7 @@ function echoAuthorizationHeader() {
 
 test('a request sends the stored token as a bearer header', async () => {
   echoAuthorizationHeader()
-  setToken('abc.def.ghi')
+  localStorage.setItem(TOKEN_STORAGE_KEY, 'abc.def.ghi')
 
   const response = await request<{ authorization: string | null }>('/echo')
 
@@ -31,7 +31,7 @@ test('a request with no stored token sends no authorization header', async () =>
 
 test('a 401 response clears the stored token', async () => {
   server.use(http.get('/api/vehicles', () => new HttpResponse(null, { status: 401 })))
-  setToken('expired.token')
+  localStorage.setItem(TOKEN_STORAGE_KEY, 'expired.token')
 
   await request('/vehicles').catch(() => undefined)
 
@@ -40,14 +40,12 @@ test('a 401 response clears the stored token', async () => {
 
 test('a response with an error status rejects with an error that carries that status', async () => {
   server.use(
-    http.post('/api/vehicles/1/purchase', () =>
+    http.get('/api/vehicles/1', () =>
       HttpResponse.json({ detail: 'Vehicle is out of stock' }, { status: 409 }),
     ),
   )
 
-  const failure = await request('/vehicles/1/purchase', { method: 'POST' }).catch(
-    (error: unknown) => error,
-  )
+  const failure = await request('/vehicles/1').catch((error: unknown) => error)
 
   expect(failure).toBeInstanceOf(ApiError)
   expect(failure).toMatchObject({ status: 409, message: 'Vehicle is out of stock' })

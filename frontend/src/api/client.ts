@@ -12,22 +12,14 @@ export class ApiError extends Error {
   }
 }
 
-interface RequestOptions {
-  method?: 'GET' | 'POST'
-}
-
 async function errorMessage(response: Response): Promise<string> {
   const body = (await response.json().catch(() => null)) as { detail?: unknown } | null
   return typeof body?.detail === 'string' ? body.detail : response.statusText
 }
 
-export async function request<T>(
-  path: string,
-  { method = 'GET' }: RequestOptions = {},
-): Promise<T> {
+export async function request<T>(path: string): Promise<T> {
   const token = getToken()
   const response = await fetch(new URL(`${API_BASE}${path}`, window.location.origin), {
-    method,
     headers: token ? { Authorization: `Bearer ${token}` } : {},
   })
   if (response.status === UNAUTHORIZED) {
