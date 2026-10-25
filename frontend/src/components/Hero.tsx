@@ -1,7 +1,7 @@
 import type { Tab } from '../lib/listing'
 import { STATUS_NAMES } from '../lib/stock'
 
-const HERO_PHOTO = '/images/toyota-fortuner.jpg'
+const HERO_PHOTO = '/images/vehicles/toyota-fortuner.jpg'
 const HERO_SCRIM = 'linear-gradient(rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.82))'
 
 const TABS: { value: Tab; label: string }[] = [

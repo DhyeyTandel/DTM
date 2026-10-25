@@ -17,6 +17,13 @@ test('a visitor opening any app page is sent to the login page', async () => {
   })
 })
 
+test('an address that does not exist is sent to the inventory, and so to login for a visitor', async () => {
+  renderApp('/no/such/page')
+  await waitFor(() => {
+    expect(whereAmI()).toHaveTextContent('/login')
+  })
+})
+
 test('a customer opening an admin page is sent to the inventory', async () => {
   server.use(http.get('/api/vehicles', () => HttpResponse.json([])))
   renderApp('/admin/vehicles/new', 'customer')
