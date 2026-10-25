@@ -4,7 +4,7 @@ import type { CardNotice } from '../lib/cardNotice'
 import { categoryLabel } from '../lib/categories'
 import { formatStockNumber } from '../lib/stockNumber'
 import { OUT_OF_STOCK_LABEL, isSoldOut } from '../lib/stock'
-import { Button } from './Button'
+import { Button, ButtonLink } from './Button'
 import { NoticeText } from './NoticeText'
 import { PriceAndStatus } from './PriceAndStatus'
 import { VehiclePhoto } from './VehiclePhoto'
@@ -14,16 +14,9 @@ interface VehicleCardProps {
   purchasing?: boolean
   notice?: CardNotice
   onPurchase: (vehicleId: number) => void
-  onDetails: (vehicleId: number) => void
 }
 
-export function VehicleCard({
-  vehicle,
-  purchasing = false,
-  notice,
-  onPurchase,
-  onDetails,
-}: VehicleCardProps) {
+export function VehicleCard({ vehicle, purchasing = false, notice, onPurchase }: VehicleCardProps) {
   const titleId = useId()
   const name = `${vehicle.make} ${vehicle.model}`
   const soldOut = isSoldOut(vehicle.quantity)
@@ -55,15 +48,13 @@ export function VehicleCard({
             >
               {soldOut ? OUT_OF_STOCK_LABEL : 'Purchase'}
             </Button>
-            <Button
+            <ButtonLink
               variant="dark"
+              to={`/vehicles/${String(vehicle.id)}`}
               aria-describedby={titleId}
-              onClick={() => {
-                onDetails(vehicle.id)
-              }}
             >
               Details
-            </Button>
+            </ButtonLink>
           </div>
         </div>
       </div>

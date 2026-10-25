@@ -1,4 +1,5 @@
 import type { ComponentProps } from 'react'
+import { Link, type LinkProps } from 'react-router'
 
 type Variant = 'primary' | 'dark' | 'outline'
 
@@ -10,16 +11,22 @@ const variantClasses: Record<Variant, string> = {
     'border-ink text-ink hover:bg-ink hover:text-canvas disabled:border-line disabled:text-ink-muted',
 }
 
+function buttonClasses(variant: Variant, className: string): string {
+  return `inline-flex min-h-11 cursor-pointer items-center justify-center border px-3 text-[0.9375rem] font-semibold tracking-[0.04em] whitespace-nowrap transition-colors disabled:cursor-not-allowed ${variantClasses[variant]} ${className}`
+}
+
 interface ButtonProps extends ComponentProps<'button'> {
   variant?: Variant
 }
 
 export function Button({ variant = 'primary', className = '', ...props }: ButtonProps) {
-  return (
-    <button
-      type="button"
-      className={`min-h-11 cursor-pointer border px-3 text-[0.9375rem] whitespace-nowrap font-semibold tracking-[0.04em] transition-colors disabled:cursor-not-allowed ${variantClasses[variant]} ${className}`}
-      {...props}
-    />
-  )
+  return <button type="button" className={buttonClasses(variant, className)} {...props} />
+}
+
+interface ButtonLinkProps extends LinkProps {
+  variant?: Variant
+}
+
+export function ButtonLink({ variant = 'primary', className = '', ...props }: ButtonLinkProps) {
+  return <Link className={buttonClasses(variant, className)} {...props} />
 }

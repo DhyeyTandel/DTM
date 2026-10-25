@@ -15,6 +15,7 @@ export function RegisterPage() {
       title="Create account"
       submitLabel="Create account"
       pending={register.isPending}
+      passwordAutoComplete="new-password"
       serverError={register.error?.message ?? null}
       onSubmit={(email, password) => {
         register.mutate(

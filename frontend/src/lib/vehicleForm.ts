@@ -1,6 +1,7 @@
 import { CATEGORIES, type Category } from './categories'
 import { PAISE_PER_RUPEE } from './money'
 
+// These limits mirror backend/app/limits.py. Change them together.
 export const MAKE_MAX_LENGTH = 50
 export const MODEL_MAX_LENGTH = 50
 export const PRICE_MAX_PAISE = 10 ** 11
@@ -11,7 +12,6 @@ export const RESTOCK_AMOUNT_MAX = 1000
 
 const IMAGE_URL_SCHEME = 'https://'
 const IMAGE_PATH_PREFIX = '/images/'
-const IMAGE_PATH_FORBIDDEN = '..'
 
 export interface VehicleFormValues {
   make: string
@@ -49,19 +49,23 @@ function textError(value: string, name: string, maxLength: number): string | und
     : undefined
 }
 
+const PRICE_PATTERN = /^\d+(\.\d{1,2})?$/
+const WHOLE_NUMBER_PATTERN = /^\d+$/
+const IMAGE_PATH_FORBIDDEN = ['..', '%', '\\']
+const IMAGE_ADDRESS_HINT = 'Use an https address or a path that starts with /images/.'
+
 function priceError(rupees: string): string | undefined {
-  const amount = Number(rupees)
-  if (rupees.trim() === '' || Number.isNaN(amount) || amount <= 0)
-    return 'Enter a price above zero.'
-  return Math.round(amount * PAISE_PER_RUPEE) > PRICE_MAX_PAISE
+  const trimmed = rupees.trim()
+  if (!PRICE_PATTERN.test(trimmed) || Number(trimmed) <= 0) return 'Enter a price above zero.'
+  return Math.round(Number(trimmed) * PAISE_PER_RUPEE) > PRICE_MAX_PAISE
     ? 'That price is too high.'
     : undefined
 }
 
 function quantityError(quantity: string): string | undefined {
-  if (quantity.trim() === '') return 'Enter how many are in stock.'
-  const amount = Number(quantity)
-  const valid = Number.isInteger(amount) && amount >= 0 && amount <= QUANTITY_MAX
+  const trimmed = quantity.trim()
+  if (trimmed === '') return 'Enter how many are in stock.'
+  const valid = WHOLE_NUMBER_PATTERN.test(trimmed) && Number(trimmed) <= QUANTITY_MAX
   return valid ? undefined : `Quantity must be a whole number from 0 to ${String(QUANTITY_MAX)}.`
 }
 
@@ -70,15 +74,16 @@ function imageUrlError(imageUrl: string): string | undefined {
   if (imageUrl.length > IMAGE_URL_MAX_LENGTH) {
     return `The address can be up to ${String(IMAGE_URL_MAX_LENGTH)} characters.`
   }
-  const allowedStart =
-    imageUrl.startsWith(IMAGE_URL_SCHEME) || imageUrl.startsWith(IMAGE_PATH_PREFIX)
-  const isPathWithDots =
-    imageUrl.startsWith(IMAGE_PATH_PREFIX) && imageUrl.includes(IMAGE_PATH_FORBIDDEN)
-  const hasSpace = /\s/.test(imageUrl)
-  const hasNothingAfterStart = imageUrl === IMAGE_URL_SCHEME || imageUrl === IMAGE_PATH_PREFIX
-  return allowedStart && !isPathWithDots && !hasSpace && !hasNothingAfterStart
-    ? undefined
-    : 'Use an https address or a path that starts with /images/.'
+  if (/\s/.test(imageUrl)) return IMAGE_ADDRESS_HINT
+  if (imageUrl.startsWith(IMAGE_URL_SCHEME)) {
+    return imageUrl.length > IMAGE_URL_SCHEME.length ? undefined : IMAGE_ADDRESS_HINT
+  }
+  if (!imageUrl.startsWith(IMAGE_PATH_PREFIX) || imageUrl === IMAGE_PATH_PREFIX) {
+    return IMAGE_ADDRESS_HINT
+  }
+  return IMAGE_PATH_FORBIDDEN.some((forbidden) => imageUrl.includes(forbidden))
+    ? IMAGE_ADDRESS_HINT
+    : undefined
 }
 
 export function checkVehicleForm(
@@ -109,12 +114,11 @@ export function toVehicleFields(values: VehicleFormValues): VehicleFields {
 }
 
 export function restockError(amount: string): string | undefined {
-  const value = Number(amount)
+  const trimmed = amount.trim()
   const valid =
-    amount.trim() !== '' &&
-    Number.isInteger(value) &&
-    value >= RESTOCK_AMOUNT_MIN &&
-    value <= RESTOCK_AMOUNT_MAX
+    WHOLE_NUMBER_PATTERN.test(trimmed) &&
+    Number(trimmed) >= RESTOCK_AMOUNT_MIN &&
+    Number(trimmed) <= RESTOCK_AMOUNT_MAX
   return valid
     ? undefined
     : `Enter a whole number from ${String(RESTOCK_AMOUNT_MIN)} to ${String(RESTOCK_AMOUNT_MAX)}.`

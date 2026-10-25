@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import type { Vehicle } from '../api/types'
 import { useDeleteVehicle } from '../hooks/useVehicleAdmin'
@@ -6,15 +6,30 @@ import { Button } from './Button'
 
 export function DeleteVehicle({ vehicle }: { vehicle: Vehicle }) {
   const [confirming, setConfirming] = useState(false)
-  const remove = useDeleteVehicle(vehicle.id)
+  const deleteMutation = useDeleteVehicle(vehicle.id)
   const navigate = useNavigate()
+  const questionId = useId()
+  const deleteButton = useRef<HTMLButtonElement>(null)
+  const cancelButton = useRef<HTMLButtonElement>(null)
+  const hasAsked = useRef(false)
+
+  useEffect(() => {
+    if (!hasAsked.current) return
+    ;(confirming ? cancelButton : deleteButton).current?.focus()
+  }, [confirming])
+
+  function ask(asking: boolean): void {
+    hasAsked.current = true
+    setConfirming(asking)
+  }
 
   if (!confirming) {
     return (
       <Button
+        ref={deleteButton}
         variant="outline"
         onClick={() => {
-          setConfirming(true)
+          ask(true)
         }}
       >
         Delete
@@ -23,15 +38,15 @@ export function DeleteVehicle({ vehicle }: { vehicle: Vehicle }) {
   }
 
   return (
-    <div className="border border-line p-4">
-      <p className="font-semibold">
+    <div role="group" aria-labelledby={questionId} className="border border-line p-4">
+      <p id={questionId} className="font-semibold">
         Delete {vehicle.make} {vehicle.model}? This cannot be undone.
       </p>
       <div className="mt-3 flex gap-2">
         <Button
-          disabled={remove.isPending}
+          disabled={deleteMutation.isPending}
           onClick={() => {
-            remove.mutate(undefined, {
+            deleteMutation.mutate(undefined, {
               onSuccess: () => {
                 void navigate('/')
               },
@@ -41,17 +56,18 @@ export function DeleteVehicle({ vehicle }: { vehicle: Vehicle }) {
           Yes, delete
         </Button>
         <Button
+          ref={cancelButton}
           variant="outline"
           onClick={() => {
-            setConfirming(false)
+            ask(false)
           }}
         >
           Cancel
         </Button>
       </div>
-      {remove.error && (
+      {deleteMutation.error && (
         <p role="alert" className="mt-3 text-error">
-          {remove.error.message}
+          {deleteMutation.error.message}
         </p>
       )}
     </div>

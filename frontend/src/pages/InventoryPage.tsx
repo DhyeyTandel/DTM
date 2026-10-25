@@ -1,4 +1,3 @@
-import { useNavigate } from 'react-router'
 import { Hero } from '../components/Hero'
 import { Listing } from '../components/Listing'
 import { EmptyState, ErrorState, LoadingState } from '../components/PageState'
@@ -9,7 +8,6 @@ import { useVehicles } from '../hooks/useVehicles'
 export function InventoryPage() {
   const { data: vehicles, isPending, isError, error, refetch } = useVehicles()
   const { params, update } = useListingParams()
-  const navigate = useNavigate()
   const { purchase, pendingIds, notices } = usePurchase()
 
   if (isPending) return <LoadingState label="Loading the lot" />
@@ -46,9 +44,6 @@ export function InventoryPage() {
         pendingIds={pendingIds}
         notices={notices}
         onPurchase={purchase}
-        onDetails={(vehicleId) => {
-          void navigate(`/vehicles/${String(vehicleId)}`)
-        }}
       />
     </>
   )

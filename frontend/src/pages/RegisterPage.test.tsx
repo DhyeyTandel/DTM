@@ -54,7 +54,7 @@ test('a successful register sends the user to the login page with a note', async
   expect(screen.getByText('Account created. Sign in to continue.')).toBeInTheDocument()
 })
 
-test('the register password field asks the browser for a new password, and login for the saved one', async () => {
+test('the register password field asks the browser for a new password, and login for the saved one', () => {
   const { unmount } = renderApp('/register')
   expect(screen.getByLabelText('Password')).toHaveAttribute('autocomplete', 'new-password')
   unmount()

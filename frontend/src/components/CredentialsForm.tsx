@@ -8,6 +8,7 @@ interface CredentialsFormProps {
   submitLabel: string
   notice?: string
   pending: boolean
+  passwordAutoComplete: 'current-password' | 'new-password'
   serverError: string | null
   onSubmit: (email: string, password: string) => void
   footer: ReactNode
@@ -18,6 +19,7 @@ export function CredentialsForm({
   submitLabel,
   notice,
   pending,
+  passwordAutoComplete,
   serverError,
   onSubmit,
   footer,
@@ -54,7 +56,7 @@ export function CredentialsForm({
         <TextField
           label="Password"
           type="password"
-          autoComplete="current-password"
+          autoComplete={passwordAutoComplete}
           value={password}
           error={errors.password ?? undefined}
           onChange={(event) => {

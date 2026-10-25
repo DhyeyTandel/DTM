@@ -20,6 +20,7 @@ export function LoginPage() {
       submitLabel="Sign in"
       notice={state?.registered ? 'Account created. Sign in to continue.' : undefined}
       pending={login.isPending}
+      passwordAutoComplete="current-password"
       serverError={login.error?.message ?? null}
       onSubmit={(email, password) => {
         login.mutate({ email, password })

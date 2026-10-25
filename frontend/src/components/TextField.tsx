@@ -23,7 +23,7 @@ export function TextField({ label, error, ...props }: TextFieldProps) {
         {...props}
       />
       {error && (
-        <p id={errorId} className="text-error">
+        <p id={errorId} role="alert" className="text-error">
           {error}
         </p>
       )}
