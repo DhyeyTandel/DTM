@@ -1,0 +1,80 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/archivo';
+
+/*
+ * Colour roles. Components use the role names (bg-canvas, text-ink), never a hex value, so dark
+ * mode is only a second set of values for the same roles.
+ */
+:root {
+  --color-canvas: #f3f1ec;
+  --color-raised: #e8e5de;
+  --color-line: #cfcbc2;
+  --color-ink: #14150f;
+  --color-ink-muted: #565951;
+  --color-accent: #0e5a3b;
+  --color-accent-hover: #0a472f;
+  --color-on-accent: #ffffff;
+  --color-low: #8a4a00;
+  --color-error: #b3261e;
+}
+
+:root[data-theme='dark'] {
+  --color-canvas: #0f100e;
+  --color-raised: #1a1c19;
+  --color-line: #31342f;
+  --color-ink: #ecebe6;
+  --color-ink-muted: #a2a59d;
+  --color-accent: #62c28f;
+  --color-accent-hover: #7bd0a2;
+  --color-on-accent: #07140d;
+  --color-low: #e2a55a;
+  --color-error: #f2928a;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-canvas: var(--color-canvas);
+  --color-raised: var(--color-raised);
+  --color-line: var(--color-line);
+  --color-ink: var(--color-ink);
+  --color-ink-muted: var(--color-ink-muted);
+  --color-accent: var(--color-accent);
+  --color-accent-hover: var(--color-accent-hover);
+  --color-on-accent: var(--color-on-accent);
+  --color-low: var(--color-low);
+  --color-error: var(--color-error);
+
+  --font-sans: 'Archivo Variable', system-ui, sans-serif;
+
+  --text-body: 1rem;
+  --text-title: 1.25rem;
+  --text-price: 1.75rem;
+  --text-display: clamp(2.25rem, 6vw, 4rem);
+  --radius-control: 0.375rem;
+}
+
+@layer base {
+  html {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    font-size: 100%;
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    min-height: 100dvh;
+    line-height: 1.5;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 3px;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    * {
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
