@@ -1,4 +1,4 @@
-const PAISE_PER_RUPEE = 100
+export const PAISE_PER_RUPEE = 100
 
 const wholeRupees = new Intl.NumberFormat('en-IN', {
   style: 'currency',
