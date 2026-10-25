@@ -122,6 +122,19 @@ The `--env-file` flag is required. Compose only reads a file named `.env` on its
 
 Postgres sets its password when the volume is first created. If the stack ever starts with a blank `POSTGRES_PASSWORD`, fix the env file and recreate the volume with `down -v` before the next `up`.
 
+## Admin
+
+There is one admin account, and it comes from `ADMIN_EMAIL` and `ADMIN_PASSWORD` (`.env.production` in production, `backend/.env` locally). The seed creates it, or promotes the existing user with that email and resets their password. The production api image runs the seed on every start, so to change the admin password, edit the env file and recreate the api container. Registering never creates an admin.
+
+Sign in with those credentials. As admin you can:
+
+- **Add a car.** Use the **Add vehicle** button on the inventory page, or go to `/admin/vehicles/new`.
+- **Edit a car.** Open the car, then use **Edit**, which goes to `/admin/vehicles/{id}/edit`. You can change the make, model, category, price and image, but not the quantity.
+- **Restock.** On the car's page, enter an amount from 1 to 1000 and use **Restock**. Stock cannot go past 10000.
+- **Delete.** On the car's page, use **Delete** and confirm. This cannot be undone.
+
+Customers never see these controls. If one opens an admin page, the app sends them to the inventory, and the api answers 403.
+
 ## API
 
 All routes are under `/api`. Errors are JSON with a `detail` key.
