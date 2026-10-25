@@ -1,8 +1,12 @@
 import { Route, Routes } from 'react-router'
 import { Layout } from './components/Layout'
+import { RequireAdmin } from './components/RequireAdmin'
+import { RequireAuth } from './components/RequireAuth'
+import { InventoryPage } from './pages/InventoryPage'
 import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { StylePage } from './pages/StylePage'
+import { VehicleFormPage } from './pages/VehicleFormPage'
 
 export function App() {
   return (
@@ -11,6 +15,12 @@ export function App() {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/style" element={<StylePage />} />
+        <Route element={<RequireAuth />}>
+          <Route path="/" element={<InventoryPage />} />
+          <Route element={<RequireAdmin />}>
+            <Route path="/admin/vehicles/new" element={<VehicleFormPage />} />
+          </Route>
+        </Route>
       </Route>
     </Routes>
   )
