@@ -1,42 +1,78 @@
 import { useId } from 'react'
 import type { Vehicle } from '../api/types'
+import { categoryLabel } from '../lib/categories'
 import { formatPrice } from '../lib/money'
-import { OUT_OF_STOCK_LABEL, isSoldOut } from '../lib/stock'
+import { formatStockNumber } from '../lib/stockNumber'
+import { OUT_OF_STOCK_LABEL, isSoldOut, stockLabel, stockStatus } from '../lib/stock'
 import { Button } from './Button'
-import { StockLabel } from './StockLabel'
 import { VehiclePhoto } from './VehiclePhoto'
 
 interface VehicleCardProps {
   vehicle: Vehicle
   onPurchase: (vehicleId: number) => void
+  onDetails: (vehicleId: number) => void
 }
 
-export function VehicleCard({ vehicle, onPurchase }: VehicleCardProps) {
+const DOT_CLASSES = {
+  'in-stock': 'bg-ok',
+  low: 'bg-low',
+  'sold-out': 'bg-gone',
+}
+
+export function VehicleCard({ vehicle, onPurchase, onDetails }: VehicleCardProps) {
   const titleId = useId()
   const name = `${vehicle.make} ${vehicle.model}`
   const soldOut = isSoldOut(vehicle.quantity)
 
   return (
-    <article className="flex flex-col">
-      <VehiclePhoto imageUrl={vehicle.image_url} description={name} />
-      <h3 id={titleId} className="mt-4 text-title font-semibold tracking-tight">
-        {name}
-      </h3>
-      <p className="text-ink-muted capitalize">{vehicle.category}</p>
-      <p className="mt-2 text-price font-bold tracking-tight tabular-nums">
-        {formatPrice(vehicle.price)}
-      </p>
-      <StockLabel quantity={vehicle.quantity} />
-      <Button
-        aria-describedby={titleId}
-        disabled={soldOut}
-        onClick={() => {
-          onPurchase(vehicle.id)
-        }}
-        className="mt-4"
-      >
-        {soldOut ? OUT_OF_STOCK_LABEL : 'Purchase'}
-      </Button>
+    <article className="flex h-full flex-col border border-line bg-surface">
+      <VehiclePhoto imageUrl={vehicle.image_url} description={name} quantity={vehicle.quantity} />
+      <div className="flex flex-1 flex-col p-4">
+        <h3 id={titleId} className="font-display text-3xl leading-none font-bold uppercase">
+          <span className="block">{vehicle.make}</span>{' '}
+          <span className="block text-brand-text">{vehicle.model}</span>
+        </h3>
+        <p className="mt-3 flex items-center text-sm text-ink-muted">
+          <span>{formatStockNumber(vehicle.id)}</span>
+          <span aria-hidden="true" className="mx-3 h-4 border-l border-line" />
+          <span>{categoryLabel(vehicle.category)}</span>
+        </p>
+        <p className="mt-5 text-xs font-semibold tracking-widest text-ink-muted uppercase">
+          Ex-showroom price
+        </p>
+        <div className="mt-1 flex items-end justify-between gap-3">
+          <p className="font-display text-4xl leading-none font-bold">
+            {formatPrice(vehicle.price)}
+          </p>
+          <p className="flex items-center gap-2 pb-0.5 whitespace-nowrap">
+            <span
+              aria-hidden="true"
+              className={`size-2.5 rounded-full ${DOT_CLASSES[stockStatus(vehicle.quantity)]}`}
+            />
+            {stockLabel(vehicle.quantity)}
+          </p>
+        </div>
+        <div className="mt-auto grid grid-cols-2 gap-2 border-t border-line pt-4">
+          <Button
+            aria-describedby={titleId}
+            disabled={soldOut}
+            onClick={() => {
+              onPurchase(vehicle.id)
+            }}
+          >
+            {soldOut ? OUT_OF_STOCK_LABEL : 'Purchase'}
+          </Button>
+          <Button
+            variant="outline"
+            aria-describedby={titleId}
+            onClick={() => {
+              onDetails(vehicle.id)
+            }}
+          >
+            Details
+          </Button>
+        </div>
+      </div>
     </article>
   )
 }

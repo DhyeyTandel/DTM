@@ -1,0 +1,58 @@
+import type { Vehicle } from '../api/types'
+
+export const SAMPLE_VEHICLES: Vehicle[] = [
+  {
+    id: 12,
+    make: 'Honda',
+    model: 'City',
+    category: 'sedan',
+    price: 14_49_000_00,
+    quantity: 12,
+    image_url: '/images/honda-city.jpg',
+  },
+  {
+    id: 7,
+    make: 'Toyota',
+    model: 'Fortuner',
+    category: 'suv',
+    price: 38_21_000_00,
+    quantity: 2,
+    image_url: '/images/toyota-fortuner.jpg',
+  },
+  {
+    id: 3,
+    make: 'Maruti Suzuki',
+    model: 'Swift',
+    category: 'hatchback',
+    price: 6_49_000_50,
+    quantity: 0,
+    image_url: '/images/maruti-swift.jpg',
+  },
+  {
+    id: 15,
+    make: 'Mahindra',
+    model: 'XUV700',
+    category: 'suv',
+    price: 18_00_000_00,
+    quantity: 7,
+    image_url: '/images/mahindra-xuv700.jpg',
+  },
+  {
+    id: 2,
+    make: 'Tata',
+    model: 'Tiago',
+    category: 'hatchback',
+    price: 6_00_000_00,
+    quantity: 3,
+    image_url: '/images/tata-tiago.jpg',
+  },
+  {
+    id: 21,
+    make: 'BMW',
+    model: '2 Series Gran Coupe',
+    category: 'coupe',
+    price: 45_00_000_00,
+    quantity: 0,
+    image_url: '/images/bmw-2-series-gran-coupe.jpg',
+  },
+]

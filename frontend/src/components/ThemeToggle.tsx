@@ -14,7 +14,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={switchTheme}
-      className="min-h-11 cursor-pointer px-2 text-ink-muted underline-offset-4 hover:text-ink hover:underline"
+      className="min-h-11 cursor-pointer px-2 text-on-band/80 hover:text-on-band"
     >
       {next === 'dark' ? 'Dark mode' : 'Light mode'}
     </button>
