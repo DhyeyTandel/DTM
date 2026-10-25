@@ -18,7 +18,7 @@ export function FilterSection({ title, children }: FilterSectionProps) {
         onClick={() => {
           setOpen(!open)
         }}
-        className="flex min-h-12 w-full cursor-pointer items-center justify-between text-left font-display text-xl font-bold uppercase"
+        className="flex min-h-12 w-full cursor-pointer items-center justify-between text-left text-[1.0625rem] font-semibold"
       >
         {title}
         <span aria-hidden="true" className="text-2xl leading-none">

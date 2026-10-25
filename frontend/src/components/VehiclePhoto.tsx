@@ -33,7 +33,7 @@ export function VehiclePhoto({ imageUrl, description, quantity }: VehiclePhotoPr
       </div>
       {strip && (
         <div
-          className={`absolute inset-x-3 bottom-3 px-3 py-1 text-sm font-semibold tracking-widest uppercase ${strip.classes}`}
+          className={`absolute inset-x-3 bottom-3 px-3 py-1 text-xs font-semibold tracking-[0.12em] uppercase ${strip.classes}`}
         >
           {strip.text}
         </div>

@@ -22,7 +22,7 @@ export function CategoryTiles({ selected, onSelect }: CategoryTilesProps) {
               onClick={() => {
                 onSelect(isSelected ? '' : category)
               }}
-              className={`size-24 cursor-pointer border font-display text-lg font-bold tracking-widest uppercase transition-colors sm:size-32 sm:text-base ${
+              className={`size-24 cursor-pointer border text-sm font-semibold tracking-[0.14em] uppercase transition-colors sm:size-32 sm:text-base ${
                 isSelected
                   ? 'border-brand bg-brand text-on-brand'
                   : 'border-line bg-surface text-ink hover:border-ink'

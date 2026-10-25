@@ -1,9 +1,6 @@
 @import 'tailwindcss';
-@import '@fontsource/barlow-condensed/600.css';
-@import '@fontsource/barlow-condensed/700.css';
-@import '@fontsource/barlow/400.css';
-@import '@fontsource/barlow/500.css';
-@import '@fontsource/barlow/600.css';
+@import '@fontsource-variable/saira';
+@import '@fontsource/saira-condensed/700.css';
 
 /*
  * Colour roles. Components use the role names (bg-canvas, text-ink), never a hex value, so dark
@@ -26,8 +23,8 @@
   --color-low: #e0a100;
   --color-gone: #b1141c;
   --color-error: #b1141c;
-  --face-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --face-body: 'Barlow', system-ui, sans-serif;
+  --face-display: 'Saira Condensed', 'Arial Narrow', sans-serif;
+  --face-body: 'Saira Variable', system-ui, sans-serif;
 }
 
 :root[data-theme='dark'] {
