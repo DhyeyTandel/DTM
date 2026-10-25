@@ -1,10 +1,12 @@
 import type { Tab } from '../lib/listing'
+import { STATUS_NAMES } from '../lib/stock'
 
 const HERO_PHOTO = '/images/toyota-fortuner.jpg'
+const HERO_SCRIM = 'linear-gradient(rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.82))'
 
 const TABS: { value: Tab; label: string }[] = [
   { value: 'current', label: 'Current' },
-  { value: 'sold-out', label: 'Sold out' },
+  { value: 'sold-out', label: STATUS_NAMES['sold-out'] },
 ]
 
 interface HeroProps {
@@ -18,7 +20,7 @@ export function Hero({ count, tab, onTab }: HeroProps) {
     <section
       className="bg-band bg-cover bg-center text-on-band"
       style={{
-        backgroundImage: `linear-gradient(rgb(0 0 0 / 0.55), rgb(0 0 0 / 0.82)), url(${HERO_PHOTO})`,
+        backgroundImage: `${HERO_SCRIM}, url(${HERO_PHOTO})`,
       }}
     >
       <div className="mx-auto flex min-h-72 max-w-7xl flex-col justify-end px-4 sm:min-h-96 sm:px-6">
@@ -30,7 +32,7 @@ export function Hero({ count, tab, onTab }: HeroProps) {
             <button
               key={value}
               type="button"
-              aria-current={tab === value ? 'true' : undefined}
+              aria-pressed={tab === value}
               onClick={() => {
                 onTab(value)
               }}

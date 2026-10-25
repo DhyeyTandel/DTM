@@ -1,26 +1,27 @@
 import { useSearchParams } from 'react-router'
-import { DEFAULT_LISTING_PARAMS, type ListingParams } from '../lib/listing'
-
-const TABS: ListingParams['tab'][] = ['current', 'sold-out']
-const SORTS: ListingParams['sort'][] = ['price-asc', 'price-desc', 'name']
-const AVAILABILITIES: ListingParams['availability'][] = ['in-stock', 'low', 'sold-out']
-
-function oneOf<T extends string>(value: string | null, allowed: T[], fallback: T): T {
-  return allowed.find((option) => option === value) ?? fallback
-}
+import { CATEGORIES } from '../lib/categories'
+import {
+  DEFAULT_LISTING_PARAMS,
+  LISTING_KEYS,
+  SORT_ORDERS,
+  TABS,
+  type ListingParams,
+} from '../lib/listing'
+import { oneOf } from '../lib/oneOf'
+import { STOCK_STATUSES } from '../lib/stock'
 
 function readParams(search: URLSearchParams): ListingParams {
   return {
     tab: oneOf(search.get('tab'), TABS, DEFAULT_LISTING_PARAMS.tab),
-    category: search.get('category') ?? DEFAULT_LISTING_PARAMS.category,
+    category: oneOf(search.get('category'), CATEGORIES, DEFAULT_LISTING_PARAMS.category),
     minPrice: search.get('minPrice') ?? DEFAULT_LISTING_PARAMS.minPrice,
     maxPrice: search.get('maxPrice') ?? DEFAULT_LISTING_PARAMS.maxPrice,
     availability: oneOf(
       search.get('availability'),
-      AVAILABILITIES,
+      STOCK_STATUSES,
       DEFAULT_LISTING_PARAMS.availability,
     ),
-    sort: oneOf(search.get('sort'), SORTS, DEFAULT_LISTING_PARAMS.sort),
+    sort: oneOf(search.get('sort'), SORT_ORDERS, DEFAULT_LISTING_PARAMS.sort),
   }
 }
 
@@ -29,9 +30,10 @@ export function useListingParams() {
   const params = readParams(search)
 
   function update(changes: Partial<ListingParams>): void {
+    const merged = { ...params, ...changes }
     const next = new URLSearchParams()
-    for (const [key, value] of Object.entries({ ...params, ...changes })) {
-      if (value !== DEFAULT_LISTING_PARAMS[key as keyof ListingParams]) next.set(key, value)
+    for (const key of LISTING_KEYS) {
+      if (merged[key] !== DEFAULT_LISTING_PARAMS[key]) next.set(key, merged[key])
     }
     setSearch(next, { replace: true })
   }

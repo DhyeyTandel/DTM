@@ -25,11 +25,9 @@ export function FilterSection({ title, children }: FilterSectionProps) {
           {open ? '−' : '+'}
         </span>
       </button>
-      {open && (
-        <div id={panelId} className="pb-4">
-          {children}
-        </div>
-      )}
+      <div id={panelId} hidden={!open} className="pb-4">
+        {children}
+      </div>
     </div>
   )
 }

@@ -1,18 +1,31 @@
 import type { Vehicle } from '../api/types'
+import type { Category } from './categories'
 import { PAISE_PER_RUPEE } from './money'
 import { stockStatus, type StockStatus } from './stock'
 
-export type Tab = 'current' | 'sold-out'
-export type SortOrder = '' | 'price-asc' | 'price-desc' | 'name'
+export const TABS = ['current', 'sold-out'] as const
+export type Tab = (typeof TABS)[number]
+
+export const SORT_ORDERS = ['price-asc', 'price-desc', 'name'] as const
+export type SortOrder = (typeof SORT_ORDERS)[number] | ''
 
 export interface ListingParams {
   tab: Tab
-  category: string
+  category: Category | ''
   minPrice: string
   maxPrice: string
   availability: StockStatus | ''
   sort: SortOrder
 }
+
+export const LISTING_KEYS = [
+  'tab',
+  'category',
+  'minPrice',
+  'maxPrice',
+  'availability',
+  'sort',
+] as const satisfies readonly (keyof ListingParams)[]
 
 export const DEFAULT_LISTING_PARAMS: ListingParams = {
   tab: 'current',
@@ -25,7 +38,8 @@ export const DEFAULT_LISTING_PARAMS: ListingParams = {
 
 function rupeesToPaise(rupees: string): number | null {
   const amount = Number(rupees)
-  return rupees === '' || Number.isNaN(amount) ? null : amount * PAISE_PER_RUPEE
+  if (rupees === '' || Number.isNaN(amount) || amount < 0) return null
+  return Math.round(amount * PAISE_PER_RUPEE)
 }
 
 export function filterVehicles(vehicles: Vehicle[], params: ListingParams): Vehicle[] {
@@ -42,12 +56,12 @@ export function filterVehicles(vehicles: Vehicle[], params: ListingParams): Vehi
   )
 }
 
-const comparers: Record<Exclude<SortOrder, ''>, (a: Vehicle, b: Vehicle) => number> = {
+const COMPARERS: Record<(typeof SORT_ORDERS)[number], (a: Vehicle, b: Vehicle) => number> = {
   'price-asc': (a, b) => a.price - b.price,
   'price-desc': (a, b) => b.price - a.price,
   name: (a, b) => `${a.make} ${a.model}`.localeCompare(`${b.make} ${b.model}`),
 }
 
 export function sortVehicles(vehicles: Vehicle[], sort: SortOrder): Vehicle[] {
-  return sort === '' ? vehicles : [...vehicles].sort(comparers[sort])
+  return sort === '' ? vehicles : [...vehicles].sort(COMPARERS[sort])
 }

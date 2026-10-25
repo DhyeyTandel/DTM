@@ -1,8 +1,8 @@
-import { CATEGORIES, categoryLabel } from '../lib/categories'
+import { CATEGORIES, categoryLabel, type Category } from '../lib/categories'
 
 interface CategoryTilesProps {
-  selected: string
-  onSelect: (category: string) => void
+  selected: Category | ''
+  onSelect: (category: Category | '') => void
 }
 
 export function CategoryTiles({ selected, onSelect }: CategoryTilesProps) {

@@ -1,7 +1,8 @@
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import type { Vehicle } from '../api/types'
 import { useListingParams } from '../hooks/useListingParams'
-import { filterVehicles, sortVehicles, type SortOrder } from '../lib/listing'
+import { filterVehicles, SORT_ORDERS, sortVehicles, type SortOrder } from '../lib/listing'
+import { oneOf } from '../lib/oneOf'
 import { Button } from './Button'
 import { CategoryTiles } from './CategoryTiles'
 import { FilterSidebar } from './FilterSidebar'
@@ -25,8 +26,21 @@ const CLEARED_FILTERS = { category: '', minPrice: '', maxPrice: '', availability
 export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
   const { params, update } = useListingParams()
   const [filtersHidden, setFiltersHidden] = useState(false)
-  const drawer = useRef<HTMLDialogElement>(null)
-  const shown = sortVehicles(filterVehicles(vehicles, params), params.sort)
+  const filterDrawerRef = useRef<HTMLDialogElement>(null)
+  const hideFiltersRef = useRef<HTMLButtonElement>(null)
+  const showFiltersRef = useRef<HTMLButtonElement>(null)
+  const filtersToggled = useRef(false)
+  const visibleVehicles = sortVehicles(filterVehicles(vehicles, params), params.sort)
+
+  useEffect(() => {
+    if (!filtersToggled.current) return
+    ;(filtersHidden ? showFiltersRef : hideFiltersRef).current?.focus()
+  }, [filtersHidden])
+
+  function toggleFilters(hidden: boolean): void {
+    filtersToggled.current = true
+    setFiltersHidden(hidden)
+  }
 
   return (
     <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6">
@@ -40,9 +54,10 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
         {!filtersHidden && (
           <aside aria-label="Filters" className="hidden w-72 shrink-0 lg:block">
             <button
+              ref={hideFiltersRef}
               type="button"
               onClick={() => {
-                setFiltersHidden(true)
+                toggleFilters(true)
               }}
               className="mb-4 min-h-11 cursor-pointer font-semibold underline underline-offset-4"
             >
@@ -55,13 +70,14 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-4">
               <p className="font-display text-2xl font-bold uppercase">
-                {shown.length} {shown.length === 1 ? 'vehicle' : 'vehicles'}
+                {visibleVehicles.length} {visibleVehicles.length === 1 ? 'vehicle' : 'vehicles'}
               </p>
               {filtersHidden && (
                 <button
+                  ref={showFiltersRef}
                   type="button"
                   onClick={() => {
-                    setFiltersHidden(false)
+                    toggleFilters(false)
                   }}
                   className="hidden min-h-11 cursor-pointer font-semibold underline underline-offset-4 lg:inline"
                 >
@@ -71,7 +87,7 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
               <Button
                 variant="outline"
                 className="lg:hidden"
-                onClick={() => drawer.current?.showModal()}
+                onClick={() => filterDrawerRef.current?.showModal()}
               >
                 Filters
               </Button>
@@ -81,7 +97,7 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
               <select
                 value={params.sort}
                 onChange={(event) => {
-                  update({ sort: event.target.value as SortOrder })
+                  update({ sort: oneOf(event.target.value, SORT_ORDERS, '') })
                 }}
                 className="min-h-11 border border-line bg-surface px-3"
               >
@@ -93,7 +109,7 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
               </select>
             </label>
           </div>
-          {shown.length === 0 ? (
+          {visibleVehicles.length === 0 ? (
             <div className="mt-8 border border-line bg-surface p-8">
               <p className="font-display text-2xl font-bold uppercase">No vehicles match</p>
               <p className="mt-2 text-ink-muted">Try a wider price range or another category.</p>
@@ -108,7 +124,7 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
             </div>
           ) : (
             <ul aria-label="Vehicles" className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-              {shown.map((vehicle) => (
+              {visibleVehicles.map((vehicle) => (
                 <li key={vehicle.id}>
                   <VehicleCard vehicle={vehicle} onPurchase={onPurchase} onDetails={onDetails} />
                 </li>
@@ -118,12 +134,12 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
         </div>
       </div>
       <dialog
-        ref={drawer}
-        aria-label="Filters"
+        ref={filterDrawerRef}
+        aria-label="Filter vehicles"
         className="m-0 h-dvh w-80 max-w-[90vw] bg-canvas p-4 text-ink backdrop:bg-black/60"
       >
-        <Button variant="outline" onClick={() => drawer.current?.close()}>
-          Close
+        <Button variant="outline" onClick={() => filterDrawerRef.current?.close()}>
+          Close filters
         </Button>
         <div className="mt-4">
           <FilterSidebar params={params} onChange={update} />

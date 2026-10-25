@@ -8,6 +8,7 @@ export function StylePage() {
 
   return (
     <>
+      {/* The hero counts the whole lot, so it does not change with the tab or the filters. */}
       <Hero
         count={SAMPLE_VEHICLES.length}
         tab={params.tab}

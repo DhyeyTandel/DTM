@@ -1,8 +1,14 @@
-export type StockStatus = 'in-stock' | 'low' | 'sold-out'
+export const STOCK_STATUSES = ['in-stock', 'low', 'sold-out'] as const
+export type StockStatus = (typeof STOCK_STATUSES)[number]
+
+export const STATUS_NAMES: Record<StockStatus, string> = {
+  'in-stock': 'In stock',
+  low: 'Low stock',
+  'sold-out': 'Sold out',
+}
 
 export const LOW_STOCK_MAX = 3
 export const OUT_OF_STOCK_LABEL = 'Out of stock'
-const SOLD_OUT_LABEL = 'Sold out'
 
 export function stockStatus(quantity: number): StockStatus {
   if (quantity === 0) return 'sold-out'
@@ -14,6 +20,6 @@ export function isSoldOut(quantity: number): boolean {
 }
 
 export function stockLabel(quantity: number): string {
-  if (isSoldOut(quantity)) return SOLD_OUT_LABEL
-  return stockStatus(quantity) === 'low' ? `${String(quantity)} left` : 'In stock'
+  const status = stockStatus(quantity)
+  return status === 'low' ? `${String(quantity)} left` : STATUS_NAMES[status]
 }

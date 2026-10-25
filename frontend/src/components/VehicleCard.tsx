@@ -3,7 +3,13 @@ import type { Vehicle } from '../api/types'
 import { categoryLabel } from '../lib/categories'
 import { formatPrice } from '../lib/money'
 import { formatStockNumber } from '../lib/stockNumber'
-import { OUT_OF_STOCK_LABEL, isSoldOut, stockLabel, stockStatus } from '../lib/stock'
+import {
+  OUT_OF_STOCK_LABEL,
+  isSoldOut,
+  stockLabel,
+  stockStatus,
+  type StockStatus,
+} from '../lib/stock'
 import { Button } from './Button'
 import { VehiclePhoto } from './VehiclePhoto'
 
@@ -13,7 +19,7 @@ interface VehicleCardProps {
   onDetails: (vehicleId: number) => void
 }
 
-const DOT_CLASSES = {
+const DOT_CLASSES: Record<StockStatus, string> = {
   'in-stock': 'bg-ok',
   low: 'bg-low',
   'sold-out': 'bg-gone',
