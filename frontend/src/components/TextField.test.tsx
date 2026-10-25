@@ -15,3 +15,9 @@ test('a text field without an error is not marked invalid', () => {
 
   expect(screen.getByLabelText('Password')).toBeValid()
 })
+
+test('a field error is announced as an alert', () => {
+  render(<TextField label="Password" error="Use at least 8 characters." />)
+
+  expect(screen.getByRole('alert')).toHaveTextContent('Use at least 8 characters.')
+})

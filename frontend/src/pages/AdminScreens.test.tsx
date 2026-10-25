@@ -213,3 +213,55 @@ test('a customer opening the edit page is sent to the inventory', async () => {
     expect(screen.getByTestId('location')).toHaveTextContent(/^\/$/)
   })
 })
+
+test('numbers written as 1e3, with more than two decimals, or a percent in the image path are refused', async () => {
+  const create = vi.fn(() => HttpResponse.json({}, { status: 201 }))
+  server.use(http.post('/api/vehicles', create))
+  renderApp('/admin/vehicles/new', 'admin')
+  await screen.findByRole('heading', { name: 'Add vehicle' })
+
+  await fillAddForm({
+    ...validAdd,
+    'Price (₹)': '1e3',
+    Quantity: '1e2',
+    'Image URL': '/images/%2e%2e/x.jpg',
+  })
+  await userEvent.click(screen.getByRole('button', { name: 'Save vehicle' }))
+  expect(screen.getByText('Enter a price above zero.')).toBeInTheDocument()
+  expect(screen.getByText('Quantity must be a whole number from 0 to 10000.')).toBeInTheDocument()
+  expect(
+    screen.getByText('Use an https address or a path that starts with /images/.'),
+  ).toBeInTheDocument()
+
+  await fillAddForm({ ...validAdd, 'Price (₹)': '19.999' })
+  await userEvent.click(screen.getByRole('button', { name: 'Save vehicle' }))
+  expect(screen.getByText('Enter a price above zero.')).toBeInTheDocument()
+  expect(create).not.toHaveBeenCalled()
+})
+
+test('a restock amount written as 1e2 is refused', async () => {
+  const restock = vi.fn(() => HttpResponse.json(honda))
+  listReturns([honda])
+  server.use(http.post('/api/vehicles/12/restock', restock))
+  renderApp('/vehicles/12', 'admin')
+  await screen.findByRole('heading', { level: 1, name: 'Honda City' })
+
+  await userEvent.type(screen.getByLabelText('Restock amount'), '1e2')
+  await userEvent.click(screen.getByRole('button', { name: 'Restock' }))
+
+  expect(screen.getByText('Enter a whole number from 1 to 1000.')).toBeInTheDocument()
+  expect(restock).not.toHaveBeenCalled()
+})
+
+test('the delete confirmation is a labelled group, focus moves to Cancel and back to Delete', async () => {
+  listReturns([honda])
+  renderApp('/vehicles/12', 'admin')
+  await screen.findByRole('heading', { level: 1, name: 'Honda City' })
+
+  await userEvent.click(screen.getByRole('button', { name: 'Delete' }))
+  expect(screen.getByRole('group', { name: /delete honda city/i })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Cancel' })).toHaveFocus()
+
+  await userEvent.click(screen.getByRole('button', { name: 'Cancel' }))
+  expect(screen.getByRole('button', { name: 'Delete' })).toHaveFocus()
+})

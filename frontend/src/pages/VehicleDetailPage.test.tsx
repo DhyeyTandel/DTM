@@ -36,11 +36,11 @@ test('the vehicle page shows the photo, the price and the status of that vehicle
   expect(screen.queryByText('Fortuner')).not.toBeInTheDocument()
 })
 
-test('the Details button on the inventory opens the vehicle page, and Back returns', async () => {
+test('the Details link on the inventory opens the vehicle page, and Back returns', async () => {
   listReturns([honda])
   renderApp('/', 'customer')
 
-  await userEvent.click(await screen.findByRole('button', { name: /details/i }))
+  await userEvent.click(await screen.findByRole('link', { name: /details/i }))
 
   expect(await screen.findByRole('heading', { level: 1, name: 'Honda City' })).toBeInTheDocument()
   expect(screen.getByTestId('location')).toHaveTextContent('/vehicles/12')

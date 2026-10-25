@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event'
 import { http, HttpResponse } from 'msw'
 import { expect, test, vi } from 'vitest'
 import { getToken } from '../auth/token'
-import { renderApp } from '../test/renderApp'
+import { renderApp, signInAs } from '../test/renderApp'
 import { server } from '../test/setup'
 
 function whereAmI() {
@@ -59,4 +59,23 @@ test('logging out clears the token and sends the user to the login page', async 
     expect(whereAmI()).toHaveTextContent('/login')
   })
   expect(getToken()).toBeNull()
+})
+
+test('if the role cannot be checked, an admin page shows the error and a Try again button', async () => {
+  let calls = 0
+  signInAs('admin')
+  server.use(
+    http.get('/api/auth/me', () => {
+      calls += 1
+      return calls === 1
+        ? HttpResponse.json({ detail: 'Internal server error' }, { status: 500 })
+        : HttpResponse.json({ id: 1, email: 'a@b.com', role: 'admin' })
+    }),
+  )
+  renderApp('/admin/vehicles/new')
+
+  expect(await screen.findByRole('alert')).toHaveTextContent('Internal server error')
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }))
+
+  expect(await screen.findByRole('heading', { name: 'Add vehicle' })).toBeInTheDocument()
 })

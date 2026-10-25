@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { MemoryRouter } from 'react-router'
 import { expect, test, vi } from 'vitest'
 import type { Vehicle } from '../api/types'
 import { VehicleCard } from './VehicleCard'
@@ -14,9 +14,11 @@ const corolla: Vehicle = {
   image_url: null,
 }
 
-function renderCard(changes: Partial<Vehicle> = {}, onDetails = vi.fn()) {
+function renderCard(changes: Partial<Vehicle> = {}) {
   render(
-    <VehicleCard vehicle={{ ...corolla, ...changes }} onPurchase={vi.fn()} onDetails={onDetails} />,
+    <MemoryRouter>
+      <VehicleCard vehicle={{ ...corolla, ...changes }} onPurchase={vi.fn()} />
+    </MemoryRouter>,
   )
 }
 
@@ -59,11 +61,8 @@ test('the card shows the title on two lines, the stock number, the category and 
   expect(screen.getByText('₹14,49,000')).toBeInTheDocument()
 })
 
-test('the Details button reports the vehicle', async () => {
-  const onDetails = vi.fn()
-  renderCard({}, onDetails)
+test('Details is a link to the vehicle page', () => {
+  renderCard()
 
-  await userEvent.click(screen.getByRole('button', { name: /details/i }))
-
-  expect(onDetails).toHaveBeenCalledWith(12)
+  expect(screen.getByRole('link', { name: /details/i })).toHaveAttribute('href', '/vehicles/12')
 })

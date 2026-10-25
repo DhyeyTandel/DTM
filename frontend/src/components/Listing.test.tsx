@@ -32,7 +32,6 @@ function renderListing(url = '/') {
         pendingIds={new Set()}
         notices={new Map()}
         onPurchase={vi.fn()}
-        onDetails={vi.fn()}
       />
     </MemoryRouter>,
   )
