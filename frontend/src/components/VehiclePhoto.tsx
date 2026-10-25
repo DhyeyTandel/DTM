@@ -22,7 +22,7 @@ export function VehiclePhoto({ imageUrl, description, quantity }: VehiclePhotoPr
           src={imageUrl}
           alt={description}
           loading="lazy"
-          className={`size-full object-contain p-4 ${status === 'sold-out' ? 'opacity-60' : ''}`}
+          className={`absolute inset-3 h-[calc(100%-1.5rem)] w-[calc(100%-1.5rem)] object-cover ${status === 'sold-out' ? 'opacity-60' : ''}`}
         />
       ) : (
         <div className="flex size-full items-center justify-center text-ink-muted">
@@ -31,7 +31,7 @@ export function VehiclePhoto({ imageUrl, description, quantity }: VehiclePhotoPr
       )}
       {strip && (
         <div
-          className={`absolute inset-x-0 bottom-0 px-3 py-1 text-sm font-semibold tracking-widest uppercase ${strip.classes}`}
+          className={`absolute inset-x-3 bottom-3 px-3 py-1 text-sm font-semibold tracking-widest uppercase ${strip.classes}`}
         >
           {strip.text}
         </div>

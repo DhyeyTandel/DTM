@@ -24,7 +24,7 @@ export const SAMPLE_VEHICLES: Vehicle[] = [
     make: 'Maruti Suzuki',
     model: 'Swift',
     category: 'hatchback',
-    price: 6_49_000_50,
+    price: 6_49_000_00,
     quantity: 0,
     image_url: '/images/maruti-swift.jpg',
   },

@@ -40,7 +40,7 @@ export function VehicleCard({ vehicle, onPurchase, onDetails }: VehicleCardProps
         <p className="mt-5 text-xs font-semibold tracking-widest text-ink-muted uppercase">
           Ex-showroom price
         </p>
-        <div className="mt-1 flex items-end justify-between gap-3">
+        <div className="mt-1 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
           <p className="font-display text-4xl leading-none font-bold">
             {formatPrice(vehicle.price)}
           </p>
@@ -52,25 +52,27 @@ export function VehicleCard({ vehicle, onPurchase, onDetails }: VehicleCardProps
             {stockLabel(vehicle.quantity)}
           </p>
         </div>
-        <div className="mt-auto grid grid-cols-2 gap-2 border-t border-line pt-4">
-          <Button
-            aria-describedby={titleId}
-            disabled={soldOut}
-            onClick={() => {
-              onPurchase(vehicle.id)
-            }}
-          >
-            {soldOut ? OUT_OF_STOCK_LABEL : 'Purchase'}
-          </Button>
-          <Button
-            variant="outline"
-            aria-describedby={titleId}
-            onClick={() => {
-              onDetails(vehicle.id)
-            }}
-          >
-            Details
-          </Button>
+        <div className="mt-auto pt-5">
+          <div className="grid grid-cols-2 gap-2 border-t border-line pt-4">
+            <Button
+              aria-describedby={titleId}
+              disabled={soldOut}
+              onClick={() => {
+                onPurchase(vehicle.id)
+              }}
+            >
+              {soldOut ? OUT_OF_STOCK_LABEL : 'Purchase'}
+            </Button>
+            <Button
+              variant="outline"
+              aria-describedby={titleId}
+              onClick={() => {
+                onDetails(vehicle.id)
+              }}
+            >
+              Details
+            </Button>
+          </div>
         </div>
       </div>
     </article>

@@ -11,7 +11,7 @@ export function CategoryTiles({ selected, onSelect }: CategoryTilesProps) {
       <h2 id="browse-by-category" className="font-display text-2xl font-bold uppercase">
         Browse by category
       </h2>
-      <div className="mt-4 grid grid-cols-3 gap-3 sm:grid-cols-6">
+      <div className="mt-4 flex flex-wrap gap-3">
         {CATEGORIES.map((category) => {
           const isSelected = category === selected
           return (
@@ -22,7 +22,7 @@ export function CategoryTiles({ selected, onSelect }: CategoryTilesProps) {
               onClick={() => {
                 onSelect(isSelected ? '' : category)
               }}
-              className={`aspect-square cursor-pointer border text-sm font-semibold tracking-widest uppercase transition-colors sm:text-base ${
+              className={`size-24 cursor-pointer border text-sm font-semibold tracking-widest uppercase transition-colors sm:size-32 sm:text-base ${
                 isSelected
                   ? 'border-brand bg-brand text-on-brand'
                   : 'border-line bg-surface text-ink hover:border-ink'
