@@ -30,3 +30,13 @@ Where the photo is not exactly the listed car:
 - The Nexon photo is a Tata Nexon, and nothing in it shows that it is the EV.
 - The Creta and Verna photos show cars with Chinese plates.
 - The Slavia and Ioniq 5 photos are rear three-quarter views, the Slavia inside a showroom.
+
+## Copies kept in the frontend
+
+The /style page does not hotlink Commons. Three of the photos above are stored as 960px copies in `frontend/public/images/`, unchanged, under the same licences and credits as the table:
+
+| File | Photo |
+|---|---|
+| `honda-city.jpg` | Honda City |
+| `toyota-fortuner.jpg` | Toyota Fortuner |
+| `maruti-swift.jpg` | Maruti Suzuki Swift |

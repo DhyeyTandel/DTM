@@ -1,7 +1,5 @@
 import type { Vehicle } from '../api/types'
 
-const COMMONS = 'https://thumb.wikimedia.org/wikipedia/commons/thumb'
-
 export const SAMPLE_VEHICLES: Vehicle[] = [
   {
     id: 1,
@@ -10,7 +8,7 @@ export const SAMPLE_VEHICLES: Vehicle[] = [
     category: 'sedan',
     price: 14_49_000_00,
     quantity: 12,
-    image_url: `${COMMONS}/5/5c/2022_Honda_City_ZX_i-VTEC_%28India%29_front_view.jpg/960px-2022_Honda_City_ZX_i-VTEC_%28India%29_front_view.jpg`,
+    image_url: '/images/honda-city.jpg',
   },
   {
     id: 2,
@@ -19,7 +17,7 @@ export const SAMPLE_VEHICLES: Vehicle[] = [
     category: 'suv',
     price: 38_21_000_00,
     quantity: 2,
-    image_url: `${COMMONS}/2/2c/Toyota_Fortuner_LTD_4x2_20221019.jpg/960px-Toyota_Fortuner_LTD_4x2_20221019.jpg`,
+    image_url: '/images/toyota-fortuner.jpg',
   },
   {
     id: 3,
@@ -28,7 +26,7 @@ export const SAMPLE_VEHICLES: Vehicle[] = [
     category: 'hatchback',
     price: 6_49_000_50,
     quantity: 0,
-    image_url: `${COMMONS}/4/43/Maruti_Suzuki_Swift_4456.JPG/960px-Maruti_Suzuki_Swift_4456.JPG`,
+    image_url: '/images/maruti-swift.jpg',
   },
   {
     id: 4,
