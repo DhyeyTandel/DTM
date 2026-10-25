@@ -37,6 +37,8 @@ def build_vehicle(**changes: object) -> dict[str, Any]:
         ({"image_url": "/etc/passwd"}, "ck_vehicles_image_url"),
         ({"image_url": "//evil.example/x.jpg"}, "ck_vehicles_image_url"),
         ({"image_url": "/images/../secret.jpg"}, "ck_vehicles_image_url"),
+        ({"image_url": "/images/%2e%2e/secret.jpg"}, "ck_vehicles_image_url"),
+        ({"image_url": "/images/a\\b.jpg"}, "ck_vehicles_image_url"),
     ],
 )
 def test_the_database_refuses_a_vehicle_that_breaks_a_check_constraint(

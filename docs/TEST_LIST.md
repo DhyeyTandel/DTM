@@ -90,8 +90,8 @@ Image url (added after the first backend phase)
 - V-38 api: `PUT` replaces `image_url`, `null` clears it, leaving it out returns 422
 - V-39 api: list and search responses include `image_url` (passes as soon as V-36 does, because every response shares one schema, so it has no red step)
 - V-41 api: an `image_url` may also be a site relative path that starts with `/images/` (the self hosted photos), on create and on update, and is echoed back
-- V-42 api: a path that is not under `/images/`, is only `/images/`, contains `..`, a space or a newline, starts with `//`, or is over 500 characters returns 422, on create and on update
-- V-43 db: the database refuses `/etc/passwd`, `//evil.example/x.jpg` and `/images/../secret.jpg`, and accepts `/images/vehicles/swift.jpg` (`ck_vehicles_image_url`)
+- V-42 api: a path that is not under `/images/`, is only `/images/`, contains `..`, `%`, a backslash, a space or a newline, starts with `//`, or is over 500 characters returns 422, on create and on update
+- V-43 db: the database refuses `/etc/passwd`, `//evil.example/x.jpg`, `/images/../secret.jpg`, `/images/%2e%2e/x` and a backslash, and accepts `/images/vehicles/swift.jpg` (`ck_vehicles_image_url`)
 
 List
 - V-12 api: `GET /api/vehicles` as customer returns all vehicles

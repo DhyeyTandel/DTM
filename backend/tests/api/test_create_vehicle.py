@@ -247,6 +247,8 @@ BAD_IMAGE_PATHS = [
     "/images/../secret.jpg",
     "/images/my car.jpg",
     "/images/car.jpg\n",
+    "/images/%2e%2e/api/x",
+    "/images/a\\b.jpg",
     "/images/" + "a" * IMAGE_URL_MAX_LENGTH,
 ]
 
