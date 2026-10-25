@@ -62,7 +62,9 @@ Admin seed
 - A-40 unit: seeding an empty vehicle table adds about fifteen vehicles covering every category, a few at zero stock, all inside the price and quantity limits
 - A-41 unit: seeding when the table already has a vehicle adds nothing
 - A-42 db: the seed entry point stocks the table, and running it twice does not duplicate the vehicles
-- A-43 unit: every seeded vehicle has its own https image url, inside the length limit, with no whitespace
+- A-43 unit: every seeded vehicle has its own image, either an https url or a `/images/` path, inside the length limit, with no whitespace
+- A-44 unit: every seeded vehicle photo is a `/images/vehicles/` path (the photos are self hosted, so they cannot break during a demo)
+- A-45 api: `GET /api/auth/me` returns the id, email and role of the user the token belongs to, and 401 without a token or with a bad one
 
 ## Vehicles (V1 to V4)
 
@@ -87,6 +89,9 @@ Image url (added after the first backend phase)
 - V-37 api: an `image_url` that is `http`, `javascript:`, contains a space or a trailing newline, is empty, is only `https://`, or is over 500 characters returns 422, on create and on update; exactly 500 is accepted
 - V-38 api: `PUT` replaces `image_url`, `null` clears it, leaving it out returns 422
 - V-39 api: list and search responses include `image_url` (passes as soon as V-36 does, because every response shares one schema, so it has no red step)
+- V-41 api: an `image_url` may also be a site relative path that starts with `/images/` (the self hosted photos), on create and on update, and is echoed back
+- V-42 api: a path that is not under `/images/`, is only `/images/`, contains `..`, a space or a newline, starts with `//`, or is over 500 characters returns 422, on create and on update
+- V-43 db: the database refuses `/etc/passwd`, `//evil.example/x.jpg` and `/images/../secret.jpg`, and accepts `/images/vehicles/swift.jpg` (`ck_vehicles_image_url`)
 
 List
 - V-12 api: `GET /api/vehicles` as customer returns all vehicles
