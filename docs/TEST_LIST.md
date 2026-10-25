@@ -250,3 +250,9 @@ Money and stock labels (F0)
 - F-26 a price with paise left over shows two decimals (₹14,49,000.50), and a whole rupee price shows none
 - F-27 stock above 3 is in stock, 1 to 3 is low, 0 is sold out
 - F-28 the stock label reads "In stock", "Only 3 left" (with the real count) and "Out of stock"
+
+Shared parts (F0)
+- F-29 a vehicle with no image shows a plain "No photo yet" block and no broken image; a vehicle with an image shows it with the car's name as its alt text
+- F-30 typing in a filter field reports the changed filters, and Clear filters resets every field
+- F-31 a text field with an error is marked invalid and the message is read with it
+- F-32 the theme starts from the stored choice, then from the system setting, and the toggle switches it and remembers it
