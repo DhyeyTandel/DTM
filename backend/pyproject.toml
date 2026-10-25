@@ -8,6 +8,7 @@ dependencies = [
     "bcrypt>=5.0.0",
     "email-validator>=2.3.0",
     "fastapi>=0.121",
+    "gunicorn>=26.2.0",
     "psycopg[binary]>=3.2",
     "pydantic-settings>=2.6",
     "pyjwt>=2.15.1",
