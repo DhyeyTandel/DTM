@@ -277,3 +277,17 @@ Dealer floor listing (F2)
 - F-44 a price that is negative or not a number is ignored, and a price with decimals is rounded to whole paise
 - F-45 Hide filters and Show filters hand focus to each other
 - F-46 each filter section and its radio group have the same accessible name, and a closed section keeps its panel in the page, hidden
+
+Real screens (F3)
+- F-47 a request with a body sends it as json with a json content type, and a 204 response resolves to nothing
+- F-48 the current user is fetched with the stored token and tells the app the role; no token means no request
+- F-49 the inventory shows a loading state while the list loads, an error with a Try again button when it fails, and a "nothing on the lot yet" state when there are no vehicles at all
+- F-50 the inventory shows the vehicles from the api, and the hero count is the number of vehicles the api returned
+- F-51 Details opens the vehicle page, which shows a bigger photo, the same price and status block, and a back link; an unknown id shows a not found state
+- F-52 an admin sees Add vehicle on the inventory; a customer does not
+- F-53 the add vehicle form checks make, model, category, price, quantity and image url before sending, shows api errors, and returns to the inventory after saving
+- F-54 the edit form opens with the vehicle's current values and saves with PUT; quantity is not editable there
+- F-55 Delete asks for confirmation first; Cancel does nothing, and confirming deletes the vehicle and returns to the inventory
+- F-56 Restock takes an amount from 1 to 1000, rejects anything else without a request, and shows the quantity the server returns
+- F-57 register and login forms show the api's message inline, and a signed in user opening login or register is sent to the inventory
+
