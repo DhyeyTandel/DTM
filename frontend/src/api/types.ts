@@ -9,3 +9,9 @@ export interface Vehicle {
   quantity: number
   image_url: string | null
 }
+
+export interface CurrentUser {
+  id: number
+  email: string
+  role: 'admin' | 'customer'
+}
