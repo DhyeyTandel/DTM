@@ -266,3 +266,9 @@ Dealer floor listing (F2)
 - F-38 clicking a category tile sets the category filter, and clicking the selected tile clears it
 - F-39 a filter section opens and closes and says which (aria-expanded); Hide filters hides the sidebar and Show filters brings it back
 - F-40 a photo shows a LOW STOCK strip at 3 or fewer and a SOLD OUT strip at zero, and no strip otherwise
+- F-41 the hero count is the whole lot and does not follow the tab; clicking the SOLD OUT tab narrows the grid to zero stock through the url
+- F-42 the Filters button opens the filter drawer and Close filters closes it
+- F-43 a category in the url that is not a category is ignored
+- F-44 a price that is negative or not a number is ignored, and a price with decimals is rounded to whole paise
+- F-45 Hide filters and Show filters hand focus to each other
+- F-46 each filter section and its radio group have the same accessible name, and a closed section keeps its panel in the page, hidden
