@@ -38,3 +38,10 @@ export const SAMPLE_VEHICLES: Vehicle[] = [
     image_url: null,
   },
 ]
+
+export const PHOTOGRAPHED_SAMPLES = SAMPLE_VEHICLES.filter((vehicle) => vehicle.image_url !== null)
+
+export function inventorySummary(vehicles: Vehicle[]): string {
+  const units = vehicles.reduce((total, vehicle) => total + vehicle.quantity, 0)
+  return `${String(vehicles.length)} cars, ${String(units)} units in stock`
+}
