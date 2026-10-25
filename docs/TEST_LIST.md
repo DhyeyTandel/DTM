@@ -214,7 +214,7 @@ Vitest and React Testing Library. MSW answers the requests, so the real api modu
 Purchase button (F4)
 - F-01 the Purchase button is enabled when stock is above zero
 - F-02 the Purchase button is disabled when stock is zero
-- F-03 a vehicle with zero stock shows an out of stock label
+- F-03 a vehicle with zero stock shows a "Sold out" status and a SOLD OUT strip on its photo (was "an out of stock label"; the dealer floor design reads Sold out, and the button keeps "Out of stock")
 - F-04 clicking Purchase asks the api layer to buy that vehicle once, and the list shows the new quantity
 - F-05 the button is disabled while the purchase request is running
 
@@ -249,10 +249,20 @@ Money and stock labels (F0)
 - F-25 a price in paise is shown in rupees with Indian digit grouping (14_49_000_00 shows as ₹14,49,000)
 - F-26 a price with paise left over shows two decimals (₹14,49,000.50), and a whole rupee price shows none
 - F-27 stock above 3 is in stock, 1 to 3 is low, 0 is sold out
-- F-28 the stock label reads "In stock", "Only 3 left" (with the real count) and "Out of stock"
+- F-28 the stock status line reads "In stock", "<n> left" (with the real count) and "Sold out" (was "Only 3 left" and "Out of stock")
 
 Shared parts (F0)
 - F-29 a vehicle with no image shows a plain "No photo yet" block and no broken image; a vehicle with an image shows it with the car's name as its alt text
 - F-30 typing in a filter field reports the changed filters, and Clear filters resets every field
 - F-31 a text field with an error is marked invalid and the message is read with it
 - F-32 the theme starts from the stored choice, then from the system setting, and the toggle switches it and remembers it
+
+Dealer floor listing (F2)
+- F-33 a stock number is the vehicle id padded to four digits after DTM- (12 shows as DTM-0012)
+- F-34 the CURRENT tab lists every vehicle, sold out ones included; the SOLD OUT tab lists only vehicles at zero stock
+- F-35 filters narrow the list: category, a price range given in rupees, and availability (in stock, low, sold out)
+- F-36 sort orders by price low to high, price high to low, or name
+- F-37 the tab, category, price range, availability and sort are read from the url and written back to it
+- F-38 clicking a category tile sets the category filter, and clicking the selected tile clears it
+- F-39 a filter section opens and closes and says which (aria-expanded); Hide filters hides the sidebar and Show filters brings it back
+- F-40 a photo shows a LOW STOCK strip at 3 or fewer and a SOLD OUT strip at zero, and no strip otherwise

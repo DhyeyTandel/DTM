@@ -1,58 +1,68 @@
 @import 'tailwindcss';
-@import '@fontsource-variable/archivo/wdth.css';
-@import './pages/variants/variants.css';
+@import '@fontsource/barlow-condensed/600.css';
+@import '@fontsource/barlow-condensed/700.css';
+@import '@fontsource/barlow/400.css';
+@import '@fontsource/barlow/500.css';
+@import '@fontsource/barlow/600.css';
 
 /*
  * Colour roles. Components use the role names (bg-canvas, text-ink), never a hex value, so dark
- * mode is only a second set of values for the same roles.
+ * mode is only a second set of values for the same roles. Green, amber and red are for stock dots.
  */
 :root {
-  --color-canvas: #f3f1ec;
-  --color-raised: #e8e5de;
-  --color-line: #cfcbc2;
-  --color-ink: #14150f;
-  --color-ink-muted: #565951;
-  --color-accent: #0e5a3b;
-  --color-accent-hover: #0a472f;
-  --color-on-accent: #ffffff;
-  --color-low: #8a4a00;
-  --color-error: #b3261e;
-  --control-radius: 0.375rem;
+  --color-canvas: #f2f2f2;
+  --color-surface: #ffffff;
+  --color-ground: #e4e4e4;
+  --color-line: #cfcfcf;
+  --color-ink: #0b0b0b;
+  --color-ink-muted: #55575a;
+  --color-brand: #b1141c;
+  --color-brand-hover: #8f0f16;
+  --color-on-brand: #ffffff;
+  --color-brand-text: #b1141c;
+  --color-band: #0b0b0b;
+  --color-on-band: #ffffff;
+  --color-ok: #1a7f37;
+  --color-low: #e0a100;
+  --color-gone: #b1141c;
+  --color-error: #b1141c;
 }
 
 :root[data-theme='dark'] {
-  --color-canvas: #0f100e;
-  --color-raised: #1a1c19;
-  --color-line: #31342f;
-  --color-ink: #ecebe6;
-  --color-ink-muted: #a2a59d;
-  --color-accent: #62c28f;
-  --color-accent-hover: #7bd0a2;
-  --color-on-accent: #07140d;
-  --color-low: #e2a55a;
-  --color-error: #f2928a;
+  --color-canvas: #0b0b0b;
+  --color-surface: #141414;
+  --color-ground: #232323;
+  --color-line: #363636;
+  --color-ink: #f2f2f2;
+  --color-ink-muted: #a3a5a8;
+  --color-brand-hover: #c61f28;
+  --color-brand-text: #ff6a70;
+  --color-band: #000000;
+  --color-ok: #3fb865;
+  --color-error: #ff6a70;
   color-scheme: dark;
 }
 
 @theme inline {
   --color-canvas: var(--color-canvas);
-  --color-raised: var(--color-raised);
+  --color-surface: var(--color-surface);
+  --color-ground: var(--color-ground);
   --color-line: var(--color-line);
   --color-ink: var(--color-ink);
   --color-ink-muted: var(--color-ink-muted);
-  --color-accent: var(--color-accent);
-  --color-accent-hover: var(--color-accent-hover);
-  --color-on-accent: var(--color-on-accent);
+  --color-brand: var(--color-brand);
+  --color-brand-hover: var(--color-brand-hover);
+  --color-on-brand: var(--color-on-brand);
+  --color-brand-text: var(--color-brand-text);
+  --color-band: var(--color-band);
+  --color-on-band: var(--color-on-band);
+  --color-ok: var(--color-ok);
   --color-low: var(--color-low);
+  --color-gone: var(--color-gone);
   --color-error: var(--color-error);
 
-  --font-sans: 'Archivo Variable', system-ui, sans-serif;
-
-  --text-body: 1rem;
-  --text-title: 1.25rem;
-  --text-price: 1.75rem;
-  --text-display: clamp(2.25rem, 6vw, 4rem);
-  --radius-control: var(--control-radius);
+  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --font-sans: 'Barlow', system-ui, sans-serif;
 }
 
 @layer base {
@@ -67,10 +77,11 @@
   body {
     min-height: 100dvh;
     line-height: 1.5;
+    font-variant-numeric: tabular-nums;
   }
 
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-brand);
     outline-offset: 3px;
   }
 

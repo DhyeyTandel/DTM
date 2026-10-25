@@ -33,10 +33,13 @@ Where the photo is not exactly the listed car:
 
 ## Copies kept in the frontend
 
-The /style page does not hotlink Commons. Three of the photos above are stored as 960px copies in `frontend/public/images/`, unchanged, under the same licences and credits as the table:
+The /style page does not hotlink Commons. Six of the photos above are stored as 960px copies in `frontend/public/images/`, unchanged, under the same licences and credits as the table:
 
 | File | Photo |
 |---|---|
 | `honda-city.jpg` | Honda City |
 | `toyota-fortuner.jpg` | Toyota Fortuner |
 | `maruti-swift.jpg` | Maruti Suzuki Swift |
+| `mahindra-xuv700.jpg` | Mahindra XUV700 |
+| `tata-tiago.jpg` | Tata Tiago |
+| `bmw-2-series-gran-coupe.jpg` | BMW 2 Series Gran Coupe |
