@@ -290,4 +290,9 @@ Real screens (F3)
 - F-55 Delete asks for confirmation first; Cancel does nothing, and confirming deletes the vehicle and returns to the inventory
 - F-56 Restock takes an amount from 1 to 1000, rejects anything else without a request, and shows the quantity the server returns
 - F-57 register and login forms show the api's message inline, and a signed in user opening login or register is sent to the inventory
+- F-58 Details and Edit are links to the vehicle and edit pages, not buttons
+- F-59 a field error is announced as an alert, and the register password field asks for a new password
+- F-60 a price must look like 1500000 or 1500000.50, a quantity and a restock amount are plain whole numbers, and an image path with .., % or a backslash is refused (no 1e3, no 19.999)
+- F-61 the delete confirmation is a labelled group; focus moves to Cancel when it opens and back to Delete when it is cancelled
+- F-62 if the role cannot be checked, an admin page shows the error and a Try again button; an address that does not exist is sent to the inventory
 

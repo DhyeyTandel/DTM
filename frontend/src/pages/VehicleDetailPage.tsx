@@ -6,7 +6,7 @@ import { EmptyState, ErrorState, LoadingState } from '../components/PageState'
 import { PriceAndStatus } from '../components/PriceAndStatus'
 import { VehiclePhoto } from '../components/VehiclePhoto'
 import { usePurchase } from '../hooks/usePurchase'
-import { useVehicles } from '../hooks/useVehicles'
+import { useVehicle } from '../hooks/useVehicles'
 import { categoryLabel } from '../lib/categories'
 import { OUT_OF_STOCK_LABEL, isSoldOut } from '../lib/stock'
 import { ROUTES } from '../lib/routes'
@@ -25,7 +25,7 @@ function BackLink() {
 
 export function VehicleDetailPage() {
   const vehicleId = Number(useParams().id)
-  const { data: vehicles, isPending, isError, error, refetch } = useVehicles()
+  const { vehicle, isPending, isError, error, refetch } = useVehicle(vehicleId)
   const { purchase, pendingIds, notices } = usePurchase()
 
   if (isPending) return <LoadingState label="Loading the vehicle" />
@@ -39,7 +39,6 @@ export function VehicleDetailPage() {
       />
     )
   }
-  const vehicle = vehicles.find((candidate) => candidate.id === vehicleId)
   if (!vehicle) {
     return (
       <>

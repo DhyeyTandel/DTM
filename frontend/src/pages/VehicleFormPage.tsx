@@ -2,7 +2,7 @@ import { useNavigate, useParams } from 'react-router'
 import { EmptyState, ErrorState, LoadingState } from '../components/PageState'
 import { VehicleForm } from '../components/VehicleForm'
 import { useCreateVehicle, useUpdateVehicle } from '../hooks/useVehicleAdmin'
-import { useVehicles } from '../hooks/useVehicles'
+import { useVehicle } from '../hooks/useVehicles'
 import { EMPTY_VEHICLE_FORM, toVehicleFields, type VehicleFormValues } from '../lib/vehicleForm'
 import type { Vehicle } from '../api/types'
 import { PAISE_PER_RUPEE } from '../lib/money'
@@ -32,13 +32,8 @@ function AddVehicle() {
       pending={create.isPending}
       serverError={create.error?.message ?? null}
       onSubmit={(values) => {
-        const { image_url: imageUrl, ...fields } = toVehicleFields(values)
         create.mutate(
-          {
-            ...fields,
-            quantity: Number(values.quantity),
-            ...(imageUrl ? { image_url: imageUrl } : {}),
-          },
+          { ...toVehicleFields(values), quantity: Number(values.quantity) },
           {
             onSuccess: () => {
               void navigate(ROUTES.home)
@@ -72,7 +67,7 @@ function EditVehicle({ vehicle }: { vehicle: Vehicle }) {
 }
 
 function EditVehicleLoader({ vehicleId }: { vehicleId: number }) {
-  const { data: vehicles, isPending, isError, error, refetch } = useVehicles()
+  const { vehicle, isPending, isError, error, refetch } = useVehicle(vehicleId)
 
   if (isPending) return <LoadingState label="Loading the vehicle" />
   if (isError) {
@@ -85,7 +80,6 @@ function EditVehicleLoader({ vehicleId }: { vehicleId: number }) {
       />
     )
   }
-  const vehicle = vehicles.find((candidate) => candidate.id === vehicleId)
   if (!vehicle) {
     return <EmptyState title="We could not find that vehicle" text="It may have been removed." />
   }

@@ -434,3 +434,9 @@ Append only. Earlier entries are never rewritten. A change of mind is a new entr
 
 **Why** — One list request keeps the screens simple at this size, and a filtered view can be shared as a link. Reading the detail page from the list avoids a new endpoint for data the page already has. Keying queries by the token is cheaper than clearing the whole cache on every sign in and out. A 409 or a 401 does not change when it is asked again, so retrying only delays the message. The in-place delete confirmation is easier to use and to test than a modal. Deleting `/style` instead of hiding it behind admin removes code nobody would open.
 
+## [2026-10-25] Image paths also refuse %, and the frontend checks the same rules
+
+**Decision** — A `/images/` path is also refused if it contains `%` or a backslash, in the schema, in the database (migration 0006) and in the add and edit form. Sign out clears the query cache as well as the token. Details and Edit are links, not buttons. The frontend form limits mirror `backend/app/limits.py`, and prices, quantities and restock amounts must be plain decimal or whole numbers (no `1e3`).
+
+**Why** — The first rule only refused a literal `..`, but a browser turns `%2e%2e` into `..` when it loads an image, so a path could climb out of `/images/`. The reviewer found it. Clearing the cache on sign out stops the last user's vehicles sitting in memory. A link can be opened in a new tab and is announced as a link by assistive technology. `Number()` accepts `1e3` and `0x10`, which a person did not mean to type.
+

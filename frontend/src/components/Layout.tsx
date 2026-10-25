@@ -1,11 +1,13 @@
 import { Outlet } from 'react-router'
-import { clearToken } from '../auth/token'
+import { useSignOut } from '../hooks/useSignOut'
 import { SiteHeader } from './SiteHeader'
 
 export function Layout() {
+  const signOut = useSignOut()
+
   return (
     <>
-      <SiteHeader onSignOut={clearToken} />
+      <SiteHeader onSignOut={signOut} />
       <main>
         <Outlet />
       </main>

@@ -15,7 +15,7 @@ export interface NewVehicle {
   category: string
   price: number
   quantity: number
-  image_url?: string
+  image_url: string | null
 }
 
 export interface VehicleChanges {

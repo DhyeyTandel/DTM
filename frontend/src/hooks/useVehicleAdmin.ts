@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import type { Vehicle } from '../api/types'
 import {
   createVehicle,
   deleteVehicle,
@@ -8,7 +7,7 @@ import {
   type VehicleChanges,
 } from '../api/vehicles'
 import { useToken } from './useToken'
-import { vehiclesKey } from './useVehicles'
+import { replaceVehicleInList, vehiclesKey } from './useVehicles'
 
 function useRefreshList() {
   const queryClient = useQueryClient()
@@ -40,9 +39,7 @@ export function useRestockVehicle(vehicleId: number) {
   return useMutation({
     mutationFn: (amount: number) => restockVehicle(vehicleId, amount),
     onSuccess: (vehicle) => {
-      queryClient.setQueryData<Vehicle[]>(vehiclesKey(token), (list) =>
-        list?.map((existing) => (existing.id === vehicle.id ? vehicle : existing)),
-      )
+      replaceVehicleInList(queryClient, token, vehicle)
     },
   })
 }

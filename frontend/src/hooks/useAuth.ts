@@ -4,9 +4,9 @@ import { setToken } from '../auth/token'
 
 export function useLogin() {
   return useMutation({
-    mutationFn: async ({ email, password }: { email: string; password: string }) => {
-      setToken(await login(email, password))
-    },
+    mutationFn: ({ email, password }: { email: string; password: string }) =>
+      login(email, password),
+    onSuccess: setToken,
   })
 }
 

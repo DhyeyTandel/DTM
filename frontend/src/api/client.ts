@@ -3,6 +3,7 @@ import { clearToken, getToken } from '../auth/token'
 const API_BASE = '/api'
 const UNAUTHORIZED = 401
 const NO_CONTENT = 204
+export const HTTP_CONFLICT = 409
 
 export class ApiError extends Error {
   readonly status: number
@@ -47,6 +48,7 @@ export async function request<T>(
   path: string,
   { method = 'GET', body }: RequestOptions = {},
 ): Promise<T> {
+  // The test environment's fetch needs an absolute address, and the browser accepts one too.
   const response = await fetch(new URL(`${API_BASE}${path}`, window.location.origin), {
     method,
     headers: headersFor(getToken(), body !== undefined),

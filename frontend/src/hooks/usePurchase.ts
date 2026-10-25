@@ -1,13 +1,11 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { useState } from 'react'
-import { ApiError } from '../api/client'
-import type { Vehicle } from '../api/types'
+import { ApiError, HTTP_CONFLICT } from '../api/client'
 import { purchaseVehicle } from '../api/vehicles'
 import type { CardNotice } from '../lib/cardNotice'
-import { vehiclesKey } from './useVehicles'
+import { replaceVehicleInList, vehiclesKey } from './useVehicles'
 import { useToken } from './useToken'
 
-const CONFLICT = 409
 const PURCHASE_COMPLETE: CardNotice = { kind: 'success', message: 'Purchase complete.' }
 const LOST_THE_LAST_ONE: CardNotice = {
   kind: 'error',
@@ -40,13 +38,11 @@ export function usePurchase() {
       showNotice(vehicleId, null)
     },
     onSuccess: (vehicle) => {
-      queryClient.setQueryData<Vehicle[]>(vehiclesKey(token), (list) =>
-        list?.map((existing) => (existing.id === vehicle.id ? vehicle : existing)),
-      )
+      replaceVehicleInList(queryClient, token, vehicle)
       showNotice(vehicle.id, PURCHASE_COMPLETE)
     },
     onError: (error, vehicleId) => {
-      if (error instanceof ApiError && error.status === CONFLICT) {
+      if (error instanceof ApiError && error.status === HTTP_CONFLICT) {
         showNotice(vehicleId, LOST_THE_LAST_ONE)
         void queryClient.invalidateQueries({ queryKey: vehiclesKey(token) })
       } else {
