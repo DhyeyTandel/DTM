@@ -1,7 +1,7 @@
 import { useId } from 'react'
 import type { Vehicle } from '../api/types'
 import { formatPrice } from '../lib/money'
-import { stockStatus } from '../lib/stock'
+import { OUT_OF_STOCK_LABEL, isSoldOut } from '../lib/stock'
 import { Button } from './Button'
 import { StockLabel } from './StockLabel'
 import { VehiclePhoto } from './VehiclePhoto'
@@ -14,7 +14,7 @@ interface VehicleCardProps {
 export function VehicleCard({ vehicle, onPurchase }: VehicleCardProps) {
   const titleId = useId()
   const name = `${vehicle.make} ${vehicle.model}`
-  const soldOut = stockStatus(vehicle.quantity) === 'sold-out'
+  const soldOut = isSoldOut(vehicle.quantity)
 
   return (
     <article className="flex flex-col">
@@ -35,7 +35,7 @@ export function VehicleCard({ vehicle, onPurchase }: VehicleCardProps) {
         }}
         className="mt-4"
       >
-        {soldOut ? 'Out of stock' : 'Purchase'}
+        {soldOut ? OUT_OF_STOCK_LABEL : 'Purchase'}
       </Button>
     </article>
   )

@@ -4,6 +4,8 @@ import { FilterBar, NO_FILTERS } from '../components/FilterBar'
 import { SelectField } from '../components/SelectField'
 import { TextField } from '../components/TextField'
 import { VehicleCard } from '../components/VehicleCard'
+import { CATEGORIES } from '../lib/categories'
+import { LOW_STOCK_MAX } from '../lib/stock'
 import { SAMPLE_VEHICLES } from './styleSamples'
 
 const COLOUR_ROLES = [
@@ -77,7 +79,7 @@ export function StylePage() {
 
       <Section title="Vehicle listing">
         <p className="mb-6 max-w-prose text-ink-muted">
-          In stock, low (3 or fewer), sold out, and a car with no photo yet.
+          In stock, low ({LOW_STOCK_MAX} or fewer), sold out, and a car with no photo yet.
         </p>
         <div className="grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-3">
           {SAMPLE_VEHICLES.map((vehicle) => (
@@ -107,8 +109,11 @@ export function StylePage() {
             error="Use at least 8 characters."
           />
           <SelectField label="Category" defaultValue="suv">
-            <option value="suv">suv</option>
-            <option value="sedan">sedan</option>
+            {CATEGORIES.map((category) => (
+              <option key={category} value={category}>
+                {category}
+              </option>
+            ))}
           </SelectField>
         </div>
       </Section>
