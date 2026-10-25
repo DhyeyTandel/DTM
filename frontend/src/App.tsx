@@ -21,6 +21,7 @@ export function App() {
           <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
           <Route element={<RequireAdmin />}>
             <Route path="/admin/vehicles/new" element={<VehicleFormPage />} />
+            <Route path="/admin/vehicles/:id/edit" element={<VehicleFormPage />} />
           </Route>
         </Route>
       </Route>

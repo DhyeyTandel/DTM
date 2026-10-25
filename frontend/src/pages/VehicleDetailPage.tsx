@@ -1,4 +1,5 @@
 import { Link, useParams } from 'react-router'
+import { AdminControls } from '../components/AdminControls'
 import { Button } from '../components/Button'
 import { NoticeText } from '../components/NoticeText'
 import { EmptyState, ErrorState, LoadingState } from '../components/PageState'
@@ -79,6 +80,7 @@ export function VehicleDetailPage() {
           >
             {isSoldOut(vehicle.quantity) ? OUT_OF_STOCK_LABEL : 'Purchase'}
           </Button>
+          <AdminControls vehicle={vehicle} />
         </div>
       </div>
     </div>

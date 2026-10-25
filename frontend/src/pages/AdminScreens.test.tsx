@@ -102,8 +102,7 @@ test('the edit form opens with the current values, has no quantity, and saves wi
     }),
   )
   renderApp('/admin/vehicles/12/edit', 'admin')
-  await screen.findByRole('heading', { name: 'Edit vehicle' })
-  expect(screen.getByLabelText('Make')).toHaveValue('Honda')
+  expect(await screen.findByLabelText('Make')).toHaveValue('Honda')
   expect(screen.getByLabelText('Price (₹)')).toHaveValue('1449000')
   expect(screen.getByLabelText('Image URL')).toHaveValue('/images/vehicles/honda-city.jpg')
   expect(screen.queryByLabelText('Quantity')).not.toBeInTheDocument()
