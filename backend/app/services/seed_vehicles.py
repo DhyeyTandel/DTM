@@ -13,17 +13,17 @@ class SampleVehicle(NamedTuple):
     image_url: str
 
 
-COMMONS_THUMBNAIL_BASE = "https://thumb.wikimedia.org/wikipedia/commons/thumb"
-THUMBNAIL_WIDTH = 960
+PHOTO_FOLDER = "/images/vehicles/"
 
 
-def commons_photo(folder: str, filename: str) -> str:
-    return f"{COMMONS_THUMBNAIL_BASE}/{folder}/{filename}/{THUMBNAIL_WIDTH}px-{filename}"
+def vehicle_photo(filename: str) -> str:
+    return f"{PHOTO_FOLDER}{filename}"
 
 
 # Prices are paise, grouped as lakhs: 7_50_000_00 is 7,50,000 rupees.
 # Zero stock is there to show sold-out cars.
-# The photos are from Wikimedia Commons and credited in the README.
+# The photos are from Wikimedia Commons, kept in frontend/public/images/vehicles (see
+# docs/IMAGE_CREDITS.md).
 SAMPLE_VEHICLES = [
     SampleVehicle(
         "Maruti Suzuki",
@@ -31,7 +31,7 @@ SAMPLE_VEHICLES = [
         Category.HATCHBACK,
         7_50_000_00,
         12,
-        commons_photo("4/43", "Maruti_Suzuki_Swift_4456.JPG"),
+        vehicle_photo("maruti-suzuki-swift.jpg"),
     ),
     SampleVehicle(
         "Tata",
@@ -39,7 +39,7 @@ SAMPLE_VEHICLES = [
         Category.HATCHBACK,
         6_00_000_00,
         8,
-        commons_photo("c/ca", "2022_Tata_Tiago_XZA%2B_front_20230512.jpg"),
+        vehicle_photo("tata-tiago.jpg"),
     ),
     SampleVehicle(
         "Hyundai",
@@ -47,7 +47,7 @@ SAMPLE_VEHICLES = [
         Category.HATCHBACK,
         8_50_000_00,
         0,
-        commons_photo("6/6d", "Hyundai_i20_%28BC3%29_1X7A6488.jpg"),
+        vehicle_photo("hyundai-i20.jpg"),
     ),
     SampleVehicle(
         "Honda",
@@ -55,7 +55,7 @@ SAMPLE_VEHICLES = [
         Category.SEDAN,
         12_50_000_00,
         6,
-        commons_photo("5/5c", "2022_Honda_City_ZX_i-VTEC_%28India%29_front_view.jpg"),
+        vehicle_photo("honda-city.jpg"),
     ),
     SampleVehicle(
         "Hyundai",
@@ -63,7 +63,7 @@ SAMPLE_VEHICLES = [
         Category.SEDAN,
         11_50_000_00,
         4,
-        commons_photo("3/31", "HYUNDAI_VERNA_%28HYUNDAI_ACCENT%29_%28RB%2CRC%29_China.jpg"),
+        vehicle_photo("hyundai-verna.jpg"),
     ),
     SampleVehicle(
         "Skoda",
@@ -71,7 +71,7 @@ SAMPLE_VEHICLES = [
         Category.SEDAN,
         13_00_000_00,
         0,
-        commons_photo("a/a9", "Skoda_Slavia_Side_view.jpg"),
+        vehicle_photo("skoda-slavia.jpg"),
     ),
     SampleVehicle(
         "Toyota",
@@ -79,7 +79,7 @@ SAMPLE_VEHICLES = [
         Category.SUV,
         38_00_000_00,
         3,
-        commons_photo("2/2c", "Toyota_Fortuner_LTD_4x2_20221019.jpg"),
+        vehicle_photo("toyota-fortuner.jpg"),
     ),
     SampleVehicle(
         "Mahindra",
@@ -87,7 +87,7 @@ SAMPLE_VEHICLES = [
         Category.SUV,
         18_00_000_00,
         7,
-        commons_photo("3/35", "2023_Mahindra_XUV700_AX7L_front.jpg"),
+        vehicle_photo("mahindra-xuv700.jpg"),
     ),
     SampleVehicle(
         "Hyundai",
@@ -95,7 +95,7 @@ SAMPLE_VEHICLES = [
         Category.SUV,
         15_00_000_00,
         10,
-        commons_photo("5/55", "HYUNDAI_CRETA_%2C_iX25_%28SU2%29_China_%284%29.jpg"),
+        vehicle_photo("hyundai-creta.jpg"),
     ),
     SampleVehicle(
         "BMW",
@@ -103,7 +103,7 @@ SAMPLE_VEHICLES = [
         Category.COUPE,
         45_00_000_00,
         2,
-        commons_photo("b/b5", "BMW_2_Series_Gran_Coupe_IMG001.jpg"),
+        vehicle_photo("bmw-2-series-gran-coupe.jpg"),
     ),
     SampleVehicle(
         "Audi",
@@ -111,7 +111,7 @@ SAMPLE_VEHICLES = [
         Category.COUPE,
         60_00_000_00,
         0,
-        commons_photo("3/32", "Audi_A5_Sportback_F5_FL_1X7A7086.jpg"),
+        vehicle_photo("audi-a5.jpg"),
     ),
     SampleVehicle(
         "Toyota",
@@ -119,7 +119,7 @@ SAMPLE_VEHICLES = [
         Category.TRUCK,
         30_00_000_00,
         5,
-        commons_photo("8/81", "Toyota_HiLux_GR_Sport_1X7A7281.jpg"),
+        vehicle_photo("toyota-hilux.jpg"),
     ),
     SampleVehicle(
         "Isuzu",
@@ -127,7 +127,7 @@ SAMPLE_VEHICLES = [
         Category.TRUCK,
         25_00_000_00,
         4,
-        commons_photo("6/6b", "2021_Isuzu_D-Max_V-Cross_4-Door_3.0_Ddi_M.jpg"),
+        vehicle_photo("isuzu-d-max-v-cross.jpg"),
     ),
     SampleVehicle(
         "Tata",
@@ -135,7 +135,7 @@ SAMPLE_VEHICLES = [
         Category.EV,
         15_00_000_00,
         9,
-        commons_photo("2/25", "Tata_Nexon_Blue_Dual_Tone.jpg"),
+        vehicle_photo("tata-nexon-ev.jpg"),
     ),
     SampleVehicle(
         "MG",
@@ -143,7 +143,7 @@ SAMPLE_VEHICLES = [
         Category.EV,
         19_00_000_00,
         3,
-        commons_photo("b/b9", "MG_ZS_EV_Facelift_1X7A5867.jpg"),
+        vehicle_photo("mg-zs-ev.jpg"),
     ),
     SampleVehicle(
         "Hyundai",
@@ -151,7 +151,7 @@ SAMPLE_VEHICLES = [
         Category.EV,
         46_00_000_00,
         1,
-        commons_photo("a/a3", "Hyundai_Ioniq_5_1X7A0848.jpg"),
+        vehicle_photo("hyundai-ioniq-5.jpg"),
     ),
 ]
 

@@ -1,7 +1,7 @@
 # Image credits
 
-The sixteen sample vehicles in the seed use photographs from Wikimedia Commons, shown through
-960 pixel thumbnails on `thumb.wikimedia.org`. Every file is licensed CC BY-SA or in the public domain.
+The sixteen sample vehicles in the seed use photographs from Wikimedia Commons, kept as 960 pixel copies in
+`frontend/public/images/vehicles/` (see the last section). Every file is licensed CC BY-SA or in the public domain.
 CC BY-SA asks for the author's name, the licence, and a link back, which is what this table is for.
 
 | Vehicle | Photo on Commons | Author | Licence |
@@ -31,15 +31,25 @@ Where the photo is not exactly the listed car:
 - The Creta and Verna photos show cars with Chinese plates.
 - The Slavia and Ioniq 5 photos are rear three-quarter views, the Slavia inside a showroom.
 
-## Copies kept in the frontend
+## Self hosted copies
 
-The /style page does not hotlink Commons. Six of the photos above are stored as 960px copies in `frontend/public/images/`, unchanged, under the same licences and credits as the table:
+The photos are not hotlinked. Each is a 960px copy, unchanged, kept in `frontend/public/images/vehicles/` and served from the same origin as `/images/vehicles/<file>`, under the licence and with the credit in the table above. The seed and the inventory page use these paths.
 
-| File | Photo |
+| Vehicle | File |
 |---|---|
-| `honda-city.jpg` | Honda City |
-| `toyota-fortuner.jpg` | Toyota Fortuner |
-| `maruti-swift.jpg` | Maruti Suzuki Swift |
-| `mahindra-xuv700.jpg` | Mahindra XUV700 |
-| `tata-tiago.jpg` | Tata Tiago |
-| `bmw-2-series-gran-coupe.jpg` | BMW 2 Series Gran Coupe |
+| Maruti Suzuki Swift | `maruti-suzuki-swift.jpg` |
+| Tata Tiago | `tata-tiago.jpg` |
+| Hyundai i20 | `hyundai-i20.jpg` |
+| Honda City | `honda-city.jpg` |
+| Hyundai Verna | `hyundai-verna.jpg` |
+| Skoda Slavia | `skoda-slavia.jpg` |
+| Toyota Fortuner | `toyota-fortuner.jpg` |
+| Mahindra XUV700 | `mahindra-xuv700.jpg` |
+| Hyundai Creta | `hyundai-creta.jpg` |
+| BMW 2 Series Gran Coupe | `bmw-2-series-gran-coupe.jpg` |
+| Audi A5 | `audi-a5.jpg` |
+| Toyota Hilux | `toyota-hilux.jpg` |
+| Isuzu D-Max V-Cross | `isuzu-d-max-v-cross.jpg` |
+| Tata Nexon EV | `tata-nexon-ev.jpg` |
+| MG ZS EV | `mg-zs-ev.jpg` |
+| Hyundai Ioniq 5 | `hyundai-ioniq-5.jpg` |
