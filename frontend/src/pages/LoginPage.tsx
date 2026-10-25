@@ -2,6 +2,7 @@ import { Link, Navigate, useLocation } from 'react-router'
 import { CredentialsForm } from '../components/CredentialsForm'
 import { useLogin } from '../hooks/useAuth'
 import { useToken } from '../hooks/useToken'
+import { ROUTES } from '../lib/routes'
 
 interface LoginLocationState {
   registered?: boolean
@@ -12,7 +13,7 @@ export function LoginPage() {
   const login = useLogin()
   const state = useLocation().state as LoginLocationState | null
 
-  if (token) return <Navigate to="/" replace />
+  if (token) return <Navigate to={ROUTES.home} replace />
 
   return (
     <CredentialsForm
@@ -28,7 +29,7 @@ export function LoginPage() {
       footer={
         <>
           New here?{' '}
-          <Link to="/register" className="font-semibold text-ink underline">
+          <Link to={ROUTES.register} className="font-semibold text-ink underline">
             Create an account
           </Link>
         </>

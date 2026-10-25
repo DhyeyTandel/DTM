@@ -9,12 +9,13 @@ import { usePurchase } from '../hooks/usePurchase'
 import { useVehicles } from '../hooks/useVehicles'
 import { categoryLabel } from '../lib/categories'
 import { OUT_OF_STOCK_LABEL, isSoldOut } from '../lib/stock'
+import { ROUTES } from '../lib/routes'
 import { formatStockNumber } from '../lib/stockNumber'
 
 function BackLink() {
   return (
     <Link
-      to="/"
+      to={ROUTES.home}
       className="inline-flex min-h-11 items-center font-semibold underline underline-offset-4"
     >
       ← Back to the lot

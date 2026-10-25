@@ -7,6 +7,7 @@ import { EMPTY_VEHICLE_FORM, toVehicleFields, type VehicleFormValues } from '../
 import type { Vehicle } from '../api/types'
 import { PAISE_PER_RUPEE } from '../lib/money'
 import { oneOf } from '../lib/oneOf'
+import { ROUTES } from '../lib/routes'
 import { CATEGORIES } from '../lib/categories'
 
 function formValuesOf(vehicle: Vehicle): VehicleFormValues {
@@ -40,7 +41,7 @@ function AddVehicle() {
           },
           {
             onSuccess: () => {
-              void navigate('/')
+              void navigate(ROUTES.home)
             },
           },
         )
@@ -62,7 +63,7 @@ function EditVehicle({ vehicle }: { vehicle: Vehicle }) {
       onSubmit={(values) => {
         update.mutate(toVehicleFields(values), {
           onSuccess: () => {
-            void navigate(`/vehicles/${String(vehicle.id)}`)
+            void navigate(ROUTES.vehicle(vehicle.id))
           },
         })
       }}

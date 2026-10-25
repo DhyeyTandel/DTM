@@ -1,5 +1,7 @@
 import { Navigate, Outlet } from 'react-router'
 import { useCurrentUser } from '../hooks/useCurrentUser'
+import { isAdmin } from '../lib/roles'
+import { ROUTES } from '../lib/routes'
 import { ErrorState, LoadingState } from './PageState'
 
 export function RequireAdmin() {
@@ -16,5 +18,5 @@ export function RequireAdmin() {
       />
     )
   }
-  return user.role === 'admin' ? <Outlet /> : <Navigate to="/" replace />
+  return isAdmin(user) ? <Outlet /> : <Navigate to={ROUTES.home} replace />
 }

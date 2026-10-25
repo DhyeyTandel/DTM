@@ -2,6 +2,7 @@ import { useEffect, useId, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import type { Vehicle } from '../api/types'
 import { useDeleteVehicle } from '../hooks/useVehicleAdmin'
+import { ROUTES } from '../lib/routes'
 import { Button } from './Button'
 
 export function DeleteVehicle({ vehicle }: { vehicle: Vehicle }) {
@@ -48,7 +49,7 @@ export function DeleteVehicle({ vehicle }: { vehicle: Vehicle }) {
           onClick={() => {
             deleteMutation.mutate(undefined, {
               onSuccess: () => {
-                void navigate('/')
+                void navigate(ROUTES.home)
               },
             })
           }}

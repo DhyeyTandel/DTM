@@ -2,6 +2,7 @@ import { useId } from 'react'
 import type { Vehicle } from '../api/types'
 import type { CardNotice } from '../lib/cardNotice'
 import { categoryLabel } from '../lib/categories'
+import { ROUTES } from '../lib/routes'
 import { formatStockNumber } from '../lib/stockNumber'
 import { OUT_OF_STOCK_LABEL, isSoldOut } from '../lib/stock'
 import { Button, ButtonLink } from './Button'
@@ -48,11 +49,7 @@ export function VehicleCard({ vehicle, purchasing = false, notice, onPurchase }:
             >
               {soldOut ? OUT_OF_STOCK_LABEL : 'Purchase'}
             </Button>
-            <ButtonLink
-              variant="dark"
-              to={`/vehicles/${String(vehicle.id)}`}
-              aria-describedby={titleId}
-            >
+            <ButtonLink variant="dark" to={ROUTES.vehicle(vehicle.id)} aria-describedby={titleId}>
               Details
             </ButtonLink>
           </div>

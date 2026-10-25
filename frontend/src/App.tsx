@@ -7,22 +7,23 @@ import { LoginPage } from './pages/LoginPage'
 import { RegisterPage } from './pages/RegisterPage'
 import { VehicleDetailPage } from './pages/VehicleDetailPage'
 import { VehicleFormPage } from './pages/VehicleFormPage'
+import { ROUTE_PATTERNS, ROUTES } from './lib/routes'
 
 export function App() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/login" element={<LoginPage />} />
-        <Route path="/register" element={<RegisterPage />} />
+        <Route path={ROUTES.login} element={<LoginPage />} />
+        <Route path={ROUTES.register} element={<RegisterPage />} />
         <Route element={<RequireAuth />}>
-          <Route path="/" element={<InventoryPage />} />
-          <Route path="/vehicles/:id" element={<VehicleDetailPage />} />
+          <Route path={ROUTES.home} element={<InventoryPage />} />
+          <Route path={ROUTE_PATTERNS.vehicle} element={<VehicleDetailPage />} />
           <Route element={<RequireAdmin />}>
-            <Route path="/admin/vehicles/new" element={<VehicleFormPage />} />
-            <Route path="/admin/vehicles/:id/edit" element={<VehicleFormPage />} />
+            <Route path={ROUTES.newVehicle} element={<VehicleFormPage />} />
+            <Route path={ROUTE_PATTERNS.editVehicle} element={<VehicleFormPage />} />
           </Route>
         </Route>
-        <Route path="*" element={<Navigate to="/" replace />} />
+        <Route path="*" element={<Navigate to={ROUTES.home} replace />} />
       </Route>
     </Routes>
   )
