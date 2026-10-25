@@ -55,3 +55,9 @@ test('a value set back to its default is removed from the url', () => {
 
   expect(result.current.location.search).toBe('')
 })
+
+test('a category that is not a category is ignored', () => {
+  const { result } = renderAt('/?category=spaceship')
+
+  expect(result.current.listing.params.category).toBe('')
+})

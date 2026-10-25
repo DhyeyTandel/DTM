@@ -18,7 +18,7 @@ test('the headline says car for a count of one', () => {
 test('the active tab is marked and clicking the other one reports it', async () => {
   const onTab = vi.fn()
   render(<Hero count={16} tab="current" onTab={onTab} />)
-  expect(screen.getByRole('button', { name: 'Current' })).toHaveAttribute('aria-current', 'true')
+  expect(screen.getByRole('button', { name: 'Current' })).toHaveAttribute('aria-pressed', 'true')
 
   await userEvent.click(screen.getByRole('button', { name: 'Sold out' }))
 

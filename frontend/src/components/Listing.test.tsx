@@ -1,7 +1,7 @@
 import { render, screen, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import { MemoryRouter } from 'react-router'
-import { expect, test, vi } from 'vitest'
+import { afterEach, beforeEach, expect, test, vi } from 'vitest'
 import type { Vehicle } from '../api/types'
 import { Listing } from './Listing'
 
@@ -72,4 +72,39 @@ test('the sort control orders the grid', async () => {
     .getAllByRole('heading')
     .map((heading) => heading.textContent)
   expect(titles).toEqual(['Honda City', 'Maruti Swift', 'Toyota Fortuner'])
+})
+
+test('Hide filters and Show filters hand focus to each other', async () => {
+  renderListing()
+
+  await userEvent.click(screen.getByRole('button', { name: 'Hide filters' }))
+  expect(screen.getByRole('button', { name: 'Show filters' })).toHaveFocus()
+
+  await userEvent.click(screen.getByRole('button', { name: 'Show filters' }))
+  expect(screen.getByRole('button', { name: 'Hide filters' })).toHaveFocus()
+})
+
+beforeEach(() => {
+  HTMLDialogElement.prototype.showModal = function showModal() {
+    this.setAttribute('open', '')
+  }
+  HTMLDialogElement.prototype.close = function close() {
+    this.removeAttribute('open')
+  }
+})
+
+afterEach(() => {
+  Reflect.deleteProperty(HTMLDialogElement.prototype, 'showModal')
+  Reflect.deleteProperty(HTMLDialogElement.prototype, 'close')
+})
+
+test('the Filters button opens the filter drawer and Close filters closes it', async () => {
+  renderListing()
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+
+  await userEvent.click(screen.getByRole('button', { name: 'Filters' }))
+  expect(screen.getByRole('dialog', { name: 'Filter vehicles' })).toBeVisible()
+
+  await userEvent.click(screen.getByRole('button', { name: 'Close filters' }))
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
 })

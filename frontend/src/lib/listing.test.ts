@@ -56,3 +56,15 @@ test('sort orders by price low to high, price high to low, or name', () => {
 test('no sort leaves the order as it came', () => {
   expect(sortVehicles(all, '')).toEqual(all)
 })
+
+test('a negative price is ignored', () => {
+  expect(filterVehicles(all, { ...DEFAULT_LISTING_PARAMS, minPrice: '-5' })).toEqual(all)
+})
+
+test('a price with decimals is rounded to whole paise', () => {
+  const justUnderOneLakh = vehicle({ id: 9, price: 1_00_000_00 })
+
+  const params = { ...DEFAULT_LISTING_PARAMS, minPrice: '100000.004' }
+
+  expect(filterVehicles([justUnderOneLakh], params)).toEqual([justUnderOneLakh])
+})

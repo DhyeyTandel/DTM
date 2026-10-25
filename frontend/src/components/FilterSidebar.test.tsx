@@ -13,7 +13,7 @@ test('every filter section starts closed and a click opens and closes it', async
   renderSidebar()
   const section = screen.getByRole('button', { name: /price range/i })
   expect(section).toHaveAttribute('aria-expanded', 'false')
-  expect(screen.queryByLabelText('Min price (₹)')).not.toBeInTheDocument()
+  expect(screen.getByLabelText('Min price (₹)')).not.toBeVisible()
 
   await userEvent.click(section)
   expect(section).toHaveAttribute('aria-expanded', 'true')
@@ -21,7 +21,7 @@ test('every filter section starts closed and a click opens and closes it', async
 
   await userEvent.click(section)
   expect(section).toHaveAttribute('aria-expanded', 'false')
-  expect(screen.queryByLabelText('Min price (₹)')).not.toBeInTheDocument()
+  expect(screen.getByLabelText('Min price (₹)')).not.toBeVisible()
 })
 
 test('choosing a category reports it', async () => {
@@ -49,4 +49,23 @@ test('choosing an availability reports it', async () => {
   await userEvent.click(screen.getByLabelText('Low stock'))
 
   expect(onChange).toHaveBeenCalledWith({ availability: 'low' })
+})
+
+test('a closed section keeps the panel its button controls', () => {
+  renderSidebar()
+  const section = screen.getByRole('button', { name: /price range/i })
+
+  const panelId = section.getAttribute('aria-controls') ?? ''
+
+  expect(document.getElementById(panelId)).toBeInTheDocument()
+})
+
+test('each radio group is named after its section', async () => {
+  renderSidebar()
+
+  await userEvent.click(screen.getByRole('button', { name: /category/i }))
+  await userEvent.click(screen.getByRole('button', { name: /availability/i }))
+
+  expect(screen.getByRole('radiogroup', { name: 'Category' })).toBeInTheDocument()
+  expect(screen.getByRole('radiogroup', { name: 'Availability' })).toBeInTheDocument()
 })
