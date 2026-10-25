@@ -8,7 +8,7 @@ interface CategoryTilesProps {
 export function CategoryTiles({ selected, onSelect }: CategoryTilesProps) {
   return (
     <section aria-labelledby="browse-by-category">
-      <h2 id="browse-by-category" className="font-display text-2xl font-bold uppercase">
+      <h2 id="browse-by-category" className="text-xl font-bold">
         Browse by category
       </h2>
       <div className="mt-4 flex flex-wrap gap-3">
@@ -22,7 +22,7 @@ export function CategoryTiles({ selected, onSelect }: CategoryTilesProps) {
               onClick={() => {
                 onSelect(isSelected ? '' : category)
               }}
-              className={`size-24 cursor-pointer border text-sm font-semibold tracking-widest uppercase transition-colors sm:size-32 sm:text-base ${
+              className={`size-24 cursor-pointer border font-display text-lg font-bold tracking-widest uppercase transition-colors sm:size-32 sm:text-base ${
                 isSelected
                   ? 'border-brand bg-brand text-on-brand'
                   : 'border-line bg-surface text-ink hover:border-ink'

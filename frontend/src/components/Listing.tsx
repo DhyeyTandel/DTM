@@ -69,7 +69,7 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div className="flex items-center gap-4">
-              <p className="font-display text-2xl font-bold uppercase">
+              <p className="text-lg font-semibold">
                 {visibleVehicles.length} {visibleVehicles.length === 1 ? 'vehicle' : 'vehicles'}
               </p>
               {filtersHidden && (
@@ -111,7 +111,7 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
           </div>
           {visibleVehicles.length === 0 ? (
             <div className="mt-8 border border-line bg-surface p-8">
-              <p className="font-display text-2xl font-bold uppercase">No vehicles match</p>
+              <p className="text-xl font-bold">No vehicles match</p>
               <p className="mt-2 text-ink-muted">Try a wider price range or another category.</p>
               <Button
                 className="mt-4"

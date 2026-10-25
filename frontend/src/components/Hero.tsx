@@ -36,7 +36,7 @@ export function Hero({ count, tab, onTab }: HeroProps) {
               onClick={() => {
                 onTab(value)
               }}
-              className={`min-h-12 cursor-pointer px-6 font-display text-xl font-bold tracking-wider uppercase transition-colors ${
+              className={`min-h-12 cursor-pointer px-6 text-[0.9375rem] font-semibold transition-colors ${
                 tab === value
                   ? 'bg-brand text-on-brand'
                   : 'bg-white/10 text-on-band hover:bg-white/20'

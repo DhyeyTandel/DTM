@@ -34,22 +34,24 @@ export function VehicleCard({ vehicle, onPurchase, onDetails }: VehicleCardProps
     <article className="flex h-full flex-col border border-line bg-surface">
       <VehiclePhoto imageUrl={vehicle.image_url} description={name} quantity={vehicle.quantity} />
       <div className="flex flex-1 flex-col p-4">
-        <h3 id={titleId} className="font-display text-3xl leading-none font-bold uppercase">
-          <span className="block">{vehicle.make}</span>{' '}
-          <span className="block text-brand-text">{vehicle.model}</span>
+        <h3 id={titleId}>
+          <span className="block font-display text-[1.75rem] leading-none font-bold uppercase">
+            {vehicle.make}
+          </span>{' '}
+          <span className="mt-1 block text-xl leading-tight font-semibold text-brand-text">
+            {vehicle.model}
+          </span>
         </h3>
-        <p className="mt-3 flex items-center text-sm text-ink-muted">
+        <p className="mt-2 flex items-center text-sm text-ink-muted">
           <span>{formatStockNumber(vehicle.id)}</span>
           <span aria-hidden="true" className="mx-3 h-4 border-l border-line" />
           <span>{categoryLabel(vehicle.category)}</span>
         </p>
-        <p className="mt-5 text-xs font-semibold tracking-widest text-ink-muted uppercase">
+        <p className="mt-4 text-xs font-semibold tracking-widest text-ink-muted uppercase">
           Ex-showroom price
         </p>
         <div className="mt-1 flex flex-wrap items-end justify-between gap-x-3 gap-y-1">
-          <p className="font-display text-4xl leading-none font-bold">
-            {formatPrice(vehicle.price)}
-          </p>
+          <p className="text-[1.625rem] leading-none font-bold">{formatPrice(vehicle.price)}</p>
           <p className="flex items-center gap-2 pb-0.5 whitespace-nowrap">
             <span
               aria-hidden="true"
@@ -58,8 +60,8 @@ export function VehicleCard({ vehicle, onPurchase, onDetails }: VehicleCardProps
             {stockLabel(vehicle.quantity)}
           </p>
         </div>
-        <div className="mt-auto pt-5">
-          <div className="grid grid-cols-2 gap-2 border-t border-line pt-4">
+        <div className="mt-auto pt-4">
+          <div className="grid grid-cols-2 gap-2 border-t border-line pt-3">
             <Button
               aria-describedby={titleId}
               disabled={soldOut}

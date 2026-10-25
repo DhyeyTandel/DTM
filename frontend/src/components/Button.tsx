@@ -17,7 +17,7 @@ export function Button({ variant = 'primary', className = '', ...props }: Button
   return (
     <button
       type="button"
-      className={`min-h-11 cursor-pointer border px-4 text-base font-semibold transition-colors disabled:cursor-not-allowed ${variantClasses[variant]} ${className}`}
+      className={`min-h-11 cursor-pointer border px-4 text-[0.9375rem] font-semibold transition-colors disabled:cursor-not-allowed ${variantClasses[variant]} ${className}`}
       {...props}
     />
   )

@@ -26,6 +26,8 @@
   --color-low: #e0a100;
   --color-gone: #b1141c;
   --color-error: #b1141c;
+  --face-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
+  --face-body: 'Barlow', system-ui, sans-serif;
 }
 
 :root[data-theme='dark'] {
@@ -61,15 +63,15 @@
   --color-gone: var(--color-gone);
   --color-error: var(--color-error);
 
-  --font-display: 'Barlow Condensed', 'Arial Narrow', sans-serif;
-  --font-sans: 'Barlow', system-ui, sans-serif;
+  --font-display: var(--face-display);
+  --font-sans: var(--face-body);
 }
 
 @layer base {
   html {
     background: var(--color-canvas);
     color: var(--color-ink);
-    font-family: var(--font-sans);
+    font-family: var(--face-body);
     font-size: 100%;
     -webkit-text-size-adjust: 100%;
   }
