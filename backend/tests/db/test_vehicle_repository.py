@@ -34,6 +34,9 @@ def build_vehicle(**changes: object) -> dict[str, Any]:
         ({"model": ""}, "ck_vehicles_model"),
         ({"image_url": "http://example.com/car.jpg"}, "ck_vehicles_image_url"),
         ({"image_url": "javascript:alert(1)"}, "ck_vehicles_image_url"),
+        ({"image_url": "/etc/passwd"}, "ck_vehicles_image_url"),
+        ({"image_url": "//evil.example/x.jpg"}, "ck_vehicles_image_url"),
+        ({"image_url": "/images/../secret.jpg"}, "ck_vehicles_image_url"),
     ],
 )
 def test_the_database_refuses_a_vehicle_that_breaks_a_check_constraint(
@@ -56,6 +59,17 @@ def test_a_vehicle_without_an_image_url_is_accepted_and_has_none(
         vehicle = SqlVehicleRepository(session).add(**build_vehicle())
 
         assert vehicle.image_url is None
+
+
+def test_a_self_hosted_photo_path_is_accepted(
+    rolled_back_session_factory: sessionmaker[Session],
+) -> None:
+    with rolled_back_session_factory() as session:
+        vehicle = SqlVehicleRepository(session).add(
+            **build_vehicle(image_url="/images/vehicles/swift.jpg")
+        )
+
+        assert vehicle.image_url == "/images/vehicles/swift.jpg"
 
 
 def test_updating_changes_only_the_five_editable_columns(

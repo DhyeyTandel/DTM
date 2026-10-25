@@ -168,3 +168,33 @@ def test_an_id_that_is_not_a_valid_vehicle_id_returns_422(
     response = client.put(f"{VEHICLES_URL}/{vehicle_id}", json=NEW_FIELDS, headers=admin_headers)
 
     assert response.status_code == 422
+
+
+def test_updating_to_a_self_hosted_photo_path_returns_it(
+    client: TestClient, admin_headers: dict[str, str], stocked_vehicle: dict[str, Any]
+) -> None:
+    response = client.put(
+        f"{VEHICLES_URL}/{stocked_vehicle['id']}",
+        json={**NEW_FIELDS, "image_url": "/images/vehicles/swift.jpg"},
+        headers=admin_headers,
+    )
+
+    assert response.json()["image_url"] == "/images/vehicles/swift.jpg"
+
+
+@pytest.mark.parametrize(
+    "image_url", ["/etc/passwd", "//evil.example/x.jpg", "/images/", "/images/../secret.jpg"]
+)
+def test_updating_to_a_bad_image_path_returns_422(
+    client: TestClient,
+    admin_headers: dict[str, str],
+    stocked_vehicle: dict[str, Any],
+    image_url: str,
+) -> None:
+    response = client.put(
+        f"{VEHICLES_URL}/{stocked_vehicle['id']}",
+        json={**NEW_FIELDS, "image_url": image_url},
+        headers=admin_headers,
+    )
+
+    assert response.status_code == 422

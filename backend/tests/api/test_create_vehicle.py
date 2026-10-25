@@ -237,3 +237,37 @@ def test_a_make_or_model_of_only_spaces_returns_422(
     )
 
     assert response.status_code == 422
+
+
+SELF_HOSTED_PHOTO = "/images/vehicles/swift.jpg"
+BAD_IMAGE_PATHS = [
+    "/etc/passwd",
+    "//evil.example/x.jpg",
+    "/images/",
+    "/images/../secret.jpg",
+    "/images/my car.jpg",
+    "/images/car.jpg\n",
+    "/images/" + "a" * IMAGE_URL_MAX_LENGTH,
+]
+
+
+def test_adding_a_vehicle_with_a_self_hosted_photo_path_returns_it(
+    client: TestClient, admin_headers: dict[str, str]
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "image_url": SELF_HOSTED_PHOTO}, headers=admin_headers
+    )
+
+    assert response.status_code == 201
+    assert response.json()["image_url"] == SELF_HOSTED_PHOTO
+
+
+@pytest.mark.parametrize("image_url", BAD_IMAGE_PATHS)
+def test_an_image_path_outside_images_or_with_dots_or_spaces_returns_422(
+    client: TestClient, admin_headers: dict[str, str], image_url: str
+) -> None:
+    response = client.post(
+        VEHICLES_URL, json={**VALID_VEHICLE, "image_url": image_url}, headers=admin_headers
+    )
+
+    assert response.status_code == 422
