@@ -29,8 +29,8 @@ test('the Purchase button is disabled when stock is zero', () => {
   expect(screen.getByRole('button', { name: /out of stock/i })).toBeDisabled()
 })
 
-test('a vehicle with zero stock shows an out of stock label', () => {
+test('a vehicle with zero stock shows a Sold out status', () => {
   renderCard({ quantity: 0 })
 
-  expect(screen.getByText('Out of stock', { selector: 'p' })).toBeInTheDocument()
+  expect(screen.getByText('Sold out', { selector: 'p' })).toBeInTheDocument()
 })
