@@ -29,8 +29,9 @@ Model = Annotated[
 
 
 def refuse_dots_in_image_path(image_url: str) -> str:
-    if image_url.startswith(IMAGE_PATH_PREFIX) and IMAGE_PATH_FORBIDDEN in image_url:
-        raise ValueError("An image path cannot go up a folder")
+    is_path = image_url.startswith(IMAGE_PATH_PREFIX)
+    if is_path and any(forbidden in image_url for forbidden in IMAGE_PATH_FORBIDDEN):
+        raise ValueError("An image path cannot go up a folder or contain % or a backslash")
     return image_url
 
 

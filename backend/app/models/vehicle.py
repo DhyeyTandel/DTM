@@ -17,6 +17,9 @@ from app.limits import (
 )
 
 CATEGORY_COLUMN_LENGTH = 20
+IMAGE_PATH_RULES = " AND ".join(
+    f"strpos(image_url, '{forbidden}') = 0" for forbidden in IMAGE_PATH_FORBIDDEN
+)
 CATEGORY_VALUES = ", ".join(f"'{category.value}'" for category in Category)
 
 
@@ -29,8 +32,7 @@ class Vehicle(Base):
         CheckConstraint(f"price BETWEEN {PRICE_MIN} AND {PRICE_MAX}", name="ck_vehicles_price"),
         CheckConstraint(
             f"image_url IS NULL OR image_url LIKE '{IMAGE_URL_SCHEME}%' "
-            f"OR (image_url LIKE '{IMAGE_PATH_PREFIX}%' "
-            f"AND image_url NOT LIKE '%{IMAGE_PATH_FORBIDDEN}%')",
+            f"OR (image_url LIKE '{IMAGE_PATH_PREFIX}%' AND {IMAGE_PATH_RULES})",
             name="ck_vehicles_image_url",
         ),
         CheckConstraint(
