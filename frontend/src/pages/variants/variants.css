@@ -1,88 +1,73 @@
-@import '@fontsource/young-serif';
-@import '@fontsource-variable/hanken-grotesk';
-@import '@fontsource/barlow-condensed/700.css';
-@import '@fontsource/barlow-condensed/800.css';
-@import '@fontsource/barlow/400.css';
-@import '@fontsource/barlow/600.css';
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/schibsted-grotesk';
+@import '@fontsource-variable/familjen-grotesk';
 
 @theme inline {
   --color-band: var(--color-band);
   --color-on-band: var(--color-on-band);
   --color-ok: var(--color-ok);
-  --color-on-ok: var(--color-on-ok);
   --color-low-fill: var(--color-low-fill);
-  --color-on-low-fill: var(--color-on-low-fill);
   --color-gone: var(--color-gone);
-  --color-on-gone: var(--color-on-gone);
   --font-display: var(--display-face);
   --font-body: var(--body-face);
 }
 
-/* A: racing green, expanded grotesque, number plate stock labels. */
-[data-variant='a'] {
-  --color-canvas: #f2f0e9;
-  --color-raised: #e5e2d6;
-  --color-line: #c9c5b6;
-  --color-ink: #101512;
-  --color-ink-muted: #4d554d;
-  --color-accent: #0b3d2b;
-  --color-accent-hover: #082e20;
-  --color-on-accent: #f2f0e9;
-  --color-band: #0b3d2b;
-  --color-on-band: #f2f0e9;
-  --color-ok: #0e6b3e;
-  --color-on-ok: #ffffff;
-  --color-low-fill: #f2b705;
-  --color-on-low-fill: #1a1400;
-  --color-gone: #a12a1f;
-  --color-on-gone: #ffffff;
-  --display-face: 'Archivo Variable', system-ui, sans-serif;
-  --body-face: 'Archivo Variable', system-ui, sans-serif;
+/* D: Mumbai taxi black and yellow, the stock shown as keys on a rack. */
+[data-variant='d'] {
+  --color-canvas: #f1efe8;
+  --color-raised: #e2dfd4;
+  --color-line: #c8c4b6;
+  --color-ink: #0e0e0c;
+  --color-ink-muted: #4a4944;
+  --color-accent: #0e0e0c;
+  --color-accent-hover: #000000;
+  --color-on-accent: #f6c90e;
+  --color-band: #f6c90e;
+  --color-on-band: #0e0e0c;
+  --color-ok: #0e0e0c;
+  --color-low-fill: #d9480f;
+  --color-gone: #4a4944;
+  --display-face: 'Bricolage Grotesque Variable', system-ui, sans-serif;
+  --body-face: 'Bricolage Grotesque Variable', system-ui, sans-serif;
   --control-radius: 0;
 }
 
-/* B: oxblood, a sturdy serif, a gauge for stock. */
-[data-variant='b'] {
-  --color-canvas: #f1ede4;
-  --color-raised: #e3ddd0;
-  --color-line: #cbc3b3;
-  --color-ink: #1b1412;
-  --color-ink-muted: #5a4e49;
-  --color-accent: #6b1523;
-  --color-accent-hover: #531019;
-  --color-on-accent: #f1ede4;
-  --color-band: #6b1523;
-  --color-on-band: #f1ede4;
-  --color-ok: #2f6b3a;
-  --color-on-ok: #ffffff;
-  --color-low-fill: #d98a00;
-  --color-on-low-fill: #1b1412;
-  --color-gone: #1b1412;
-  --color-on-gone: #f1ede4;
-  --display-face: 'Young Serif', Georgia, serif;
-  --body-face: 'Hanken Grotesk Variable', system-ui, sans-serif;
-  --control-radius: 0.125rem;
+/* E: petrol blue, a register read down a column, the filter written as a sentence. */
+[data-variant='e'] {
+  --color-canvas: #ecebe6;
+  --color-raised: #dfddd5;
+  --color-line: #c5c2b8;
+  --color-ink: #101417;
+  --color-ink-muted: #4b5257;
+  --color-accent: #0a4b57;
+  --color-accent-hover: #073a44;
+  --color-on-accent: #ffffff;
+  --color-band: #0a4b57;
+  --color-on-band: #f2f0ea;
+  --color-ok: #1b6e37;
+  --color-low-fill: #a86500;
+  --color-gone: #b3261e;
+  --display-face: 'Schibsted Grotesk Variable', system-ui, sans-serif;
+  --body-face: 'Schibsted Grotesk Variable', system-ui, sans-serif;
+  --control-radius: 0.25rem;
 }
 
-/* C: signal orange, a condensed road-sign face, a big stock numeral. */
-[data-variant='c'] {
-  --color-canvas: #eeece7;
-  --color-raised: #dddad1;
-  --color-line: #c3bfb4;
-  --color-ink: #121212;
-  --color-ink-muted: #484845;
-  --color-accent: #121212;
+/* F: big photography with the price sticker stuck on the windscreen. */
+[data-variant='f'] {
+  --color-canvas: #f2f2ef;
+  --color-raised: #e3e3de;
+  --color-line: #c9c9c2;
+  --color-ink: #101214;
+  --color-ink-muted: #4a4d50;
+  --color-accent: #101214;
   --color-accent-hover: #000000;
-  --color-on-accent: #eeece7;
-  --color-band: #ff5b1f;
-  --color-on-band: #121212;
+  --color-on-accent: #f2f2ef;
+  --color-band: #d7261e;
+  --color-on-band: #ffffff;
   --color-ok: #17803d;
-  --color-on-ok: #ffffff;
-  --color-low-fill: #ffc21a;
-  --color-on-low-fill: #121212;
-  --color-gone: #c62a1d;
-  --color-on-gone: #ffffff;
-  --display-face: 'Barlow Condensed', system-ui, sans-serif;
-  --body-face: 'Barlow', system-ui, sans-serif;
+  --color-low-fill: #9a5b00;
+  --color-gone: #101214;
+  --display-face: 'Familjen Grotesk Variable', system-ui, sans-serif;
+  --body-face: 'Familjen Grotesk Variable', system-ui, sans-serif;
   --control-radius: 0;
 }

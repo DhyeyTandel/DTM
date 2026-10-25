@@ -1,16 +1,16 @@
 import { Route, Routes } from 'react-router'
 import { Layout } from './components/Layout'
 import { StylePage } from './pages/StylePage'
-import { VariantA } from './pages/variants/VariantA'
-import { VariantB } from './pages/variants/VariantB'
-import { VariantC } from './pages/variants/VariantC'
+import { VariantD } from './pages/variants/VariantD'
+import { VariantE } from './pages/variants/VariantE'
+import { VariantF } from './pages/variants/VariantF'
 
 export function App() {
   return (
     <Routes>
-      <Route path="/style/a" element={<VariantA />} />
-      <Route path="/style/b" element={<VariantB />} />
-      <Route path="/style/c" element={<VariantC />} />
+      <Route path="/style/d" element={<VariantD />} />
+      <Route path="/style/e" element={<VariantE />} />
+      <Route path="/style/f" element={<VariantF />} />
       <Route element={<Layout />}>
         <Route path="/style" element={<StylePage />} />
       </Route>
