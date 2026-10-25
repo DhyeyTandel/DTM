@@ -209,7 +209,7 @@ Operations
 
 ## Frontend (F)
 
-Vitest and React Testing Library. The api layer is replaced with a fake at its module boundary, so no test makes a real request. Components are tested through what the user sees.
+Vitest and React Testing Library. MSW answers the requests, so the real api module runs and no test reaches a real server. Components are tested through what the user sees.
 
 Purchase button (F4)
 - F-01 the Purchase button is enabled when stock is above zero
@@ -238,3 +238,15 @@ Login and register forms (F1)
 - F-18 a 401 on login shows "invalid email or password"
 - F-19 a 409 on register shows that the email is already registered
 - F-20 a successful register sends the user to the login page
+
+Api client (F0)
+- F-21 a request sends the stored token as a bearer header
+- F-22 a request with no stored token sends no authorization header
+- F-23 a 401 response clears the stored token
+- F-24 a response with an error status rejects with an error that carries that status
+
+Money and stock labels (F0)
+- F-25 a price in paise is shown in rupees with Indian digit grouping (14_49_000_00 shows as ₹14,49,000)
+- F-26 a price with paise left over shows two decimals (₹14,49,000.50), and a whole rupee price shows none
+- F-27 stock above 3 is in stock, 1 to 3 is low, 0 is sold out
+- F-28 the stock label reads "In stock", "Only 3 left" (with the real count) and "Out of stock"
