@@ -4,6 +4,8 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.database import Base
 from app.domain.category import Category
 from app.limits import (
+    IMAGE_PATH_FORBIDDEN,
+    IMAGE_PATH_PREFIX,
     IMAGE_URL_MAX_LENGTH,
     IMAGE_URL_SCHEME,
     MAKE_MAX_LENGTH,
@@ -26,7 +28,9 @@ class Vehicle(Base):
         CheckConstraint(f"category IN ({CATEGORY_VALUES})", name="ck_vehicles_category"),
         CheckConstraint(f"price BETWEEN {PRICE_MIN} AND {PRICE_MAX}", name="ck_vehicles_price"),
         CheckConstraint(
-            f"image_url IS NULL OR image_url LIKE '{IMAGE_URL_SCHEME}%'",
+            f"image_url IS NULL OR image_url LIKE '{IMAGE_URL_SCHEME}%' "
+            f"OR (image_url LIKE '{IMAGE_PATH_PREFIX}%' "
+            f"AND image_url NOT LIKE '%{IMAGE_PATH_FORBIDDEN}%')",
             name="ck_vehicles_image_url",
         ),
         CheckConstraint(

@@ -1,9 +1,12 @@
+import re
 from typing import Annotated
 
-from pydantic import BaseModel, ConfigDict, Field, StringConstraints
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, StringConstraints
 
 from app.domain.category import Category
 from app.limits import (
+    IMAGE_PATH_FORBIDDEN,
+    IMAGE_PATH_PREFIX,
     IMAGE_URL_MAX_LENGTH,
     IMAGE_URL_SCHEME,
     MAKE_MAX_LENGTH,
@@ -23,9 +26,23 @@ Make = Annotated[
 Model = Annotated[
     str, StringConstraints(strip_whitespace=True, min_length=1, max_length=MODEL_MAX_LENGTH)
 ]
+
+
+def refuse_dots_in_image_path(image_url: str) -> str:
+    if image_url.startswith(IMAGE_PATH_PREFIX) and IMAGE_PATH_FORBIDDEN in image_url:
+        raise ValueError("An image path cannot go up a folder")
+    return image_url
+
+
 # A plain string, not HttpUrl: HttpUrl rewrites the address, which could pass the column length.
+# Either an https address or a self hosted photo under /images/.
 ImageUrl = Annotated[
-    str, StringConstraints(max_length=IMAGE_URL_MAX_LENGTH, pattern=rf"^{IMAGE_URL_SCHEME}\S+$")
+    str,
+    StringConstraints(
+        max_length=IMAGE_URL_MAX_LENGTH,
+        pattern=rf"^({re.escape(IMAGE_URL_SCHEME)}|{re.escape(IMAGE_PATH_PREFIX)})\S+$",
+    ),
+    AfterValidator(refuse_dots_in_image_path),
 ]
 Price = Annotated[int, Field(strict=True, ge=PRICE_MIN, le=PRICE_MAX)]
 Quantity = Annotated[int, Field(strict=True, ge=QUANTITY_MIN, le=QUANTITY_MAX)]
