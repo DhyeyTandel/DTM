@@ -8,7 +8,7 @@ Read before working: `docs/BRIEF.md`, `docs/STORIES.md`, `docs/TEST_LIST.md`, `d
 
 - Backend: FastAPI, SQLAlchemy, Alembic, Postgres, pytest
 - Frontend: React, Vite, TypeScript, Tailwind
-- Deploy: Docker Compose and Caddy behind Cloudflare, on my own VPS
+- Deploy: Docker Compose and Caddy on my ThinkPad home server, through a Cloudflare Tunnel at dtm.dhyeytandel.in
 - CI: ruff and mypy on the backend, eslint and prettier on the frontend, plus all tests
 
 ## Decisions already made

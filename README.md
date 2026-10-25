@@ -4,20 +4,20 @@ DTM is a car dealership inventory app. Signed-in customers browse the lot and bu
 It is a FastAPI and PostgreSQL backend with a React frontend, built test first, one behaviour at a time.
 It was written for the Incubyte take-home: small commits, a test before every change, and CI on every push.
 
-**Live demo:** https://example.com (placeholder, to be replaced)
+**Live demo:** https://dtm.dhyeytandel.in
 
 ## Tech stack
 
 - Backend: FastAPI, SQLAlchemy, Alembic, PostgreSQL, pytest
 - Frontend: React, Vite, TypeScript, Tailwind, TanStack Query
-- Deploy: Docker Compose and Caddy behind Cloudflare, on a VPS
+- Deploy: Docker Compose and Caddy on a home server, reached through a Cloudflare Tunnel
 - CI (GitHub Actions): ruff and mypy plus pytest on the backend; eslint, prettier and tests on the frontend
 
 ## How it fits together
 
 ```mermaid
 flowchart LR
-    Browser --> Caddy
+    Browser --> Cloudflare --> cloudflared --> Caddy
     Caddy --> FastAPI
     subgraph FastAPI
         direction LR
@@ -107,6 +107,20 @@ make test-report
 ```
 
 This starts the test database, runs the backend suite and writes an HTML report and a branch coverage report. Both are committed: [docs/test-report/report.html](docs/test-report/report.html) and [docs/test-report/coverage/index.html](docs/test-report/coverage/index.html).
+
+## Deploy
+
+Production runs on a home server with `compose.prod.yaml`: postgres, the api, Caddy serving the built frontend, and a `cloudflared` tunnel. Nothing is published on the host. Cloudflare routes `dtm.dhyeytandel.in` through the tunnel to `http://web:80`, and Caddy proxies `/api` to the api.
+
+```sh
+cp .env.production.example .env.production   # then set every value, including TUNNEL_TOKEN
+docker compose --env-file .env.production -f compose.prod.yaml up -d --build
+curl https://dtm.dhyeytandel.in/api/health
+```
+
+The `--env-file` flag is required. Compose only reads a file named `.env` on its own, so without the flag every secret comes through blank.
+
+Postgres sets its password when the volume is first created. If the stack ever starts with a blank `POSTGRES_PASSWORD`, fix the env file and recreate the volume with `down -v` before the next `up`.
 
 ## API
 
