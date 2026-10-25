@@ -27,7 +27,13 @@ const vehicles = [
 function renderListing(url = '/') {
   render(
     <MemoryRouter initialEntries={[url]}>
-      <Listing vehicles={vehicles} onPurchase={vi.fn()} onDetails={vi.fn()} />
+      <Listing
+        vehicles={vehicles}
+        pendingIds={new Set()}
+        notices={new Map()}
+        onPurchase={vi.fn()}
+        onDetails={vi.fn()}
+      />
     </MemoryRouter>,
   )
 }

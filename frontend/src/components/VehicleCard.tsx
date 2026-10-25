@@ -1,5 +1,6 @@
 import { useId } from 'react'
 import type { Vehicle } from '../api/types'
+import type { CardNotice } from '../lib/cardNotice'
 import { categoryLabel } from '../lib/categories'
 import { formatPrice } from '../lib/money'
 import { formatStockNumber } from '../lib/stockNumber'
@@ -15,6 +16,8 @@ import { VehiclePhoto } from './VehiclePhoto'
 
 interface VehicleCardProps {
   vehicle: Vehicle
+  purchasing?: boolean
+  notice?: CardNotice
   onPurchase: (vehicleId: number) => void
   onDetails: (vehicleId: number) => void
 }
@@ -25,7 +28,13 @@ const DOT_CLASSES: Record<StockStatus, string> = {
   'sold-out': 'bg-gone',
 }
 
-export function VehicleCard({ vehicle, onPurchase, onDetails }: VehicleCardProps) {
+export function VehicleCard({
+  vehicle,
+  purchasing = false,
+  notice,
+  onPurchase,
+  onDetails,
+}: VehicleCardProps) {
   const titleId = useId()
   const name = `${vehicle.make} ${vehicle.model}`
   const soldOut = isSoldOut(vehicle.quantity)
@@ -52,11 +61,20 @@ export function VehicleCard({ vehicle, onPurchase, onDetails }: VehicleCardProps
             {stockLabel(vehicle.quantity)}
           </p>
         </div>
+        {notice && (
+          <p
+            role={notice.kind === 'error' ? 'alert' : 'status'}
+            className={`mt-3 text-[0.9375rem] font-semibold ${notice.kind === 'error' ? 'text-error' : 'text-ok'}`}
+          >
+            {notice.message}
+          </p>
+        )}
         <div className="mt-auto pt-4">
           <div className="grid grid-cols-2 gap-2 border-t border-line pt-3">
             <Button
               aria-describedby={titleId}
-              disabled={soldOut}
+              disabled={soldOut || purchasing}
+              aria-busy={purchasing}
               onClick={() => {
                 onPurchase(vehicle.id)
               }}

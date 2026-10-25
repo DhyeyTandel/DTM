@@ -18,6 +18,8 @@ export function StylePage() {
       />
       <Listing
         vehicles={SAMPLE_VEHICLES}
+        pendingIds={new Set()}
+        notices={new Map()}
         onPurchase={() => undefined}
         onDetails={() => undefined}
       />

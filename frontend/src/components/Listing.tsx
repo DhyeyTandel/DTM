@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import type { Vehicle } from '../api/types'
+import type { CardNotice } from '../lib/cardNotice'
 import { useListingParams } from '../hooks/useListingParams'
 import { filterVehicles, SORT_ORDERS, sortVehicles, type SortOrder } from '../lib/listing'
 import { oneOf } from '../lib/oneOf'
@@ -10,6 +11,8 @@ import { VehicleCard } from './VehicleCard'
 
 interface ListingProps {
   vehicles: Vehicle[]
+  pendingIds: ReadonlySet<number>
+  notices: ReadonlyMap<number, CardNotice>
   onPurchase: (vehicleId: number) => void
   onDetails: (vehicleId: number) => void
 }
@@ -23,7 +26,7 @@ const SORT_OPTIONS: { value: SortOrder; label: string }[] = [
 
 const CLEARED_FILTERS = { category: '', minPrice: '', maxPrice: '', availability: '' } as const
 
-export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
+export function Listing({ vehicles, pendingIds, notices, onPurchase, onDetails }: ListingProps) {
   const { params, update } = useListingParams()
   const [filtersHidden, setFiltersHidden] = useState(false)
   const filterDrawerRef = useRef<HTMLDialogElement>(null)
@@ -126,7 +129,13 @@ export function Listing({ vehicles, onPurchase, onDetails }: ListingProps) {
             <ul aria-label="Vehicles" className="mt-6 grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
               {visibleVehicles.map((vehicle) => (
                 <li key={vehicle.id}>
-                  <VehicleCard vehicle={vehicle} onPurchase={onPurchase} onDetails={onDetails} />
+                  <VehicleCard
+                    vehicle={vehicle}
+                    purchasing={pendingIds.has(vehicle.id)}
+                    notice={notices.get(vehicle.id)}
+                    onPurchase={onPurchase}
+                    onDetails={onDetails}
+                  />
                 </li>
               ))}
             </ul>
